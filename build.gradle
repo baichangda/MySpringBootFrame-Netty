@@ -1,0 +1,54 @@
+allprojects{
+    group 'MySpringBootFrame-Netty'
+    version '1.0-SNAPSHOT'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    bootRun {
+        addResources = true
+        /**
+         * 启动时候带入jvm的参数;如下(启动jvisualvm监控)
+         * nohup gradle bootRun -PjvmArgs="-Djava.rmi.server.hostname=172.16.24.36 -Dcom.sun.management.jmxremote.port=10001 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=true" &
+         */
+        if (project.hasProperty('jvmArgs') ) {
+            jvmArgs = (project.jvmArgs.split("\\s+") as List)
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven { url "${mavenRepoUrl}" }
+    }
+
+    dependencies{
+
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked"
+            options.encoding = "UTF-8"
+        }
+    }
+}
+buildscript {
+    ext {
+        springBootVersion = '1.+'
+        mavenRepoUrl='http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+    repositories {
+        mavenLocal()
+        maven { url "${mavenRepoUrl}" }
+    }
+    dependencies {
+        //使用springboot框架
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
+dependencies {
+    compile project(':NettyServer')
+}
