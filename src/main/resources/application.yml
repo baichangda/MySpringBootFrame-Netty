@@ -2,10 +2,10 @@ spring:
 #  i18n资源文件配置
    messages:
       basename: i18n/base/messages,i18n/main/messages,i18n/nettyserver/messages
-      cache-seconds: -1
       encoding: UTF-8
+      cache-duration: -1
 
-nettyServer:
+netty:
    http:
       servers[0]:
          id: test
