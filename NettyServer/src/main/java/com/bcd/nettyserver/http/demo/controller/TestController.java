@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 @NettyHttpRequestMapping("/test")
 public class TestController {
     private ExecutorService es= Executors.newCachedThreadPool();
-    @NettyHttpRequestMapping(value = "/testFun",method = NettyHttpRequestMethodEnum.POST,timeout = 5*1000)
+    @NettyHttpRequestMapping(value = "/testFun",method = NettyHttpRequestMethodEnum.GET,timeout = 5*1000)
     public NettyHttpDeferredResult test(
             @NettyHttpRequestParam(value = "name") String name,
             @NettyHttpRequestParam(value = "age")Integer age,
