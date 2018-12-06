@@ -2,7 +2,6 @@ package com.bcd.base.util;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -94,7 +93,7 @@ public class ExcelUtil {
      * @param dataList 数据集合
      * @return
      */
-    public static XSSFWorkbook exportExcel_2007(List<List> dataList,BiConsumer<Cell,Object> cellBiConsumer){
+    public static XSSFWorkbook exportExcel_2007(List<List> dataList, BiConsumer<Cell,Object> cellBiConsumer){
         XSSFWorkbook workBook = new XSSFWorkbook();
         Sheet sheet = workBook.createSheet();
         writeSheet(sheet,1,1,cellBiConsumer,dataList);
@@ -106,7 +105,7 @@ public class ExcelUtil {
      * @param dataList 数据集合
      * @return
      */
-    public static HSSFWorkbook exportExcel_2003(List<List> dataList,BiConsumer<Cell,Object> cellBiConsumer){
+    public static HSSFWorkbook exportExcel_2003(List<List> dataList, BiConsumer<Cell,Object> cellBiConsumer){
         HSSFWorkbook workBook = new HSSFWorkbook();
         Sheet sheet = workBook.createSheet();
         writeSheet(sheet,1,1,cellBiConsumer,dataList);
@@ -127,7 +126,7 @@ public class ExcelUtil {
      * @param cellBiConsumer 读取cell值的方法
      * @param dataList 数据集合
      */
-    public static void overWriteExcel(final Path path,final int sheetIndex, final int beginRowIndex, final int beginColIndex,BiConsumer<Cell,Object> cellBiConsumer, List<List> dataList){
+    public static void overWriteExcel(final Path path, final int sheetIndex, final int beginRowIndex, final int beginColIndex, BiConsumer<Cell,Object> cellBiConsumer, List<List> dataList){
         if(dataList==null||dataList.size()==0){
             return;
         }
@@ -156,10 +155,10 @@ public class ExcelUtil {
      * @param cellBiConsumer 读取cell值的方法
      * @param dataList 数据集合
      */
-    public static void writeExcel(final Path sourcePath,final Path targetPath,final int sheetIndex, final int beginRowIndex, final int beginColIndex,BiConsumer<Cell,Object> cellBiConsumer, List<List> dataList){
+    public static void writeExcel(final Path sourcePath, final Path targetPath, final int sheetIndex, final int beginRowIndex, final int beginColIndex, BiConsumer<Cell,Object> cellBiConsumer, List<List> dataList){
         try (InputStream is = Files.newInputStream(sourcePath);
              OutputStream os = Files.newOutputStream(targetPath)) {
-            Workbook workbook=WorkbookFactory.create(is);
+            Workbook workbook= WorkbookFactory.create(is);
             if(sheetIndex>workbook.getNumberOfSheets()){
                 return;
             }
@@ -221,7 +220,7 @@ public class ExcelUtil {
      * @return
      */
     public static List<List> readExcel(final Sheet sheet, final int beginRowIndex, final int beginColIndex, final int endColIndex,
-                                       final Function<Row,Boolean> rowFunction,final Function<Cell,Object> cellFunction){
+                                       final Function<Row,Boolean> rowFunction, final Function<Cell,Object> cellFunction){
         List<List> returnList=new ArrayList<>();
         int startRow=beginRowIndex-1;
         int endRow=sheet.getLastRowNum();
@@ -247,10 +246,10 @@ public class ExcelUtil {
         return returnList;
     }
 
-    public static List<List> readExcel(final InputStream is,final int sheetIndex,final int beginRowIndex,final int beginColIndex,final int endColIndex,
-                                       final Function<Row,Boolean> rowFunction,final Function<Cell,Object> cellFunction){
+    public static List<List> readExcel(final InputStream is, final int sheetIndex, final int beginRowIndex, final int beginColIndex, final int endColIndex,
+                                       final Function<Row,Boolean> rowFunction, final Function<Cell,Object> cellFunction){
         try {
-            Workbook workbook=WorkbookFactory.create(is);
+            Workbook workbook= WorkbookFactory.create(is);
             if(sheetIndex>workbook.getNumberOfSheets()){
                 return new ArrayList<>();
             }
@@ -262,13 +261,13 @@ public class ExcelUtil {
     }
 
     public static List<Map<String,Object>> readExcel(final Sheet sheet, final int beginRowIndex, final int beginColIndex, final int endColIndex,
-                                      final String[] fieldNameArr, final Function<Row,Boolean> rowFunction,final Function<Cell,Object> cellFunction){
+                                                     final String[] fieldNameArr, final Function<Row,Boolean> rowFunction, final Function<Cell,Object> cellFunction){
         List<List> dataList=readExcel(sheet, beginRowIndex, beginColIndex, endColIndex, rowFunction,cellFunction);
         return parseToJsonArrayData(dataList,fieldNameArr);
     }
 
     public static List<Map<String,Object>> readExcel(final InputStream is, final int sheetIndex, final int beginRowIndex, final int beginColIndex, final int endColIndex,
-                                      final String[] fieldNameArr, final Function<Row,Boolean> rowFunction,final Function<Cell,Object> cellFunction){
+                                                     final String[] fieldNameArr, final Function<Row,Boolean> rowFunction, final Function<Cell,Object> cellFunction){
         List<List> dataList=readExcel(is,sheetIndex, beginRowIndex, beginColIndex, endColIndex, rowFunction,cellFunction);
         return parseToJsonArrayData(dataList,fieldNameArr);
     }

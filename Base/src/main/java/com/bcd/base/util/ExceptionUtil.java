@@ -3,7 +3,6 @@ package com.bcd.base.util;
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.message.JsonMessage;
 
-import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -52,10 +51,6 @@ public class ExceptionUtil {
         Throwable realException=parseRealException(throwable);
         if(realException instanceof BaseRuntimeException){
             return JsonMessage.fail(realException.getMessage(),((BaseRuntimeException)realException).getCode(),getStackTraceMessage(realException));
-        }else if(realException instanceof ConstraintViolationException) {
-            return JsonMessage.fail(
-                    ((ConstraintViolationException)realException).getConstraintViolations().stream().map(e->e.getMessage()).reduce((e1,e2)->e1+","+e2).get()
-            );
         }else {
 //            return JsonMessage.fail(realException.getMessage(),null,getStackTraceMessage(realException));
             return JsonMessage.fail(realException.getMessage());

@@ -1,6 +1,6 @@
 package com.bcd.base.json.jackson.filter;
 
-import com.bcd.base.json.SimpleFilterBean;
+import com.bcd.base.json.jackson.SimpleFilterBean;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;

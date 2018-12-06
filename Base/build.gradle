@@ -1,0 +1,28 @@
+dependencies {
+    //spring支持
+    compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+
+    //poi 集成
+    compile("org.apache.poi:poi:${poiVersion}")
+    compile("org.apache.poi:poi-ooxml:${poiVersion}")
+
+    //json
+    compile("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+    compile("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
+    compile("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
+
+    //apache commons beanUtils
+    compile("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
+
+    //apache commons lang3
+    compile("org.apache.commons:commons-lang3:${commonsLangVersion}")
+}
+buildscript {
+    ext {
+        jacksonVersion = '+'
+        poiVersion = '+'
+        httpclientVersion ='+'
+        commonsBeanutilsVersion ='+'
+        commonsLangVersion='+'
+    }
+}

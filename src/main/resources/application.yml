@@ -9,4 +9,4 @@ netty:
    http:
       servers[0]:
          id: test
-         port: 6379
+         port: 4444
