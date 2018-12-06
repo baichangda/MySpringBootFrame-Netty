@@ -1,6 +1,0 @@
-[submodule "NettyServer"]
-	path = NettyServer
-	url = ../NettyServer.git
-[submodule "Base"]
-	path = Base
-	url = ../Base.git
