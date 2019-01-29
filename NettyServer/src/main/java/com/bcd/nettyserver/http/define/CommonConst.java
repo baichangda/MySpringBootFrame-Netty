@@ -42,5 +42,5 @@ public class CommonConst {
     /**
      * netty 工作线程组
      */
-    public final static ExecutorService HTTP_REQUEST_HANDLE_THREAD_POOL= Executors.newCachedThreadPool();
+    public final static ExecutorService HTTP_REQUEST_HANDLE_THREAD_POOL= Executors.newFixedThreadPool(5);
 }
