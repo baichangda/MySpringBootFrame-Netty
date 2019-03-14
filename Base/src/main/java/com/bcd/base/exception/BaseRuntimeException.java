@@ -1,6 +1,5 @@
 package com.bcd.base.exception;
 
-import com.bcd.base.message.JsonMessage;
 import com.bcd.base.util.ExceptionUtil;
 
 /**
@@ -36,17 +35,13 @@ public class BaseRuntimeException extends RuntimeException{
     public static BaseRuntimeException getException(String message){
         return new BaseRuntimeException(message);
     }
-    public static BaseRuntimeException getException(String message, String code){
+    public static BaseRuntimeException getException(String message,String code){
         return new BaseRuntimeException(message,code);
     }
     public static BaseRuntimeException getException(Throwable e){
         return new BaseRuntimeException(e);
     }
-    public static BaseRuntimeException getException(Throwable e, String code){
+    public static BaseRuntimeException getException(Throwable e,String code){
         return new BaseRuntimeException(e,code);
-    }
-
-    public JsonMessage toJsonMessage(){
-        return ExceptionUtil.toJsonMessage(this);
     }
 }

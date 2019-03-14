@@ -1,4 +1,4 @@
-package com.bcd.base.json.jackson;
+package com.bcd.base.json;
 
 import java.util.HashSet;
 import java.util.Set;

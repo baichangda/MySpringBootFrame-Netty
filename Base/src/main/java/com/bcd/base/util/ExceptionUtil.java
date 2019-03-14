@@ -2,16 +2,22 @@ package com.bcd.base.util;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.message.JsonMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 /**
  * Created by Administrator on 2017/7/27.
  */
 public class ExceptionUtil {
+
+    private final static Logger logger= LoggerFactory.getLogger(ExceptionUtil.class);
 
     /**
      * 获取堆栈信息
@@ -39,23 +45,10 @@ public class ExceptionUtil {
      */
     public static void printException(Throwable throwable){
         Throwable realException=parseRealException(throwable);
-        realException.printStackTrace();
+        logger.error("Error",realException);
     }
 
-    /**
-     * 根据异常生成JsonMessage
-     * @param throwable
-     * @return
-     */
-    public static JsonMessage toJsonMessage(Throwable throwable){
-        Throwable realException=parseRealException(throwable);
-        if(realException instanceof BaseRuntimeException){
-            return JsonMessage.fail(realException.getMessage(),((BaseRuntimeException)realException).getCode(),getStackTraceMessage(realException));
-        }else {
-//            return JsonMessage.fail(realException.getMessage(),null,getStackTraceMessage(realException));
-            return JsonMessage.fail(realException.getMessage());
-        }
-    }
+
 
 
 
@@ -85,6 +78,23 @@ public class ExceptionUtil {
         }else{
             //6、如果真实异常不为当前异常,则继续解析其真实异常
             return parseRealException(realException);
+        }
+    }
+
+    /**
+     * 根据异常生成JsonMessage
+     * @param throwable
+     * @return
+     */
+    public static JsonMessage toJsonMessage(Throwable throwable){
+        Throwable realException=parseRealException(throwable);
+        if(realException==null){
+            throw BaseRuntimeException.getException("ExceptionUtil.toJsonMessage Param[throwable] Can't Be Null");
+        }
+        if(realException instanceof BaseRuntimeException){
+            return JsonMessage.fail(realException.getMessage(),((BaseRuntimeException)realException).getCode(),getStackTraceMessage(realException));
+        }else {
+            return JsonMessage.fail(realException.getMessage());
         }
     }
 }

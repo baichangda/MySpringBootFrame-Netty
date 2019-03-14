@@ -1,10 +1,7 @@
 package com.bcd.base.util;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,9 +49,9 @@ public class StringUtil {
      */
     public static String replaceStrs(String str, Map<String,String> dataMap){
         String[] newStr=new String[]{str};
-        dataMap.forEach((k,v)->{
-            newStr[0]=newStr[0].replaceAll("\\$\\{"+escapeExprSpecialWord(k)+"\\}",escapeExprSpecialWord(v));
-        });
+        dataMap.forEach((k,v)->
+            newStr[0]=newStr[0].replaceAll("\\$\\{"+escapeExprSpecialWord(k)+"\\}",escapeExprSpecialWord(v))
+        );
         return newStr[0];
     }
 

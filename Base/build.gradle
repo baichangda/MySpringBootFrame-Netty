@@ -1,15 +1,13 @@
 dependencies {
-    //spring支持
+    //springboot支持
     compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
-
-    //poi 集成
-    compile("org.apache.poi:poi:${poiVersion}")
-    compile("org.apache.poi:poi-ooxml:${poiVersion}")
-
+    //springboot test支持
+    compile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     //json
     compile("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     compile("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
     compile("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}")
 
     //apache commons beanUtils
     compile("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
@@ -20,8 +18,6 @@ dependencies {
 buildscript {
     ext {
         jacksonVersion = '+'
-        poiVersion = '+'
-        httpclientVersion ='+'
         commonsBeanutilsVersion ='+'
         commonsLangVersion='+'
     }

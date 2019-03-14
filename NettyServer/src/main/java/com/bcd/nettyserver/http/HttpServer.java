@@ -23,11 +23,11 @@ import java.util.concurrent.Executors;
 /**
  * 基于Netty的Http监听服务
  */
-public class NettyHttpServer implements Runnable{
+public class HttpServer implements Runnable{
     private String serverId;
     private int port;
 
-    public NettyHttpServer(String serverId, int port) {
+    public HttpServer(String serverId, int port) {
         this.serverId = serverId;
         this.port = port;
     }

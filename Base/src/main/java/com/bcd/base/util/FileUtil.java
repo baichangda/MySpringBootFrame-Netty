@@ -5,9 +5,7 @@ import com.bcd.base.exception.BaseRuntimeException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 
 public class FileUtil {
 
@@ -37,7 +35,7 @@ public class FileUtil {
             return;
         }
         try {
-            if (Files.exists(path)) {
+            if (path.toFile().exists()) {
                 return;
             }
             Files.createDirectories(path.getParent());

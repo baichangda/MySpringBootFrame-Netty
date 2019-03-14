@@ -1,4 +1,4 @@
-package com.bcd.nettyserver.http.config.properties.http;
+package com.bcd.nettyserver.http.properties.http;
 
 
 public class HttpConfig {

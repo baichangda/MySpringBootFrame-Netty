@@ -1,6 +1,6 @@
-package com.bcd.nettyserver.http.config.properties;
+package com.bcd.nettyserver.http.properties;
 
-import com.bcd.nettyserver.http.config.properties.http.HttpConfig;
+import com.bcd.nettyserver.http.properties.http.HttpConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

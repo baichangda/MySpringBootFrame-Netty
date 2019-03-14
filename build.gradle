@@ -60,5 +60,5 @@ buildscript {
 }
 
 dependencies {
-    compile project(':NettyServer')
+    compile project(':Protocol')
 }

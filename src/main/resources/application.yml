@@ -6,7 +6,9 @@ spring:
       cache-duration: -1
 
 netty:
+   tcp:
+      server_32960:
+          port: 6666
    http:
-      servers[0]:
-         id: test
-         port: 4444
+       id: test
+       port: 5555

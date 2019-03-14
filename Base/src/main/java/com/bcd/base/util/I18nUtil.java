@@ -26,7 +26,7 @@ public class I18nUtil {
      * @return
      */
     public static String getMessage(String key){
-       return getMessage(key,null, LocaleContextHolder.getLocale());
+       return getMessage(key,null,LocaleContextHolder.getLocale());
     }
 
     /**
