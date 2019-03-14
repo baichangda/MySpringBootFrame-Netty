@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.http.config.properties.http;
 
-public class HttpServerConfig {
+
+public class HttpConfig {
     public String id;
     public int port;
 

@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.http;
 
 
+import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.nettyserver.http.handler.NettyHttpRequestHandler;
 import com.bcd.nettyserver.http.support.spring.converter.SpringConverter;
 import io.netty.bootstrap.ServerBootstrap;
@@ -22,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * 基于Netty的Http监听服务
  */
-public class NettyHttpServer {
+public class NettyHttpServer implements Runnable{
     private String serverId;
     private int port;
 
@@ -53,7 +54,7 @@ public class NettyHttpServer {
             ChannelFuture channelFuture= serverBootstrap.bind(new InetSocketAddress(port)).sync();
             channelFuture.channel().closeFuture().sync();
         }catch(Exception e){
-            e.printStackTrace();
+            throw BaseRuntimeException.getException(e);
         }finally{
             boosGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
