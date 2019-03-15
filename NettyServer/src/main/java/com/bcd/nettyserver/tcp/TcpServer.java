@@ -1,5 +1,20 @@
 package com.bcd.nettyserver.tcp;
 
-public interface TcpServer extends Runnable{
-    int getPort();
+import com.bcd.nettyserver.tcp.parse.Parser;
+
+public abstract class TcpServer implements Runnable{
+    protected int port;
+
+    public TcpServer(int port, Parser parser) {
+        this.port = port;
+    }
+
+    public TcpServer(int port) {
+        this(port,new Parser());
+    }
+
+    public int getPort() {
+        return port;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.bcd.protocol.gb32960.handler;
+package com.bcd.nettyserver.tcp.handler;
 
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import io.netty.buffer.ByteBuf;
@@ -10,13 +10,20 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class PacketSplitHandler extends ByteToMessageDecoder {
+public abstract class PacketSplitHandler extends ByteToMessageDecoder {
 
     Logger logger= LoggerFactory.getLogger(PacketSplitHandler.class);
-    PacketInfo packetInfo;
 
-    public PacketSplitHandler(PacketInfo packetInfo) {
-        this.packetInfo = packetInfo;
+    private byte[] header;
+    private int lengthFieldStart;
+    private int lengthFieldEnd;
+    private int lengthFieldLength;
+
+    public PacketSplitHandler(byte[] header,int lengthFieldStart,int lengthFieldEnd) {
+        this.header=header;
+        this.lengthFieldStart=lengthFieldStart;
+        this.lengthFieldEnd=lengthFieldEnd;
+        this.lengthFieldLength=lengthFieldEnd-lengthFieldStart;
     }
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -27,9 +34,8 @@ public class PacketSplitHandler extends ByteToMessageDecoder {
     }
 
     private boolean checkReadableLength(ByteBuf in){
-        return in.readableBytes()>=(packetInfo.getLengthFieldEnd()+1);
+        return in.readableBytes()>=(lengthFieldEnd+1);
     }
-
 
     private Object decode(ChannelHandlerContext ctx, ByteBuf in) {
         //1、开始检测报文头(最小长度为 内容为0 再加上异或校验位)
@@ -37,7 +43,6 @@ public class PacketSplitHandler extends ByteToMessageDecoder {
             return null;
         }
         //2、检测报文头
-        byte[] header= packetInfo.getHeader();
         byte[] temp=new byte[header.length];
         int readIndex=header.length;
         in.getBytes(0,temp);
@@ -76,9 +81,9 @@ public class PacketSplitHandler extends ByteToMessageDecoder {
             return null;
         }
         //4.2、读取长度字段
-        long len=getUnadjustedFrameLength(in, packetInfo.getLengthFieldStart(), packetInfo.getLengthFieldLength());
+        long len=getUnadjustedFrameLength(in, lengthFieldStart, lengthFieldLength);
         //4.3、读取完整的报文
-        int readLength=(int)(packetInfo.getLengthFieldEnd()+len+1);
+        int readLength=(int)(lengthFieldEnd+len+1);
         if(readLength<=in.readableBytes()){
             ByteBuf res= in.readBytes(readLength);
             in.discardReadBytes();
@@ -94,30 +99,7 @@ public class PacketSplitHandler extends ByteToMessageDecoder {
     }
 
 
-    protected long getUnadjustedFrameLength(ByteBuf buf, int offset, int length) {
-        long frameLength;
-        switch (length) {
-            case 1:
-                frameLength = buf.getUnsignedByte(offset);
-                break;
-            case 2:
-                frameLength = buf.getUnsignedShort(offset);
-                break;
-            case 3:
-                frameLength = buf.getUnsignedMedium(offset);
-                break;
-            case 4:
-                frameLength = buf.getUnsignedInt(offset);
-                break;
-            case 8:
-                frameLength = buf.getLong(offset);
-                break;
-            default:
-                throw new DecoderException(
-                        "unsupported lengthFieldLength: " + length + " (expected: 1, 2, 3, 4, or 8)");
-        }
-        return frameLength;
-    }
+    protected abstract long getUnadjustedFrameLength(ByteBuf buf, int offset, int length) ;
 
     protected boolean checkXor(ByteBuf data){
         int len=data.readableBytes();
@@ -128,6 +110,36 @@ public class PacketSplitHandler extends ByteToMessageDecoder {
         return temp==data.getByte(len-1);
     }
 
+    public static class Default extends PacketSplitHandler{
+        public Default(byte[] header, int lengthFieldStart, int lengthFieldEnd) {
+            super(header, lengthFieldStart, lengthFieldEnd);
+        }
 
+        @Override
+        protected long getUnadjustedFrameLength(ByteBuf buf, int offset, int length) {
+            long frameLength;
+            switch (length) {
+                case 1:
+                    frameLength = buf.getUnsignedByte(offset);
+                    break;
+                case 2:
+                    frameLength = buf.getUnsignedShort(offset);
+                    break;
+                case 3:
+                    frameLength = buf.getUnsignedMedium(offset);
+                    break;
+                case 4:
+                    frameLength = buf.getUnsignedInt(offset);
+                    break;
+                case 8:
+                    frameLength = buf.getLong(offset);
+                    break;
+                default:
+                    throw new DecoderException(
+                            "unsupported lengthFieldLength: " + length + " (expected: 1, 2, 3, 4, or 8)");
+            }
+            return frameLength;
+        }
+    }
     
 }

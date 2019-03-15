@@ -9,7 +9,6 @@ public class PacketInfo {
     private byte[] header;
     private Integer lengthFieldStart;
     private Integer lengthFieldEnd;
-    private Integer lengthFieldLength;
     //标注@PacketField的字段集合和注解集合
     private List<Field> fieldList1;
     private List<PacketField> annoList1;
@@ -39,14 +38,6 @@ public class PacketInfo {
 
     public void setLengthFieldEnd(Integer lengthFieldEnd) {
         this.lengthFieldEnd = lengthFieldEnd;
-    }
-
-    public Integer getLengthFieldLength() {
-        return lengthFieldLength;
-    }
-
-    public void setLengthFieldLength(Integer lengthFieldLength) {
-        this.lengthFieldLength = lengthFieldLength;
     }
 
     public List<Field> getFieldList1() {

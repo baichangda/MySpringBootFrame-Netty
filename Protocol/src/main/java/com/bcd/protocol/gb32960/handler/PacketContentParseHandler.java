@@ -12,9 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@ChannelHandler.Sharable
-@Component
 @SuppressWarnings("unchecked")
+@Component
 public class PacketContentParseHandler extends ChannelInboundHandlerAdapter {
     Logger logger= LoggerFactory.getLogger(PacketContentParseHandler.class);
 
