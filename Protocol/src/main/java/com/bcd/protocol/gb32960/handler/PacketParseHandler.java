@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @SuppressWarnings("unchecked")
 @Component
+@ChannelHandler.Sharable
 public class PacketParseHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     @Qualifier("parser_32960")

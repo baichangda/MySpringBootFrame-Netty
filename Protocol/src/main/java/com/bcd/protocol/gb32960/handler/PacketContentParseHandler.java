@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @SuppressWarnings("unchecked")
 @Component
+@ChannelHandler.Sharable
 public class PacketContentParseHandler extends ChannelInboundHandlerAdapter {
     Logger logger= LoggerFactory.getLogger(PacketContentParseHandler.class);
 

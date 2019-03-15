@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ParserConfig {
+public class ParserConfig_32960 {
     @Bean("parser_32960")
     public Parser parser(){
         return new Parser();

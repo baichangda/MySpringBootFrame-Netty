@@ -17,6 +17,7 @@ import java.util.Date;
 
 @SuppressWarnings("unchecked")
 @Component
+@ChannelHandler.Sharable
 public class BusinessHandler extends ChannelInboundHandlerAdapter{
     Logger logger= LoggerFactory.getLogger(BusinessHandler.class);
 
