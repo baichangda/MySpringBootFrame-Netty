@@ -4,12 +4,14 @@ import com.bcd.base.util.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@ConditionalOnProperty("netty.tcp")
 @Component("tcpStarter")
 public class Starter implements CommandLineRunner{
     Logger logger= LoggerFactory.getLogger(Starter.class);

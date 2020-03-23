@@ -14,7 +14,7 @@ public class ByteArrayFieldParser implements FieldParser<byte[]> {
             for(int j=0;j<=singleLen-1;j++){
                 param[j]=data[i*singleLen+j];
             }
-            res[i]= ByteFieldParser.INSTANCE.parse(param);
+            res[i]= param[0];
         }
         return res;
     }

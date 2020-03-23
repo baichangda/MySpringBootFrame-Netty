@@ -2,6 +2,7 @@ package com.bcd.nettyserver.tcp.parse;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.SpringUtil;
+import com.bcd.base.util.StringUtil;
 import com.bcd.nettyserver.tcp.anno.PacketField;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
@@ -10,9 +11,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
@@ -20,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Parser{
-    private final static ScriptEngineManager MANAGER = new ScriptEngineManager();
     public final static Map<String,PacketInfo> PACKET_INFO_CACHE=new ConcurrentHashMap<>();
 
     private FieldParser<Byte> byteFieldParser;
@@ -104,24 +102,25 @@ public class Parser{
             //3、进行解析
             List<Field> fieldList1=packetInfo.getFieldList1();
             List<PacketField> annoList1=packetInfo.getAnnoList1();
-            ScriptEngine engine= MANAGER.getEngineByName("js");
+            List<List<String>[]> rpnList1=packetInfo.getRpnList1();
+            Map<String,Double> valMap=new HashMap<>();
             for(int i=0;i<=annoList1.size()-1;i++){
                 PacketField packetField= annoList1.get(i);
+                //rpn[0]是lenExpr,rpn[1]是listLenExpr
+                List<String>[] rpn= rpnList1.get(i);
                 Field field=fieldList1.get(i);
                 Class fieldType= field.getType();
                 Object val;
                 Class handleClass=packetField.handleClass();
                 if(handleClass==Void.class) {
                     //3.1、如果处理类为空
-                    String listLenExpr = packetField.listLenExpr();
-                    if (listLenExpr.isEmpty()) {
+                    if (rpn[1]==null) {
                         int len;
                         //3.1.1、如果字段不为对象集合,则取出其长度,按照固定长度方式解析
-                        if (packetField.lenExpr().isEmpty()) {
+                        if (rpn[0]==null) {
                             len = packetField.len();
                         } else {
-                            String expr = packetField.lenExpr();
-                            len = ((Number) engine.eval(expr)).intValue();
+                            len = StringUtil.calcRPN(rpn[0],valMap).intValue();
                         }
                         byte[] tempData = new byte[len];
                         data.readBytes(tempData);
@@ -172,7 +171,7 @@ public class Parser{
                         //3.1.2、如果字段为对象集合,则特殊处理,按照List泛型内部对象结构和长度依次循环读取字节解析
                         if (List.class.isAssignableFrom(fieldType)) {
                             Class listType = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                            int listLen = ((Number) engine.eval(listLenExpr)).intValue();
+                            int listLen = StringUtil.calcRPN(rpn[1],valMap).intValue();
                             List list = new ArrayList(listLen);
                             for (int j = 1; j <= listLen; j++) {
                                 list.add(parse(listType, data));
@@ -190,14 +189,15 @@ public class Parser{
                     }
                     val=fieldHandler.handle(data,(T)instance);
                 }
+                //3.3、如果当前字段是变量,则加入到map中供后面表达式使用
                 if(!packetField.var().isEmpty()){
-                    engine.put(packetField.var(),val);
+                    valMap.put(packetField.var(),((Number)val).doubleValue());
                 }
                 field.setAccessible(true);
                 field.set(instance,val);
             }
             return instance;
-        } catch (InstantiationException |IllegalAccessException |ScriptException e) {
+        } catch (InstantiationException |IllegalAccessException e) {
             throw BaseRuntimeException.getException(e);
         }
     }
@@ -224,10 +224,23 @@ public class Parser{
                     return 0;
                 }
             }).collect(Collectors.toList());
-            //2、转换成注解
+            //2、转换成注解,同时转换逆波兰表达式
             List<PacketField> annoList1= fieldList1.stream().map(field -> field.getAnnotation(PacketField.class)).collect(Collectors.toList());
 
-            //3、找出头字段注解和长度字段注解
+            //3、转换逆波兰表达式
+            List<List<String>[]> rpnList1=annoList1.stream().map(packetField->{
+                List<String>[] rpn=new List[2];
+                if(!packetField.lenExpr().isEmpty()){
+                    rpn[0]= StringUtil.parseArithmeticToRPN(packetField.lenExpr());
+                }
+                if(!packetField.listLenExpr().isEmpty()){
+                    rpn[1]= StringUtil.parseArithmeticToRPN(packetField.listLenExpr());
+                }
+                return rpn;
+            }).collect(Collectors.toList());
+
+
+            //4、找出头字段注解和长度字段注解
             PacketField headPacketField=null;
             PacketField contentLengthPacketField=null;
             for (Field field : fieldList1) {
@@ -241,9 +254,9 @@ public class Parser{
                     break;
                 }
             }
-            //4、设置信息
+            //5、设置信息
             PacketInfo packetInfo=new PacketInfo();
-            //4.1、头解析
+            //5.1、头解析
             if(headPacketField!=null){
                 byte[] header=null;
                 String val=headPacketField.headValue();
@@ -261,7 +274,7 @@ public class Parser{
                 }
                 packetInfo.setHeader(header);
             }
-            //4.2、长度解析
+            //5.2、长度解析
             if(contentLengthPacketField!=null) {
                 int len=0;
                 for (PacketField curField : annoList1) {
@@ -274,9 +287,10 @@ public class Parser{
                 packetInfo.setLengthFieldStart(len);
                 packetInfo.setLengthFieldEnd(packetInfo.getLengthFieldStart()+contentLengthPacketField.len());
             }
-            //4.3、填充字段信息和注解信息
+            //5.3、填充字段信息和注解信息
             packetInfo.setFieldList1(fieldList1);
             packetInfo.setAnnoList1(annoList1);
+            packetInfo.setRpnList1(rpnList1);
             return packetInfo;
         });
     }

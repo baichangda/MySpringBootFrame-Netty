@@ -12,6 +12,8 @@ public class PacketInfo {
     //标注@PacketField的字段集合和注解集合
     private List<Field> fieldList1;
     private List<PacketField> annoList1;
+    //每一个packetField里表达式对应的逆波兰表达式
+    private List<List<String>[]> rpnList1;
 
     public PacketInfo() {
     }
@@ -56,4 +58,11 @@ public class PacketInfo {
         this.annoList1 = annoList1;
     }
 
+    public List<List<String>[]> getRpnList1() {
+        return rpnList1;
+    }
+
+    public void setRpnList1(List<List<String>[]> rpnList1) {
+        this.rpnList1 = rpnList1;
+    }
 }
