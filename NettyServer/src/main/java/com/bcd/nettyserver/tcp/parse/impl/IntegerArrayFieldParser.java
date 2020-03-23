@@ -1,20 +1,17 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import io.netty.buffer.ByteBuf;
 
 
 public class IntegerArrayFieldParser implements FieldParser<int[]> {
     public final static IntegerArrayFieldParser INSTANCE=new IntegerArrayFieldParser();
     @Override
-    public int[] parse(byte[] data,Object ...ext) {
+    public int[] parse(ByteBuf data, int len, Object... ext) {
         int singleLen=(int)ext[0];
-        int[] res=new int[data.length/singleLen];
+        int[] res=new int[len/singleLen];
         for(int i=0;i<=res.length-1;i++){
-            byte[] param=new byte[singleLen];
-            for(int j=0;j<=singleLen-1;j++){
-                param[j]=data[i*singleLen+j];
-            }
-            res[i]= IntegerFieldParser.INSTANCE.parse(param);
+            res[i]=toByteBuf(data,4,singleLen).readInt();
         }
         return res;
     }

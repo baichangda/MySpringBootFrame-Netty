@@ -1,9 +1,12 @@
 package com.bcd.nettyserver.tcp.parse;
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.base.util.ClassUtil;
+import com.bcd.base.util.ProxyUtil;
 import com.bcd.base.util.SpringUtil;
 import com.bcd.base.util.StringUtil;
 import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
 import io.netty.buffer.ByteBuf;
@@ -11,28 +14,50 @@ import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import javax.script.*;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class Parser{
+public abstract class Parser{
     public final static Map<String,PacketInfo> PACKET_INFO_CACHE=new ConcurrentHashMap<>();
 
-    private FieldParser<Byte> byteFieldParser;
-    private FieldParser<byte[]> byteArrayFieldParser;
-    private FieldParser<Short> shortFieldParser;
-    private FieldParser<short[]> shortArrayFieldParser;
-    private FieldParser<Integer> integerFieldParser;
-    private FieldParser<int[]> integerArrayFieldParser;
-    private FieldParser<Long> longFieldParser;
-    private FieldParser<long[]> longArrayFieldParser;
-    private FieldParser<String> stringFieldParser;
-    private FieldParser<Date> dateFieldParser;
+
+    protected FieldParser<Byte> byteFieldParser;
+    protected FieldParser<byte[]> byteArrayFieldParser;
+    protected FieldParser<Short> shortFieldParser;
+    protected FieldParser<short[]> shortArrayFieldParser;
+    protected FieldParser<Integer> integerFieldParser;
+    protected FieldParser<int[]> integerArrayFieldParser;
+    protected FieldParser<Long> longFieldParser;
+    protected FieldParser<long[]> longArrayFieldParser;
+    protected FieldParser<String> stringFieldParser;
+    protected FieldParser<Date> dateFieldParser;
+    /**
+     * 用于处理时候直接通过索引拿到对应解析器
+     * 索引对应 {@link FieldInfo#type}
+     */
+    protected FieldParser[] fieldParserArr=new FieldParser[20];
+
+    /**
+     * {@link PacketField#handleClass()} 对应的处理类
+     */
+    protected Map<Class,FieldHandler> classToHandler =new HashMap<>();
 
     public Parser() {
+    }
+
+    public void init(){
+        //初始化解析器
+        initParser();
+        //初始化处理器
+        initHandler();
+        afterInit();
+    }
+
+    protected void initParser(){
         this.byteFieldParser = ByteFieldParser.INSTANCE;
         this.byteArrayFieldParser = ByteArrayFieldParser.INSTANCE;
         this.shortFieldParser = ShortFieldParser.INSTANCE;
@@ -43,6 +68,56 @@ public class Parser{
         this.longArrayFieldParser = LongArrayFieldParser.INSTANCE;
         this.stringFieldParser = StringFieldParser.INSTANCE;
         this.dateFieldParser = DateFieldParser.INSTANCE;
+
+        fieldParserArr[1]=byteFieldParser;
+        fieldParserArr[2]=shortFieldParser;
+        fieldParserArr[3]=integerFieldParser;
+        fieldParserArr[4]=longFieldParser;
+        fieldParserArr[5]=stringFieldParser;
+        fieldParserArr[6]=dateFieldParser;
+        fieldParserArr[7]=byteArrayFieldParser;
+        fieldParserArr[8]=shortArrayFieldParser;
+        fieldParserArr[9]=integerArrayFieldParser;
+        fieldParserArr[10]=longArrayFieldParser;
+        fieldParserArr[11]=byteArrayFieldParser;
+        fieldParserArr[12]=shortArrayFieldParser;
+        fieldParserArr[13]=integerArrayFieldParser;
+        fieldParserArr[14]=longArrayFieldParser;
+    }
+
+    protected abstract void initHandler();
+
+    protected void afterInit(){
+        //为handler设置parser
+        classToHandler.values().forEach(e->{
+            e.setParser(this);
+        });
+    }
+
+    /**
+     * 初始化 classToHandler
+     * 通过spring
+     */
+    protected void initHandlerBySpring(){
+        SpringUtil.applicationContext.getBeansOfType(FieldHandler.class).values().forEach(e->{
+            Class clazz= ProxyUtil.getSource(e).getClass();
+            classToHandler.put(clazz,e);
+        });
+    }
+
+    /**
+     * 初始化 classToHandler
+     * 去除接口和抽象类
+     * 通过扫描
+     */
+    protected void initHandlerByScanClass(String packageName){
+        try {
+            for (Class e : ClassUtil.getClassesByParentClass(FieldHandler.class, packageName)) {
+                classToHandler.put(e,(FieldHandler) e.newInstance());
+            }
+        } catch (IOException | ClassNotFoundException |IllegalAccessException |InstantiationException e) {
+            throw BaseRuntimeException.getException(e);
+        }
     }
 
     public FieldParser<Byte> getByteFieldParser() {
@@ -94,107 +169,77 @@ public class Parser{
      * @return
      */
     public <T>T parse(Class<T> clazz,ByteBuf data){
-        //1、获取包信息
+        //解析包
         PacketInfo packetInfo=toPacketInfo(clazz);
         try {
-            //2、构造实例
+            //构造实例
             T instance= clazz.newInstance();
-            //3、进行解析
-            List<Field> fieldList1=packetInfo.getFieldList1();
-            List<PacketField> annoList1=packetInfo.getAnnoList1();
-            List<List<String>[]> rpnList1=packetInfo.getRpnList1();
+            //进行解析
+            List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
             Map<String,Double> valMap=new HashMap<>();
-            for(int i=0;i<=annoList1.size()-1;i++){
-                PacketField packetField= annoList1.get(i);
-                //rpn[0]是lenExpr,rpn[1]是listLenExpr
-                List<String>[] rpn= rpnList1.get(i);
-                Field field=fieldList1.get(i);
-                Class fieldType= field.getType();
+            for(int i=0;i<=fieldInfoList.size()-1;i++){
+                FieldInfo fieldInfo= fieldInfoList.get(i);
                 Object val;
-                Class handleClass=packetField.handleClass();
-                if(handleClass==Void.class) {
-                    //3.1、如果处理类为空
-                    if (rpn[1]==null) {
-                        int len;
-                        //3.1.1、如果字段不为对象集合,则取出其长度,按照固定长度方式解析
-                        if (rpn[0]==null) {
-                            len = packetField.len();
-                        } else {
-                            len = StringUtil.calcRPN(rpn[0],valMap).intValue();
-                        }
-                        byte[] tempData = new byte[len];
-                        data.readBytes(tempData);
-
-                        if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
-                            val = byteFieldParser.parse(tempData);
-                        } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
-                            val = shortFieldParser.parse(tempData);
-                        } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
-                            val = integerFieldParser.parse(tempData);
-                        } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
-                            val = longFieldParser.parse(tempData);
-                        } else if (String.class.isAssignableFrom(fieldType)) {
-                            val = stringFieldParser.parse(tempData);
-                        } else if (Date.class.isAssignableFrom(fieldType)) {
-                            val = dateFieldParser.parse(tempData);
-                        } else if (fieldType.isArray()) {
-                            Class arrType = fieldType.getComponentType();
-                            if (Byte.class.isAssignableFrom(arrType) || Byte.TYPE.isAssignableFrom(arrType)) {
-                                val = byteArrayFieldParser.parse(tempData, packetField.singleLen());
-                            } else if (Short.class.isAssignableFrom(arrType) || Short.TYPE.isAssignableFrom(arrType)) {
-                                val = shortArrayFieldParser.parse(tempData, packetField.singleLen());
-                            } else if (Integer.class.isAssignableFrom(arrType) || Integer.TYPE.isAssignableFrom(arrType)) {
-                                val = integerArrayFieldParser.parse(tempData, packetField.singleLen());
-                            } else if (Long.class.isAssignableFrom(arrType) || Long.TYPE.isAssignableFrom(arrType)) {
-                                val = longArrayFieldParser.parse(tempData, packetField.singleLen());
-                            } else {
-                                throw BaseRuntimeException.getException("Class[" + instance.getClass().getName() + "] Field[" + field.getName() + "] Array Type[" + arrType.getName() + "] Not Support");
-                            }
-                        } else if (List.class.isAssignableFrom(fieldType)) {
-                            Class listType = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                            if (Byte.class.isAssignableFrom(listType) || Byte.TYPE.isAssignableFrom(listType)) {
-                                val = Arrays.asList(byteArrayFieldParser.parse(tempData, packetField.singleLen()));
-                            } else if (Short.class.isAssignableFrom(listType) || Short.TYPE.isAssignableFrom(listType)) {
-                                val = Arrays.asList(shortArrayFieldParser.parse(tempData, packetField.singleLen()));
-                            } else if (Integer.class.isAssignableFrom(listType) || Integer.TYPE.isAssignableFrom(listType)) {
-                                val = Arrays.asList(integerArrayFieldParser.parse(tempData, packetField.singleLen()));
-                            } else if (Long.class.isAssignableFrom(listType) || Long.TYPE.isAssignableFrom(listType)) {
-                                val = Arrays.asList(longArrayFieldParser.parse(tempData, packetField.singleLen()));
-                            } else {
-                                throw BaseRuntimeException.getException("Class[" + instance.getClass().getName() + "] Field[" + field.getName() + "] List Type[" + listType.getName() + "] Not Support");
-                            }
-                        } else {
-                            //3.1.1.1、如果为实体类型,则解析实体类
-                            val = parse(fieldType, data);
-                        }
-                    } else {
-                        //3.1.2、如果字段为对象集合,则特殊处理,按照List泛型内部对象结构和长度依次循环读取字节解析
-                        if (List.class.isAssignableFrom(fieldType)) {
-                            Class listType = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                            int listLen = StringUtil.calcRPN(rpn[1],valMap).intValue();
-                            List list = new ArrayList(listLen);
-                            for (int j = 1; j <= listLen; j++) {
-                                list.add(parse(listType, data));
-                            }
-                            val = list;
-                        } else {
-                            throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Must Be List Type");
-                        }
-                    }
-                }else{
-                    //3.2、如果处理类不为空
-                    FieldHandler<T> fieldHandler=(FieldHandler) SpringUtil.applicationContext.getBean(handleClass);
+                int type=fieldInfo.getType();
+                PacketField packetField= fieldInfo.getPacketField();
+                /**
+                 * rpns[0] 代表 {@link PacketField#lenExpr()}
+                 * rpns[1] 代表 {@link PacketField#listLenExpr()}
+                 */
+                List<String>[] rpns= fieldInfo.getRpns();
+                if(type==0){
+                    /**
+                     * {@link PacketField#handleClass()} 不为空
+                     * 特殊处理
+                     */
+                    Class handleClass=fieldInfo.getClazz();
+                    FieldHandler<T> fieldHandler= classToHandler.get(handleClass);
                     if(fieldHandler==null){
-                        fieldHandler=(FieldHandler)handleClass.newInstance();
+                        throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
                     }
-                    val=fieldHandler.handle(data,(T)instance);
+                    val=fieldHandler.handle(data,instance);
+                }else{
+                    if(type==101){
+                        /**
+                         * 如果{@link PacketField#listLenExpr()} ()} 不为空
+                         * 处理List<Bean>类型字段
+                         */
+                        int listLen = StringUtil.calcRPN(rpns[1],valMap).intValue();
+                        List list = new ArrayList(listLen);
+                        for (int j = 1; j <= listLen; j++) {
+                            list.add(parse(fieldInfo.getClazz(), data));
+                        }
+                        val = list;
+                    }else{
+                        if(type==100){
+                            /**
+                             * 处理Bean 类型数据
+                             */
+                            val = parse(fieldInfo.getClazz(), data);
+                        }else{
+                            int len;
+                            /**
+                             * 如果{@link PacketField#lenExpr()} 为空
+                             */
+                            if(fieldInfo.getRpns()[0]==null){
+                                len=packetField.len();
+                            }else{
+                                len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                            }
+                            val=fieldParserArr[type].parse(data,len,packetField.singleLen());
+
+                            /**
+                             * 如果 {@link PacketField#var()} 不为空
+                             * 说明是变量
+                             */
+                            if(fieldInfo.isVar()){
+                                valMap.put(packetField.var(),((Number)val).doubleValue());
+                            }
+
+                        }
+                    }
                 }
-                //3.3、如果当前字段是变量,则加入到map中供后面表达式使用
-                if(!packetField.var().isEmpty()){
-                    valMap.put(packetField.var(),((Number)val).doubleValue());
-                }
-                field.setAccessible(true);
-                field.set(instance,val);
+                fieldInfo.getField().set(instance,val);
             }
             return instance;
         } catch (InstantiationException |IllegalAccessException e) {
@@ -211,9 +256,12 @@ public class Parser{
     public PacketInfo toPacketInfo(Class clazz){
         return PACKET_INFO_CACHE.computeIfAbsent(clazz.getName(),(className)->{
             List<Field> allFieldList= FieldUtils.getAllFieldsList(clazz);
-            //1、处理@PacketField字段
-            //1.1、过滤出@PacketField注解字段并按照index排序
-            List<Field> fieldList1=allFieldList.stream().filter(field -> field.getAnnotation(PacketField.class)!=null).sorted((f1,f2)->{
+            /**
+             * 1、过滤所有带{@link PacketField}的字段
+             * 2、将字段按照{@link PacketField#index()}正序
+             * 3、将每个字段类型解析成FieldInfo
+             */
+            List<FieldInfo> fieldInfoList=allFieldList.stream().filter(field -> field.getAnnotation(PacketField.class)!=null).sorted((f1, f2)->{
                 int i1=f1.getAnnotation(PacketField.class).index();
                 int i2=f2.getAnnotation(PacketField.class).index();
                 if(i1<i2){
@@ -223,28 +271,102 @@ public class Parser{
                 }else{
                     return 0;
                 }
-            }).collect(Collectors.toList());
-            //2、转换成注解,同时转换逆波兰表达式
-            List<PacketField> annoList1= fieldList1.stream().map(field -> field.getAnnotation(PacketField.class)).collect(Collectors.toList());
+            }).map(field->{
+                field.setAccessible(true);
+                PacketField packetField= field.getAnnotation(PacketField.class);
+                Class fieldType=field.getType();
+                int type;
+                Class typeClazz=null;
+                boolean isVar=false;
+                //判断是否特殊处理
+                if(packetField.handleClass()==Void.class){
+                    //判断是否是List<Bean>(Bean代表自定义实体类型,不包括Byte、Short、Integer、Long)
+                    if(packetField.listLenExpr().isEmpty()) {
+                        if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
+                            type = 1;
+                        } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
+                            type = 2;
+                        } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
+                            type = 3;
+                        } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
+                            type = 4;
+                        } else if (String.class.isAssignableFrom(fieldType)) {
+                            type = 5;
+                        } else if (Date.class.isAssignableFrom(fieldType)) {
+                            type = 6;
+                        } else if (fieldType.isArray()) {
+                            //数组类型
+                            Class arrType = fieldType.getComponentType();
+                            if (Byte.class.isAssignableFrom(arrType) || Byte.TYPE.isAssignableFrom(arrType)) {
+                                type = 7;
+                            } else if (Short.class.isAssignableFrom(arrType) || Short.TYPE.isAssignableFrom(arrType)) {
+                                type = 8;
+                            } else if (Integer.class.isAssignableFrom(arrType) || Integer.TYPE.isAssignableFrom(arrType)) {
+                                type = 9;
+                            } else if (Long.class.isAssignableFrom(arrType) || Long.TYPE.isAssignableFrom(arrType)) {
+                                type = 10;
+                            } else {
+                                throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Array Type[" + arrType.getName() + "] Not Support");
+                            }
+                        } else if (List.class.isAssignableFrom(fieldType)) {
+                            //简单类型的集合
+                            Class listType = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                            if (Byte.class.isAssignableFrom(listType) || Byte.TYPE.isAssignableFrom(listType)) {
+                                type = 11;
+                            } else if (Short.class.isAssignableFrom(listType) || Short.TYPE.isAssignableFrom(listType)) {
+                                type = 12;
+                            } else if (Integer.class.isAssignableFrom(listType) || Integer.TYPE.isAssignableFrom(listType)) {
+                                type = 13;
+                            } else if (Long.class.isAssignableFrom(listType) || Long.TYPE.isAssignableFrom(listType)) {
+                                type = 14;
+                            } else {
+                                throw BaseRuntimeException.getException("Class[" + clazz.getClass().getName() + "] Field[" + field.getName() + "] List Type[" + listType.getName() + "] Not Support");
+                            }
+                        } else {
+                            //实体类型
+                            type = 100;
+                            typeClazz = fieldType;
+                        }
+                    }else{
+                        //实体类型集合
+                        type=101;
+                        typeClazz = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                    }
+                }else{
+                    //特殊处理
+                    type=0;
+                }
 
-            //3、转换逆波兰表达式
-            List<List<String>[]> rpnList1=annoList1.stream().map(packetField->{
-                List<String>[] rpn=new List[2];
+                //转换逆波兰表达式
+                List<String>[] rpns=new List[2];
                 if(!packetField.lenExpr().isEmpty()){
-                    rpn[0]= StringUtil.parseArithmeticToRPN(packetField.lenExpr());
+                    rpns[0]= StringUtil.parseArithmeticToRPN(packetField.lenExpr());
                 }
                 if(!packetField.listLenExpr().isEmpty()){
-                    rpn[1]= StringUtil.parseArithmeticToRPN(packetField.listLenExpr());
+                    rpns[1]= StringUtil.parseArithmeticToRPN(packetField.listLenExpr());
                 }
-                return rpn;
+
+                //判断是否是变量
+                if(!packetField.var().isEmpty()){
+                    isVar=true;
+                }
+
+                FieldInfo fieldInfo=new FieldInfo();
+                fieldInfo.setField(field);
+                fieldInfo.setType(type);
+                fieldInfo.setVar(isVar);
+                fieldInfo.setClazz(typeClazz);
+                fieldInfo.setPacketField(packetField);
+                fieldInfo.setRpns(rpns);
+                return fieldInfo;
             }).collect(Collectors.toList());
 
-
-            //4、找出头字段注解和长度字段注解
+            PacketInfo packetInfo=new PacketInfo();
+            //找出头字段注解和长度字段注解
             PacketField headPacketField=null;
             PacketField contentLengthPacketField=null;
-            for (Field field : fieldList1) {
-                PacketField curField=field.getAnnotation(PacketField.class);
+            for (FieldInfo fieldInfo : fieldInfoList) {
+                PacketField curField=fieldInfo.getPacketField();
                 if(!curField.headValue().isEmpty()){
                     headPacketField=curField;
                 }else if(curField.isLengthField()){
@@ -254,9 +376,7 @@ public class Parser{
                     break;
                 }
             }
-            //5、设置信息
-            PacketInfo packetInfo=new PacketInfo();
-            //5.1、头解析
+            //头解析
             if(headPacketField!=null){
                 byte[] header=null;
                 String val=headPacketField.headValue();
@@ -274,10 +394,11 @@ public class Parser{
                 }
                 packetInfo.setHeader(header);
             }
-            //5.2、长度解析
+            //长度解析
             if(contentLengthPacketField!=null) {
                 int len=0;
-                for (PacketField curField : annoList1) {
+                for (FieldInfo fieldInfo : fieldInfoList) {
+                    PacketField curField=fieldInfo.getPacketField();
                     if (curField.index() < contentLengthPacketField.index()) {
                         len += curField.len();
                     } else {
@@ -287,10 +408,7 @@ public class Parser{
                 packetInfo.setLengthFieldStart(len);
                 packetInfo.setLengthFieldEnd(packetInfo.getLengthFieldStart()+contentLengthPacketField.len());
             }
-            //5.3、填充字段信息和注解信息
-            packetInfo.setFieldList1(fieldList1);
-            packetInfo.setAnnoList1(annoList1);
-            packetInfo.setRpnList1(rpnList1);
+            packetInfo.setFieldInfoList(fieldInfoList);
             return packetInfo;
         });
     }

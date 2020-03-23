@@ -12,9 +12,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PacketDataFieldHandler implements FieldHandler<PacketData> {
-    @Autowired
-    @Qualifier("parser_32960")
     Parser parser;
+
+    public PacketDataFieldHandler() {
+    }
+
+
+    @Override
+    public void setParser(Parser parser) {
+        this.parser=parser;
+    }
 
     @Override
     public PacketData handle(ByteBuf data,Object ... ext) {

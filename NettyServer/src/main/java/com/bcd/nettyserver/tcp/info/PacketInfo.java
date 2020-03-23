@@ -1,19 +1,14 @@
 package com.bcd.nettyserver.tcp.info;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class PacketInfo {
     private byte[] header;
     private Integer lengthFieldStart;
     private Integer lengthFieldEnd;
-    //标注@PacketField的字段集合和注解集合
-    private List<Field> fieldList1;
-    private List<PacketField> annoList1;
-    //每一个packetField里表达式对应的逆波兰表达式
-    private List<List<String>[]> rpnList1;
+    //解析的字段信息集合
+    private List<FieldInfo> fieldInfoList;
 
     public PacketInfo() {
     }
@@ -42,27 +37,11 @@ public class PacketInfo {
         this.lengthFieldEnd = lengthFieldEnd;
     }
 
-    public List<Field> getFieldList1() {
-        return fieldList1;
+    public List<FieldInfo> getFieldInfoList() {
+        return fieldInfoList;
     }
 
-    public void setFieldList1(List<Field> fieldList1) {
-        this.fieldList1 = fieldList1;
-    }
-
-    public List<PacketField> getAnnoList1() {
-        return annoList1;
-    }
-
-    public void setAnnoList1(List<PacketField> annoList1) {
-        this.annoList1 = annoList1;
-    }
-
-    public List<List<String>[]> getRpnList1() {
-        return rpnList1;
-    }
-
-    public void setRpnList1(List<List<String>[]> rpnList1) {
-        this.rpnList1 = rpnList1;
+    public void setFieldInfoList(List<FieldInfo> fieldInfoList) {
+        this.fieldInfoList = fieldInfoList;
     }
 }

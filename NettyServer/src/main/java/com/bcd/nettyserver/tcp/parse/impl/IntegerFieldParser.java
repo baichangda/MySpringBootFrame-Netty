@@ -1,16 +1,15 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 
-public class IntegerFieldParser extends NumberFieldParser<Integer> {
+import com.bcd.nettyserver.tcp.parse.FieldParser;
+import io.netty.buffer.ByteBuf;
+
+public class IntegerFieldParser implements FieldParser<Integer> {
     public final static IntegerFieldParser INSTANCE=new IntegerFieldParser();
 
-    public IntegerFieldParser() {
-        super(4);
-    }
-
     @Override
-    public Integer parse(byte[] data,Object ...ext) {
-        return toByteBuf(data).readInt();
+    public Integer parse(ByteBuf data,int len, Object ...ext) {
+        return toByteBuf(data,4,len).readInt();
     }
 
 

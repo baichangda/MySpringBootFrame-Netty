@@ -1,16 +1,15 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 
-public class LongFieldParser extends NumberFieldParser<Long> {
+import com.bcd.nettyserver.tcp.parse.FieldParser;
+import io.netty.buffer.ByteBuf;
+
+public class LongFieldParser implements FieldParser<Long> {
     public final static LongFieldParser INSTANCE=new LongFieldParser();
 
-    public LongFieldParser() {
-        super(8);
-    }
-
     @Override
-    public Long parse(byte[] data,Object ...ext) {
-        return toByteBuf(data).readLong();
+    public Long parse(ByteBuf data,int len, Object ...ext) {
+        return toByteBuf(data,8,len).readLong();
     }
 
 }

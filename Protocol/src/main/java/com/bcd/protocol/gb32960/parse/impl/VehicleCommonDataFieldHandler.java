@@ -16,20 +16,22 @@ import org.springframework.stereotype.Component;
 public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommonData> {
     Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldHandler.class);
 
-    @Autowired
-    @Qualifier("parser_32960")
     Parser parser;
+
     @Override
     public VehicleCommonData handle(ByteBuf data,Object ...ext) {
         return parseVehicleData(data);
     }
 
+    @Override
+    public void setParser(Parser parser) {
+        this.parser=parser;
+    }
+
     private VehicleCommonData parseVehicleData(ByteBuf byteBuf){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
         A:while(byteBuf.isReadable()) {
-            byte[] b2=new byte[1];
-            byteBuf.readBytes(b2);
-            short flag = ShortFieldParser.INSTANCE.parse(b2);
+            short flag = ShortFieldParser.INSTANCE.parse(byteBuf,1);
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
@@ -89,9 +91,7 @@ public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommon
                     logger.warn("Parse Vehicle Common Data Interrupted,Unknown Flag["+flag+"]");
                     //2.8、如果是自定义数据,只做展现,不解析
                     //2.8.1、解析长度
-                    byte[] lenData=new byte[2];
-                    byteBuf.getBytes(0,lenData);
-                    Integer len= IntegerFieldParser.INSTANCE.parse(lenData);
+                    Integer len= IntegerFieldParser.INSTANCE.parse(byteBuf,2);
                     //2.8.2、获取接下来的报文
                     byte[] content=new byte[len];
                     byteBuf.getBytes(0,content);

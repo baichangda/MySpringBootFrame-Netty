@@ -4,12 +4,9 @@ import com.bcd.base.util.StringUtil;
 import com.bcd.nettyserver.tcp.parse.Parser;
 
 import javax.script.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class TcpServer implements Runnable{
     protected int port;
@@ -18,10 +15,6 @@ public abstract class TcpServer implements Runnable{
     public TcpServer(int port, Parser parser) {
         this.port = port;
         this.parser=parser;
-    }
-
-    public TcpServer(int port) {
-        this(port,new Parser());
     }
 
     public int getPort() {
