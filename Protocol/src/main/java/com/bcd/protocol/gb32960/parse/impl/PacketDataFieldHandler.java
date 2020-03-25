@@ -3,11 +3,8 @@ package com.bcd.protocol.gb32960.parse.impl;
 import com.bcd.nettyserver.tcp.parse.Parser;
 import com.bcd.protocol.gb32960.data.*;
 import com.bcd.nettyserver.tcp.parse.FieldHandler;
-import com.bcd.nettyserver.tcp.util.ParseUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -77,5 +74,52 @@ public class PacketDataFieldHandler implements FieldHandler<PacketData> {
             }
         }
         return packetData;
+    }
+
+    @Override
+    public String toHex(PacketData data, Object... ext) {
+        Packet packet=(Packet)ext[0];
+        String hex=null;
+        switch (packet.getFlag()){
+            //车辆登入
+            case 1:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //车辆实时信息
+            case 2:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //补发信息上报
+            case 3:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //车辆登出
+            case 4:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //平台登入
+            case 5:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //平台登出
+            case 6:{
+                hex= parser.toHex(data);
+                break;
+            }
+            //心跳
+            case 7:{
+                break;
+            }
+            //终端校时
+            case 8:{
+                break;
+            }
+        }
+        return hex;
     }
 }

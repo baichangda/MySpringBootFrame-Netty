@@ -1,8 +1,11 @@
 package com.bcd.nettyserver.tcp.parse;
 
 
+import com.bcd.base.exception.BaseRuntimeException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
+import java.util.Objects;
 
 public interface FieldParser<T> {
     /**
@@ -21,7 +24,15 @@ public interface FieldParser<T> {
      * @param ext 附加信息
      * @return
      */
-    String toHex(T data,int len,Object ... ext);
+    default String toHex(T data,int len,Object ... ext){
+        throw BaseRuntimeException.getException("toHex not support");
+    }
+
+    default void checkHexData(T data){
+        if(Objects.isNull(data)){
+            throw BaseRuntimeException.getException("toHex data can't be null");
+        }
+    }
 
     /**
      * 按照期望长度和实际长度取出数据
@@ -32,22 +43,18 @@ public interface FieldParser<T> {
      * @param actualByteLen 实际长度
      */
     default ByteBuf toByteBuf(ByteBuf data,int expectByteLen,int actualByteLen){
+        ByteBuf temp= Unpooled.buffer(expectByteLen,expectByteLen);
         if(expectByteLen==actualByteLen){
-            return data.readBytes(actualByteLen);
+            temp.writeBytes(data,expectByteLen);
         }else if(expectByteLen<actualByteLen){
             data.skipBytes(actualByteLen-expectByteLen);
-            return data.readBytes(actualByteLen);
+            temp.writeBytes(data,expectByteLen);
         }else {
-            ByteBuf temp= Unpooled.buffer(actualByteLen);
             for (int i = 1; i <= expectByteLen - actualByteLen; i++) {
                 temp.writeByte(0);
             }
             temp.writeBytes(data, actualByteLen);
-            return temp;
         }
-    }
-
-    default String toHex(){
-        
+        return temp;
     }
 }

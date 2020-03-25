@@ -21,6 +21,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 解析器类,线程安全
+ */
+@SuppressWarnings("unchecked")
 public abstract class Parser{
     public final static Map<String,PacketInfo> PACKET_INFO_CACHE=new ConcurrentHashMap<>();
 
@@ -160,6 +164,87 @@ public abstract class Parser{
         return dateFieldParser;
     }
 
+    public <T>String toHex(T t){
+        try{
+            if(t==null){
+                return "";
+            }else{
+                StringBuilder sb=new StringBuilder();
+                Class clazz= t.getClass();
+                //解析包
+                Map<String,Double> valMap=new HashMap<>();
+                PacketInfo packetInfo=toPacketInfo(clazz);
+                List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
+                for(int i=0;i<=fieldInfoList.size()-1;i++){
+                    StringBuilder val=new StringBuilder();
+                    FieldInfo fieldInfo= fieldInfoList.get(i);
+                    Object data=fieldInfo.getField().get(t);
+                    int type=fieldInfo.getType();
+                    PacketField packetField= fieldInfo.getPacketField();
+                    /**
+                     * rpns[0] 代表 {@link PacketField#lenExpr()}
+                     * rpns[1] 代表 {@link PacketField#listLenExpr()}
+                     */
+                    List<String>[] rpns= fieldInfo.getRpns();
+                    if(type==0){
+                        /**
+                         * {@link PacketField#handleClass()} 不为空
+                         * 特殊处理
+                         */
+                        Class handleClass=fieldInfo.getClazz();
+                        FieldHandler fieldHandler= classToHandler.get(handleClass);
+                        if(fieldHandler==null){
+                            throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
+                        }
+                        val.append(fieldHandler.toHex(data));
+                    }else{
+                        if(type==101){
+                            /**
+                             * 如果{@link PacketField#listLenExpr()} ()} 不为空
+                             * 处理List<Bean>类型字段
+                             */
+                            int listLen = StringUtil.calcRPN(rpns[1],valMap).intValue();
+                            List list = (List)data;
+                            for (int j = 0; j <= listLen-1; j++) {
+                                val.append(toHex(list.get(j)));
+                            }
+                        }else{
+                            if(type==100){
+                                /**
+                                 * 处理Bean 类型数据
+                                 */
+                                val.append(toHex(data));
+                            }else{
+                                int len;
+                                /**
+                                 * 如果{@link PacketField#lenExpr()} 为空
+                                 */
+                                if(rpns[0]==null){
+                                    len=packetField.len();
+                                }else{
+                                    len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                                }
+                                val.append(fieldParserArr[type].toHex(data,len,packetField.singleLen()));
+                                /**
+                                 * 如果 {@link PacketField#var()} 不为空
+                                 * 说明是变量
+                                 */
+                                if(fieldInfo.isVar()){
+                                    valMap.put(packetField.var(),((Number)data).doubleValue());
+                                }
+
+                            }
+                        }
+                    }
+                    sb.append(val);
+                }
+                return sb.toString();
+            }
+        } catch (IllegalAccessException e) {
+            throw BaseRuntimeException.getException(e);
+        }
+    }
+
     /**
      * 根据类型和缓冲数据生成对应对象
      * 所有涉及解析对象必须有空参数的构造方法
@@ -193,7 +278,7 @@ public abstract class Parser{
                      * 特殊处理
                      */
                     Class handleClass=fieldInfo.getClazz();
-                    FieldHandler<T> fieldHandler= classToHandler.get(handleClass);
+                    FieldHandler fieldHandler= classToHandler.get(handleClass);
                     if(fieldHandler==null){
                         throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
                     }
@@ -221,7 +306,7 @@ public abstract class Parser{
                             /**
                              * 如果{@link PacketField#lenExpr()} 为空
                              */
-                            if(fieldInfo.getRpns()[0]==null){
+                            if(rpns[0]==null){
                                 len=packetField.len();
                             }else{
                                 len=StringUtil.calcRPN(rpns[0],valMap).intValue();
@@ -335,6 +420,7 @@ public abstract class Parser{
                 }else{
                     //特殊处理
                     type=0;
+                    typeClazz=packetField.handleClass();
                 }
 
                 //转换逆波兰表达式

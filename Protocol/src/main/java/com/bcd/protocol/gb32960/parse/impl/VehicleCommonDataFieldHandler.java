@@ -5,12 +5,9 @@ import com.bcd.nettyserver.tcp.parse.impl.IntegerFieldParser;
 import com.bcd.nettyserver.tcp.parse.impl.ShortFieldParser;
 import com.bcd.protocol.gb32960.data.*;
 import com.bcd.nettyserver.tcp.parse.FieldHandler;
-import com.bcd.nettyserver.tcp.util.ParseUtil;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 @Component
 public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommonData> {
@@ -101,5 +98,47 @@ public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommon
             }
         }
         return vehicleCommonData;
+    }
+
+    @Override
+    public String toHex(VehicleCommonData data, Object... ext) {
+        StringBuilder sb=new StringBuilder();
+        if(data.getVehicleBaseData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)1,1));
+            sb.append(parser.toHex(data.getVehicleBaseData()));
+        }
+        if(data.getVehicleMotorData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)2,1));
+            sb.append(parser.toHex(data.getVehicleMotorData()));
+        }
+        if(data.getVehicleFuelBatteryData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)3,1));
+            sb.append(parser.toHex(data.getVehicleFuelBatteryData()));
+        }
+        if(data.getVehicleEngineData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)4,1));
+            sb.append(parser.toHex(data.getVehicleEngineData()));
+        }
+        if(data.getVehiclePositionData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)5,1));
+            sb.append(parser.toHex(data.getVehiclePositionData()));
+        }
+        if(data.getVehicleLimitValueData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)6,1));
+            sb.append(parser.toHex(data.getVehicleLimitValueData()));
+        }
+        if(data.getVehicleAlarmData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)7,1));
+            sb.append(parser.toHex(data.getVehicleAlarmData()));
+        }
+        if(data.getVehicleStorageVoltageData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)8,1));
+            sb.append(parser.toHex(data.getVehicleStorageVoltageData()));
+        }
+        if(data.getVehicleStorageTemperatureData()!=null){
+            sb.append(ShortFieldParser.INSTANCE.toHex((short)9,1));
+            sb.append(parser.toHex(data.getVehicleStorageTemperatureData()));
+        }
+        return sb.toString();
     }
 }

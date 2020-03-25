@@ -31,8 +31,8 @@ public class StorageVoltageData {
     short frameTotal;
 
     //单体电池电压
-    @PacketField(index = 7,lenExpr = "2*m")
-    int singleVoltage;
+    @PacketField(index = 7,singleLen = 2,lenExpr = "2*m")
+    int[] singleVoltage;
 
     public short getNo() {
         return no;
@@ -82,11 +82,11 @@ public class StorageVoltageData {
         this.frameTotal = frameTotal;
     }
 
-    public int getSingleVoltage() {
+    public int[] getSingleVoltage() {
         return singleVoltage;
     }
 
-    public void setSingleVoltage(int singleVoltage) {
+    public void setSingleVoltage(int[] singleVoltage) {
         this.singleVoltage = singleVoltage;
     }
 }
