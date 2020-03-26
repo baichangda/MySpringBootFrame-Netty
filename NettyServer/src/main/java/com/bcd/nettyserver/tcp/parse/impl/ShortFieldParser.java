@@ -8,10 +8,9 @@ import io.netty.buffer.Unpooled;
 
 public class ShortFieldParser implements FieldParser<Short> {
     public final static int BYTE_LENGTH=2;
-    public final static ShortFieldParser INSTANCE=new ShortFieldParser();
 
     @Override
-    public Short parse(ByteBuf data,int len, Object ...ext) {
+    public Short parse(ByteBuf data,int len,Object instance, Object ...ext) {
         if(len==1){
             //优化处理 byte->short
             return data.readUnsignedByte();

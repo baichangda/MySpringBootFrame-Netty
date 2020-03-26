@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 
 public class Packet {
     //头 0-2
-    @PacketField(index = 1,len = 2,headValue = "2323")
+    @PacketField(index = 1,len = 2)
     byte[] header;
     //命令标识 2-3
     @PacketField(index = 2,len = 1)
@@ -20,7 +20,7 @@ public class Packet {
     @PacketField(index = 5,len = 1)
     short encodeWay;
     //数据单元长度 22-24
-    @PacketField(index = 6,len = 2,isLengthField = true,var = "len")
+    @PacketField(index = 6,len = 2,var = "len")
     int contentLength;
     //数据单元
     @PacketField(index = 7,lenExpr = "len")

@@ -10,7 +10,6 @@ import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * 解析器类,线程安全
  */
 @SuppressWarnings("unchecked")
-public abstract class Parser{
+public abstract class ParserContext {
     public final static Map<String,PacketInfo> PACKET_INFO_CACHE=new ConcurrentHashMap<>();
 
 
@@ -46,11 +45,11 @@ public abstract class Parser{
     protected FieldParser[] fieldParserArr=new FieldParser[20];
 
     /**
-     * {@link PacketField#handleClass()} 对应的处理类
+     * {@link PacketField#parserClass()} 对应的处理类
      */
     protected Map<Class,FieldParser> classToHandler =new HashMap<>();
 
-    public Parser() {
+    public ParserContext() {
     }
 
     public void init(){
@@ -62,17 +61,39 @@ public abstract class Parser{
     }
 
     protected void initParser(){
-        this.byteFieldParser = ByteFieldParser.INSTANCE;
-        this.byteArrayFieldParser = ByteArrayFieldParser.INSTANCE;
-        this.shortFieldParser = ShortFieldParser.INSTANCE;
-        this.shortArrayFieldParser = ShortArrayFieldParser.INSTANCE;
-        this.integerFieldParser = IntegerFieldParser.INSTANCE;
-        this.integerArrayFieldParser = IntegerArrayFieldParser.INSTANCE;
-        this.longFieldParser = LongFieldParser.INSTANCE;
-        this.longArrayFieldParser = LongArrayFieldParser.INSTANCE;
-        this.stringFieldParser = StringFieldParser.INSTANCE;
-        this.dateFieldParser = DateFieldParser.INSTANCE;
-        this.byteBufFieldParser=ByteBufFieldParser.INSTANCE;
+        if(this.byteFieldParser==null) {
+            this.byteFieldParser = new ByteFieldParser();
+        }
+        if(this.byteArrayFieldParser==null) {
+            this.byteArrayFieldParser = new ByteArrayFieldParser();
+        }
+        if(this.shortFieldParser==null) {
+            this.shortFieldParser = new ShortFieldParser();
+        }
+        if(this.shortArrayFieldParser==null) {
+            this.shortArrayFieldParser = new ShortArrayFieldParser();
+        }
+        if(this.integerFieldParser==null) {
+            this.integerFieldParser = new IntegerFieldParser();
+        }
+        if(this.integerArrayFieldParser==null) {
+            this.integerArrayFieldParser = new IntegerArrayFieldParser();
+        }
+        if(this.longFieldParser==null) {
+            this.longFieldParser = new LongFieldParser();
+        }
+        if(this.longArrayFieldParser==null) {
+            this.longArrayFieldParser = new LongArrayFieldParser();
+        }
+        if(this.stringFieldParser==null) {
+            this.stringFieldParser = new StringFieldParser();
+        }
+        if(this.dateFieldParser==null) {
+            this.dateFieldParser = new DateFieldParser();
+        }
+        if(this.byteBufFieldParser==null) {
+            this.byteBufFieldParser = new ByteBufFieldParser();
+        }
 
         fieldParserArr[1]=byteFieldParser;
         fieldParserArr[2]=shortFieldParser;
@@ -92,7 +113,7 @@ public abstract class Parser{
     protected void afterInit(){
         //为handler设置parser
         classToHandler.values().forEach(e->{
-            e.setParser(this);
+            e.setContext(this);
         });
     }
 
@@ -101,7 +122,7 @@ public abstract class Parser{
      * 通过spring
      */
     protected void initHandlerBySpring(){
-        SpringUtil.applicationContext.getBeansOfType(FieldHandler.class).values().forEach(e->{
+        SpringUtil.applicationContext.getBeansOfType(FieldParser.class).values().forEach(e->{
             Class clazz= ProxyUtil.getSource(e).getClass();
             classToHandler.put(clazz,e);
         });
@@ -114,8 +135,8 @@ public abstract class Parser{
      */
     protected void initHandlerByScanClass(String packageName){
         try {
-            for (Class e : ClassUtil.getClassesByParentClass(FieldHandler.class, packageName)) {
-                classToHandler.put(e,(FieldHandler) e.newInstance());
+            for (Class e : ClassUtil.getClassesByParentClass(FieldParser.class, packageName)) {
+                classToHandler.put(e,(FieldParser) e.newInstance());
             }
         } catch (IOException | ClassNotFoundException |IllegalAccessException |InstantiationException e) {
             throw BaseRuntimeException.getException(e);
@@ -186,15 +207,24 @@ public abstract class Parser{
                     List<String>[] rpns= fieldInfo.getRpns();
                     if(type==0){
                         /**
-                         * {@link PacketField#handleClass()} 不为空
+                         * {@link PacketField#parserClass()} 不为空
                          * 特殊处理
                          */
                         Class handleClass=fieldInfo.getClazz();
-                        FieldHandler fieldHandler= classToHandler.get(handleClass);
-                        if(fieldHandler==null){
+                        FieldParser fieldParser= classToHandler.get(handleClass);
+                        if(fieldParser==null){
                             throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
                         }
-                        val.append(fieldHandler.toHex(data));
+                        int len;
+                        /**
+                         * 如果{@link PacketField#lenExpr()} 为空
+                         */
+                        if(rpns[0]==null){
+                            len=packetField.len();
+                        }else{
+                            len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                        }
+                        val.append(fieldParser.toHex(data,len));
                     }else{
                         if(type==101){
                             /**
@@ -272,15 +302,24 @@ public abstract class Parser{
                 List<String>[] rpns= fieldInfo.getRpns();
                 if(type==0){
                     /**
-                     * {@link PacketField#handleClass()} 不为空
+                     * {@link PacketField#parserClass()} 不为空
                      * 特殊处理
                      */
-                    Class handleClass=fieldInfo.getClazz();
-                    FieldHandler fieldHandler= classToHandler.get(handleClass);
-                    if(fieldHandler==null){
-                        throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
+                    Class parserClass=fieldInfo.getClazz();
+                    FieldParser fieldParser= classToHandler.get(parserClass);
+                    if(fieldParser==null){
+                        throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
                     }
-                    val=fieldHandler.handle(data,instance);
+                    int len;
+                    /**
+                     * 如果{@link PacketField#lenExpr()} 为空
+                     */
+                    if(rpns[0]==null){
+                        len=packetField.len();
+                    }else{
+                        len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                    }
+                    val=fieldParser.parse(data,len,instance);
                 }else{
                     if(type==101){
                         /**
@@ -309,7 +348,7 @@ public abstract class Parser{
                             }else{
                                 len=StringUtil.calcRPN(rpns[0],valMap).intValue();
                             }
-                            val=fieldParserArr[type].parse(data,len,packetField.singleLen());
+                            val=fieldParserArr[type].parse(data,len,instance,packetField.singleLen());
 
                             /**
                              * 如果 {@link PacketField#var()} 不为空
@@ -362,7 +401,7 @@ public abstract class Parser{
                 Class typeClazz=null;
                 boolean isVar=false;
                 //判断是否特殊处理
-                if(packetField.handleClass()==Void.class){
+                if(packetField.parserClass()==Void.class){
                     //判断是否是List<Bean>(Bean代表自定义实体类型,不包括Byte、Short、Integer、Long)
                     if(packetField.listLenExpr().isEmpty()) {
                         if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
@@ -407,7 +446,7 @@ public abstract class Parser{
                 }else{
                     //特殊处理
                     type=0;
-                    typeClazz=packetField.handleClass();
+                    typeClazz=packetField.parserClass();
                 }
 
                 //转换逆波兰表达式
@@ -435,91 +474,61 @@ public abstract class Parser{
             }).collect(Collectors.toList());
 
             PacketInfo packetInfo=new PacketInfo();
-            //找出头字段注解和长度字段注解
-            PacketField headPacketField=null;
-            PacketField contentLengthPacketField=null;
-            for (FieldInfo fieldInfo : fieldInfoList) {
-                PacketField curField=fieldInfo.getPacketField();
-                if(!curField.headValue().isEmpty()){
-                    headPacketField=curField;
-                }else if(curField.isLengthField()){
-                    contentLengthPacketField=curField;
-                }
-                if(headPacketField!=null&&contentLengthPacketField!=null){
-                    break;
-                }
-            }
-            //头解析
-            if(headPacketField!=null){
-                byte[] header=ByteBufUtil.decodeHexDump(headPacketField.headValue());
-                packetInfo.setHeader(header);
-            }
-            //长度解析
-            if(contentLengthPacketField!=null) {
-                int len=0;
-                for (FieldInfo fieldInfo : fieldInfoList) {
-                    PacketField curField=fieldInfo.getPacketField();
-                    if (curField.index() < contentLengthPacketField.index()) {
-                        len += curField.len();
-                    } else {
-                        break;
-                    }
-                }
-                packetInfo.setLengthFieldStart(len);
-                packetInfo.setLengthFieldLength(contentLengthPacketField.len());
-            }
             packetInfo.setFieldInfoList(fieldInfoList);
             return packetInfo;
         });
     }
 
-    public Parser withByteFieldParser(FieldParser<Byte> parser){
+    public ParserContext withByteFieldParser(FieldParser<Byte> parser){
         this.byteFieldParser=parser;
         return this;
     }
 
-    public Parser withByteArrayFieldParser(FieldParser<byte[]> parser){
+    public ParserContext withByteArrayFieldParser(FieldParser<byte[]> parser){
         this.byteArrayFieldParser=parser;
         return this;
     }
 
-    public Parser withDateFieldParser(FieldParser<Date> parser){
+    public ParserContext withDateFieldParser(FieldParser<Date> parser){
         this.dateFieldParser=parser;
         return this;
     }
 
-    public Parser withIntegerFieldParser(FieldParser<Integer> parser){
+    public ParserContext withIntegerFieldParser(FieldParser<Integer> parser){
         this.integerFieldParser=parser;
         return this;
     }
 
-    public Parser withIntegerArrayFieldParser(FieldParser<int[]> parser){
+    public ParserContext withIntegerArrayFieldParser(FieldParser<int[]> parser){
         this.integerArrayFieldParser =parser;
         return this;
     }
 
-    public Parser withLongFieldParser(FieldParser<Long> parser){
+    public ParserContext withLongFieldParser(FieldParser<Long> parser){
         this.longFieldParser=parser;
         return this;
     }
 
-    public Parser withLongArrayFieldParser(FieldParser<long[]> parser){
+    public ParserContext withLongArrayFieldParser(FieldParser<long[]> parser){
         this.longArrayFieldParser=parser;
         return this;
     }
 
-    public Parser withShortFieldParser(FieldParser<Short> parser){
+    public ParserContext withShortFieldParser(FieldParser<Short> parser){
         this.shortFieldParser=parser;
         return this;
     }
 
-    public Parser withShortArrayFieldParser(FieldParser<short[]> parser){
+    public ParserContext withShortArrayFieldParser(FieldParser<short[]> parser){
         this.shortArrayFieldParser=parser;
         return this;
     }
 
-    public Parser withStringFieldParser(FieldParser<String> parser){
+    public ParserContext withStringFieldParser(FieldParser<String> parser){
         this.stringFieldParser=parser;
         return this;
     }
+
+
+
 }

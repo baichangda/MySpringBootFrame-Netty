@@ -4,7 +4,7 @@ package com.bcd.protocol.gb32960;
 import com.bcd.base.util.ExceptionUtil;
 import com.bcd.nettyserver.tcp.TcpServer;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
-import com.bcd.nettyserver.tcp.parse.Parser;
+import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.handler.BusinessHandler;
 import com.bcd.protocol.gb32960.handler.PacketContentParseHandler;
 import com.bcd.protocol.gb32960.handler.PacketParseHandler;
@@ -44,7 +44,7 @@ public class TcpServer_32960 extends TcpServer{
 
     PacketInfo packetInfo;
 
-    public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port,@Qualifier("parser_32960") Parser parser){
+    public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port,@Qualifier("parser_32960") ParserContext parser){
         super(port,parser);
         packetInfo=parser.toPacketInfo(Packet.class);
     }
@@ -60,7 +60,7 @@ public class TcpServer_32960 extends TcpServer{
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
                             ch.pipeline().addLast(new ReadTimeoutHandler(60*10));
-                            ch.pipeline().addLast(new PacketSplitHandler.Default(packetInfo.getHeader(),packetInfo.getLengthFieldStart(),packetInfo.getLengthFieldLength()));
+                            ch.pipeline().addLast(new PacketSplitHandler.Default(new byte[]{35,35},22,2));
                             ch.pipeline().addLast(packetParseHandler);
                             ch.pipeline().addLast(packetContentParseHandler);
                             ch.pipeline().addLast(businessHandler);

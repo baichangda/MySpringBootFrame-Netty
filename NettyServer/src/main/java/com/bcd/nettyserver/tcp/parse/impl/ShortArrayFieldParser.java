@@ -10,10 +10,9 @@ import io.netty.buffer.Unpooled;
 
 public class ShortArrayFieldParser implements FieldParser<short[]> {
     public final static int BYTE_LENGTH=2;
-    public final static ShortArrayFieldParser INSTANCE=new ShortArrayFieldParser();
 
     @Override
-    public short[] parse(ByteBuf data, int len, Object... ext) {
+    public short[] parse(ByteBuf data, int len,Object instance, Object... ext) {
         int singleLen=(int)ext[0];
         short[] res=new short[len/singleLen];
         //优化处理 byte->short

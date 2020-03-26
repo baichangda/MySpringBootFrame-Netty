@@ -1,26 +1,73 @@
 package com.bcd.nettyserver.tcp.anno;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
+/**
+ * 解析字段注解,被标注的字段将会参与解析,并将解析后的值设置到字段中
+ * 支持的字段类型如下:
+ *
+ * byte/Byte
+ * short/Short
+ * int/Integer
+ * long/Long
+ * String
+ * Date
+ * byte[]
+ * short[]
+ * int[]
+ * long[]
+ * ByteBuf
+ * 自定义类型,TestBean
+ * 自定义类型集合,List<TestBean>
+ *
+ * 如果以上类型不满足解析需求,可以自行设置{@link #parserClass()}属性定义自定义解析器
+ *
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PacketField {
-    //序号
+    /**
+     * 序号
+     * 用于标注当前注解字段在协议文档中的顺序
+     * 例如: 1,2,3
+     */
     int index();
-    //字节长度(代表的是Byte的长度)
+
+    /**
+     * 字段所占字节长度
+     * 常量数值
+     * 例如: 1,2,3
+     */
     int len() default 0;
-    //是否是长度字段(用作于包的最外层的长度字段标记)
-    boolean isLengthField() default false;
-    //头字段值(用作于包的最外层的头字段标记)
-    String headValue() default "";
-    //变量名称
+
+    /**
+     * 变量名称
+     * 标注此标记的会在解析时候将值缓存,供以下注解使用
+     * {@link #lenExpr()}
+     * {@link #listLenExpr()}
+     * 例如: m,n,a
+     */
     String var() default "";
-    //字段字节长度表达式(用于固定长度字段解析,配合var参数使用,代表的是Byte的长度)
+
+    /**
+     * 字段所占字节长度表达式
+     * 用于固定长度字段解析,配合var参数使用,代表的是Byte的长度
+     * 例如:
+     * m
+     * m*n
+     * a*b-1
+     * a*(b-2)
+     */
     String lenExpr() default "";
-    //集合长度表达式(用于对象集合字段不定长度的解析,配合var参数使用,代表的是当前集合元素的个数)
+
+    /**
+     * 集合长度表达式
+     * 用于对象集合字段不定长度的解析,配合var参数使用,代表的是当前集合元素的个数
+     * 适用于 List<TestBean> 字段类型
+     * 例如:
+     * m
+     * m*n
+     */
     String listLenExpr() default "";
     /**
      * 单个元素字节长度(用于字节数组转换成byte[]、short[]、int[]、long[]数组中单个元素对应字节数)
@@ -30,6 +77,10 @@ public @interface PacketField {
      * 如果配比为 4: 则表示4个byte转换成一个int存入数组,最后转换的长度为 int[2]
      */
     int singleLen() default 1;
-    //处理类(表明需要特殊处理)
-    Class handleClass() default Void.class;
+
+    /**
+     * 处理类
+     * 用于处理特殊情况,class类型必须是{@link com.bcd.nettyserver.tcp.parse.FieldParser}子类
+     */
+    Class parserClass() default Void.class;
 }

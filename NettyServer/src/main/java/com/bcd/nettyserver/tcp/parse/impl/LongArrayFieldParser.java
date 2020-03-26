@@ -11,9 +11,8 @@ import java.util.Objects;
 
 public class LongArrayFieldParser implements FieldParser<long[]> {
     public final static int BYTE_LENGTH=8;
-    public final static LongArrayFieldParser INSTANCE=new LongArrayFieldParser();
     @Override
-    public long[] parse(ByteBuf data, int len, Object... ext) {
+    public long[] parse(ByteBuf data, int len,Object instance, Object... ext) {
         int singleLen=(int)ext[0];
         long[] res=new long[len/singleLen];
         //优化处理 int->long

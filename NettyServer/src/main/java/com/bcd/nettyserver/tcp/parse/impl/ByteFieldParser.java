@@ -8,9 +8,8 @@ import io.netty.buffer.ByteBufUtil;
 
 public class ByteFieldParser implements FieldParser<Byte>{
     public final static int BYTE_LENGTH=1;
-    public final static ByteFieldParser INSTANCE=new ByteFieldParser();
     @Override
-    public Byte parse(ByteBuf data,int len, Object ...ext) {
+    public Byte parse(ByteBuf data,int len,Object instance, Object ...ext) {
         if(len==BYTE_LENGTH){
             return data.readByte();
         }else if(len>BYTE_LENGTH){

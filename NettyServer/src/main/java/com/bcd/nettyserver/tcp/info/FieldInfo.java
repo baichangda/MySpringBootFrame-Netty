@@ -18,17 +18,17 @@ public class FieldInfo {
      * 5、String
      * 6、Date
      *
-     * 7、byte[]/Byte[]
-     * 8、short[]/Short[]
-     * 9、int[]/Integer[]
-     * 10、long[]/Long[]
+     * 7、byte[]
+     * 8、short[]
+     * 9、int[]
+     * 10、long[]
      *
      * 11、ByteBuf
      *
      * 100、实体类型,例如TestBean
      * 101、集合实体类型,例如List<TestBean>
      *
-     * 0、通用解析方法失效、此时采用对应{@link PacketField#handleClass()}处理类处理
+     * 0、通用解析方法失效、此时采用对应{@link PacketField#parserClass()}处理类处理
      *
      */
     public int type;
@@ -44,12 +44,14 @@ public class FieldInfo {
      * 当type=100/101时候才有值,为实体类型
      * type=100,代表实体类型
      * type=101,代表集合泛型
-     * type=0,代表{@link PacketField#handleClass()}处理类类型
+     * type=0,代表{@link PacketField#parserClass()}处理类类型
      */
     public Class clazz;
 
     /**
      * 逆波兰表达式
+     * rpns[0] 对应 {@link PacketField#lenExpr()}表达式
+     * rpns[1] 对应 {@link PacketField#listLenExpr()}表达式
      */
     public List<String>[] rpns;
 

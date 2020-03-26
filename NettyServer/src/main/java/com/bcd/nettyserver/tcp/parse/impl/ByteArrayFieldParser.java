@@ -11,9 +11,8 @@ import java.util.Objects;
 
 public class ByteArrayFieldParser implements FieldParser<byte[]> {
     public final static int BYTE_LENGTH=1;
-    public final static ByteArrayFieldParser INSTANCE=new ByteArrayFieldParser();
     @Override
-    public byte[] parse(ByteBuf data, int len, Object... ext) {
+    public byte[] parse(ByteBuf data, int len,Object instance, Object... ext) {
         int singleLen=(int)ext[0];
         byte[] res=new byte[len/singleLen];
         if(singleLen==BYTE_LENGTH){

@@ -1,7 +1,7 @@
 package com.bcd.nettyserver.tcp;
 
 import com.bcd.base.util.StringUtil;
-import com.bcd.nettyserver.tcp.parse.Parser;
+import com.bcd.nettyserver.tcp.parse.ParserContext;
 
 import javax.script.*;
 import java.util.HashMap;
@@ -10,9 +10,9 @@ import java.util.Map;
 
 public abstract class TcpServer implements Runnable{
     protected int port;
-    protected Parser parser;
+    protected ParserContext parser;
 
-    public TcpServer(int port, Parser parser) {
+    public TcpServer(int port, ParserContext parser) {
         this.port = port;
         this.parser=parser;
     }
@@ -21,7 +21,7 @@ public abstract class TcpServer implements Runnable{
         return port;
     }
 
-    public Parser getParser() {
+    public ParserContext getParser() {
         return parser;
     }
 

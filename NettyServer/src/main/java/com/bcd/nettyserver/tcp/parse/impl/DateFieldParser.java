@@ -20,9 +20,8 @@ public class DateFieldParser implements FieldParser<Date>{
     public final static int BASE_YEAR=2000;
 
     Logger logger= LoggerFactory.getLogger(DateFieldParser.class);
-    public final static DateFieldParser INSTANCE=new DateFieldParser();
     @Override
-    public Date parse(ByteBuf data,int len, Object ...ext) {
+    public Date parse(ByteBuf data,int len,Object instance, Object ...ext) {
         if(len==6){
             byte year=data.readByte();
             int month=data.readByte();

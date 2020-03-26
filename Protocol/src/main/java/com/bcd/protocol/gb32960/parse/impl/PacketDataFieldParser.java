@@ -7,10 +7,10 @@ import io.netty.buffer.ByteBuf;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PacketDataFieldHandler implements FieldParser<PacketData> {
+public class PacketDataFieldParser implements FieldParser<PacketData> {
     ParserContext context;
 
-    public PacketDataFieldHandler() {
+    public PacketDataFieldParser() {
     }
 
     @Override

@@ -6,9 +6,8 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
 public class ByteBufFieldParser implements FieldParser<ByteBuf> {
-    public final static ByteBufFieldParser INSTANCE=new ByteBufFieldParser();
     @Override
-    public ByteBuf parse(ByteBuf data, int len, Object... ext) {
+    public ByteBuf parse(ByteBuf data, int len,Object instance, Object... ext) {
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         byteBuf.writeBytes(data,len);
         return byteBuf;

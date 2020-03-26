@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 @Component
-public class VehicleCommonDataFieldHandler implements FieldParser<VehicleCommonData> {
-    Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldHandler.class);
+public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonData> {
+    Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldParser.class);
 
     ParserContext context;
 
@@ -28,7 +28,7 @@ public class VehicleCommonDataFieldHandler implements FieldParser<VehicleCommonD
     private VehicleCommonData parseVehicleData(ByteBuf byteBuf){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
         A:while(byteBuf.isReadable()) {
-            short flag = ShortFieldParser.INSTANCE.parse(byteBuf,1);
+            short flag = context.getShortFieldParser().parse(byteBuf,1,vehicleCommonData);
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
@@ -88,7 +88,7 @@ public class VehicleCommonDataFieldHandler implements FieldParser<VehicleCommonD
                     logger.warn("Parse Vehicle Common Data Interrupted,Unknown Flag["+flag+"]");
                     //2.8、如果是自定义数据,只做展现,不解析
                     //2.8.1、解析长度
-                    Integer len= IntegerFieldParser.INSTANCE.parse(byteBuf,2);
+                    Integer len= context.getIntegerFieldParser().parse(byteBuf,2,vehicleCommonData);
                     //2.8.2、获取接下来的报文
                     byte[] content=new byte[len];
                     byteBuf.getBytes(0,content);
@@ -104,39 +104,39 @@ public class VehicleCommonDataFieldHandler implements FieldParser<VehicleCommonD
     public String toHex(VehicleCommonData data,int len, Object... ext) {
         StringBuilder sb=new StringBuilder();
         if(data.getVehicleBaseData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)1,1));
+            sb.append(context.getShortFieldParser().toHex((short)1,1));
             sb.append(context.toHex(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)2,1));
+            sb.append(context.getShortFieldParser().toHex((short)2,1));
             sb.append(context.toHex(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)3,1));
+            sb.append(context.getShortFieldParser().toHex((short)3,1));
             sb.append(context.toHex(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)4,1));
+            sb.append(context.getShortFieldParser().toHex((short)4,1));
             sb.append(context.toHex(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)5,1));
+            sb.append(context.getShortFieldParser().toHex((short)5,1));
             sb.append(context.toHex(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)6,1));
+            sb.append(context.getShortFieldParser().toHex((short)6,1));
             sb.append(context.toHex(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)7,1));
+            sb.append(context.getShortFieldParser().toHex((short)7,1));
             sb.append(context.toHex(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)8,1));
+            sb.append(context.getShortFieldParser().toHex((short)8,1));
             sb.append(context.toHex(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
-            sb.append(ShortFieldParser.INSTANCE.toHex((short)9,1));
+            sb.append(context.getShortFieldParser().toHex((short)9,1));
             sb.append(context.toHex(data.getVehicleStorageTemperatureData()));
         }
         return sb.toString();

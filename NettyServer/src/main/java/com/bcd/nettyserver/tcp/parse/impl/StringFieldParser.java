@@ -8,9 +8,8 @@ import io.netty.buffer.Unpooled;
 import java.util.Objects;
 
 public class StringFieldParser implements FieldParser<String> {
-    public final static StringFieldParser INSTANCE=new StringFieldParser();
     @Override
-    public String parse(ByteBuf data,int len, Object ...ext) {
+    public String parse(ByteBuf data,int len,Object instance, Object ...ext) {
         int discardLen=0;
         byte[] bytes=new byte[len];
         data.readBytes(bytes);

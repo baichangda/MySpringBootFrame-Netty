@@ -11,10 +11,9 @@ import java.util.Objects;
 
 public class IntegerFieldParser implements FieldParser<Integer> {
     public final static int BYTE_LENGTH=4;
-    public final static IntegerFieldParser INSTANCE=new IntegerFieldParser();
 
     @Override
-    public Integer parse(ByteBuf data,int len, Object ...ext) {
+    public Integer parse(ByteBuf data,int len,Object instance, Object ...ext) {
         if(len==2){
             //优化处理 short->int
             return data.readUnsignedShort();

@@ -2,7 +2,7 @@ package com.bcd.protocol.gb32960.handler;
 
 import com.bcd.protocol.gb32960.data.Packet;
 import com.bcd.protocol.gb32960.data.PacketData;
-import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldHandler;
+import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldParser;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,12 +19,12 @@ public class PacketContentParseHandler extends ChannelInboundHandlerAdapter {
     Logger logger= LoggerFactory.getLogger(PacketContentParseHandler.class);
 
     @Autowired
-    PacketDataFieldHandler packetDataFieldHandler;
+    PacketDataFieldParser packetDataFieldHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Packet packet=(Packet)msg;
-        PacketData packetData= packetDataFieldHandler.handle(Unpooled.wrappedBuffer(packet.getDataContent()),packet);
+        PacketData packetData= packetDataFieldHandler.parse(Unpooled.wrappedBuffer(packet.getDataContent()),packet.getDataContent().readableBytes(),packet);
         packet.setData(packetData);
         super.channelRead(ctx, msg);
     }

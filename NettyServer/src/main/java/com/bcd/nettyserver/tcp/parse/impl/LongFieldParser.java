@@ -9,10 +9,9 @@ import io.netty.buffer.Unpooled;
 
 public class LongFieldParser implements FieldParser<Long> {
     public final static int BYTE_LENGTH=8;
-    public final static LongFieldParser INSTANCE=new LongFieldParser();
 
     @Override
-    public Long parse(ByteBuf data,int len, Object ...ext) {
+    public Long parse(ByteBuf data,int len,Object instance, Object ...ext) {
         if(len==4){
             //优化处理 int->long
             return data.readUnsignedInt();
