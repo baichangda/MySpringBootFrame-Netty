@@ -1,63 +1,61 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
-import com.bcd.nettyserver.tcp.parse.Parser;
+import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.data.*;
-import com.bcd.nettyserver.tcp.parse.FieldHandler;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PacketDataFieldHandler implements FieldHandler<PacketData> {
-    Parser parser;
+public class PacketDataFieldHandler implements FieldParser<PacketData> {
+    ParserContext context;
 
     public PacketDataFieldHandler() {
     }
 
-
     @Override
-    public void setParser(Parser parser) {
-        this.parser=parser;
+    public void setContext(ParserContext context) {
+        this.context =context;
     }
 
     @Override
-    public PacketData handle(ByteBuf data,Object instance,Object ... ext) {
+    public PacketData parse(ByteBuf data,int len,Object instance,Object ... ext) {
         Packet packet=(Packet)instance;
         PacketData packetData=null;
         switch (packet.getFlag()){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= parser.parse(VehicleLoginData.class, data);
+                VehicleLoginData vehicleLoginData= context.parse(VehicleLoginData.class, data);
                 packetData=vehicleLoginData;
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= parser.parse(VehicleRealData.class,data);
+                VehicleRealData vehicleRealData= context.parse(VehicleRealData.class,data);
                 packetData=vehicleRealData;
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= parser.parse(VehicleSupplementData.class,data);
+                VehicleSupplementData vehicleSupplementData= context.parse(VehicleSupplementData.class,data);
                 packetData=vehicleSupplementData;
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= parser.parse(VehicleLogoutData.class,data);
+                VehicleLogoutData vehicleLogoutData= context.parse(VehicleLogoutData.class,data);
                 packetData=vehicleLogoutData;
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= parser.parse(PlatformLoginData.class,data);
+                PlatformLoginData platformLoginData= context.parse(PlatformLoginData.class,data);
                 packetData=platformLoginData;
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= parser.parse(PlatformLogoutData.class,data);
+                PlatformLogoutData platformLogoutData= context.parse(PlatformLogoutData.class,data);
                 packetData=platformLogoutData;
                 break;
             }
@@ -74,38 +72,38 @@ public class PacketDataFieldHandler implements FieldHandler<PacketData> {
     }
 
     @Override
-    public String toHex(PacketData data, Object... ext) {
+    public String toHex(PacketData data,int len, Object... ext) {
         Packet packet=(Packet)ext[0];
         String hex=null;
         switch (packet.getFlag()){
             //车辆登入
             case 1:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //车辆实时信息
             case 2:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //补发信息上报
             case 3:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //车辆登出
             case 4:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //平台登入
             case 5:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //平台登出
             case 6:{
-                hex= parser.toHex(data);
+                hex= context.toHex(data);
                 break;
             }
             //心跳

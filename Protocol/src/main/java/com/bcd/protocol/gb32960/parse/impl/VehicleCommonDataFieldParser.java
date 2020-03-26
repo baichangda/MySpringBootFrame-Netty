@@ -1,28 +1,28 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
-import com.bcd.nettyserver.tcp.parse.Parser;
+import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.nettyserver.tcp.parse.impl.IntegerFieldParser;
 import com.bcd.nettyserver.tcp.parse.impl.ShortFieldParser;
 import com.bcd.protocol.gb32960.data.*;
-import com.bcd.nettyserver.tcp.parse.FieldHandler;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 @Component
-public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommonData> {
+public class VehicleCommonDataFieldHandler implements FieldParser<VehicleCommonData> {
     Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldHandler.class);
 
-    Parser parser;
+    ParserContext context;
 
     @Override
-    public VehicleCommonData handle(ByteBuf data,Object instance,Object ...ext) {
+    public VehicleCommonData parse(ByteBuf data,int len,Object instance,Object ...ext) {
         return parseVehicleData(data);
     }
 
     @Override
-    public void setParser(Parser parser) {
-        this.parser=parser;
+    public void setContext(ParserContext context) {
+        this.context =context;
     }
 
     private VehicleCommonData parseVehicleData(ByteBuf byteBuf){
@@ -32,55 +32,55 @@ public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommon
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
-                    VehicleBaseData data = parser.parse(VehicleBaseData.class,byteBuf);
+                    VehicleBaseData data = context.parse(VehicleBaseData.class,byteBuf);
                     vehicleCommonData.setVehicleBaseData(data);
                     break;
                 }
                 case 2: {
                     //2.2、驱动电机数据
-                    VehicleMotorData vehicleMotorData= parser.parse(VehicleMotorData.class,byteBuf);
+                    VehicleMotorData vehicleMotorData= context.parse(VehicleMotorData.class,byteBuf);
                     vehicleCommonData.setVehicleMotorData(vehicleMotorData);
                     break;
                 }
                 case 3: {
                     //2.3、燃料电池数据
-                    VehicleFuelBatteryData vehicleFuelBatteryData= parser.parse(VehicleFuelBatteryData.class,byteBuf);
+                    VehicleFuelBatteryData vehicleFuelBatteryData= context.parse(VehicleFuelBatteryData.class,byteBuf);
                     vehicleCommonData.setVehicleFuelBatteryData(vehicleFuelBatteryData);
                     break;
                 }
                 case 4: {
                     //2.4、发动机数据
-                    VehicleEngineData data= parser.parse(VehicleEngineData.class,byteBuf);
+                    VehicleEngineData data= context.parse(VehicleEngineData.class,byteBuf);
                     vehicleCommonData.setVehicleEngineData(data);
                     break;
                 }
                 case 5: {
                     //2.5、车辆位置数据
-                    VehiclePositionData data= parser.parse(VehiclePositionData.class,byteBuf);
+                    VehiclePositionData data= context.parse(VehiclePositionData.class,byteBuf);
                     vehicleCommonData.setVehiclePositionData(data);
                     break;
                 }
                 case 6: {
                     //2.6、极值数据
-                    VehicleLimitValueData data= parser.parse(VehicleLimitValueData.class,byteBuf);
+                    VehicleLimitValueData data= context.parse(VehicleLimitValueData.class,byteBuf);
                     vehicleCommonData.setVehicleLimitValueData(data);
                     break;
                 }
                 case 7: {
                     //2.7、报警数据
-                    VehicleAlarmData vehicleAlarmData= parser.parse(VehicleAlarmData.class,byteBuf);
+                    VehicleAlarmData vehicleAlarmData= context.parse(VehicleAlarmData.class,byteBuf);
                     vehicleCommonData.setVehicleAlarmData(vehicleAlarmData);
                     break;
                 }
                 case 8:{
                     //2.8、可充电储能装置电压数据
-                    VehicleStorageVoltageData vehicleStorageVoltageData= parser.parse(VehicleStorageVoltageData.class,byteBuf);
+                    VehicleStorageVoltageData vehicleStorageVoltageData= context.parse(VehicleStorageVoltageData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageVoltageData(vehicleStorageVoltageData);
                     break;
                 }
                 case 9:{
                     //2.9、可充电储能装置温度数据
-                    VehicleStorageTemperatureData vehicleStorageTemperatureData= parser.parse(VehicleStorageTemperatureData.class,byteBuf);
+                    VehicleStorageTemperatureData vehicleStorageTemperatureData= context.parse(VehicleStorageTemperatureData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageTemperatureData(vehicleStorageTemperatureData);
                     break;
                 }
@@ -101,43 +101,43 @@ public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommon
     }
 
     @Override
-    public String toHex(VehicleCommonData data, Object... ext) {
+    public String toHex(VehicleCommonData data,int len, Object... ext) {
         StringBuilder sb=new StringBuilder();
         if(data.getVehicleBaseData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)1,1));
-            sb.append(parser.toHex(data.getVehicleBaseData()));
+            sb.append(context.toHex(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)2,1));
-            sb.append(parser.toHex(data.getVehicleMotorData()));
+            sb.append(context.toHex(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)3,1));
-            sb.append(parser.toHex(data.getVehicleFuelBatteryData()));
+            sb.append(context.toHex(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)4,1));
-            sb.append(parser.toHex(data.getVehicleEngineData()));
+            sb.append(context.toHex(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)5,1));
-            sb.append(parser.toHex(data.getVehiclePositionData()));
+            sb.append(context.toHex(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)6,1));
-            sb.append(parser.toHex(data.getVehicleLimitValueData()));
+            sb.append(context.toHex(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)7,1));
-            sb.append(parser.toHex(data.getVehicleAlarmData()));
+            sb.append(context.toHex(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)8,1));
-            sb.append(parser.toHex(data.getVehicleStorageVoltageData()));
+            sb.append(context.toHex(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
             sb.append(ShortFieldParser.INSTANCE.toHex((short)9,1));
-            sb.append(parser.toHex(data.getVehicleStorageTemperatureData()));
+            sb.append(context.toHex(data.getVehicleStorageTemperatureData()));
         }
         return sb.toString();
     }

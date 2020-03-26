@@ -11,8 +11,6 @@ import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.IOException;
@@ -50,7 +48,7 @@ public abstract class Parser{
     /**
      * {@link PacketField#handleClass()} 对应的处理类
      */
-    protected Map<Class,FieldHandler> classToHandler =new HashMap<>();
+    protected Map<Class,FieldParser> classToHandler =new HashMap<>();
 
     public Parser() {
     }
