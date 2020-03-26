@@ -23,44 +23,41 @@ public class PacketDataFieldHandler implements FieldHandler<PacketData> {
     @Override
     public PacketData handle(ByteBuf data,Object ... ext) {
         Packet packet=(Packet)ext[0];
-        int len=packet.getContentLength();
-        ByteBuf content= Unpooled.buffer(len,len);
-        data.readBytes(content,len);
         PacketData packetData=null;
         switch (packet.getFlag()){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= parser.parse(VehicleLoginData.class, content);
+                VehicleLoginData vehicleLoginData= parser.parse(VehicleLoginData.class, data);
                 packetData=vehicleLoginData;
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= parser.parse(VehicleRealData.class,content);
+                VehicleRealData vehicleRealData= parser.parse(VehicleRealData.class,data);
                 packetData=vehicleRealData;
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= parser.parse(VehicleSupplementData.class,content);
+                VehicleSupplementData vehicleSupplementData= parser.parse(VehicleSupplementData.class,data);
                 packetData=vehicleSupplementData;
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= parser.parse(VehicleLogoutData.class,content);
+                VehicleLogoutData vehicleLogoutData= parser.parse(VehicleLogoutData.class,data);
                 packetData=vehicleLogoutData;
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= parser.parse(PlatformLoginData.class,content);
+                PlatformLoginData platformLoginData= parser.parse(PlatformLoginData.class,data);
                 packetData=platformLoginData;
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= parser.parse(PlatformLogoutData.class,content);
+                PlatformLogoutData platformLogoutData= parser.parse(PlatformLogoutData.class,data);
                 packetData=platformLogoutData;
                 break;
             }

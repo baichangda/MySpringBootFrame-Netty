@@ -39,6 +39,7 @@ public abstract class Parser{
     protected FieldParser<long[]> longArrayFieldParser;
     protected FieldParser<String> stringFieldParser;
     protected FieldParser<Date> dateFieldParser;
+    protected FieldParser<ByteBuf> byteBufFieldParser;
     /**
      * 用于处理时候直接通过索引拿到对应解析器
      * 索引对应 {@link FieldInfo#type}
@@ -72,6 +73,7 @@ public abstract class Parser{
         this.longArrayFieldParser = LongArrayFieldParser.INSTANCE;
         this.stringFieldParser = StringFieldParser.INSTANCE;
         this.dateFieldParser = DateFieldParser.INSTANCE;
+        this.byteBufFieldParser=ByteBufFieldParser.INSTANCE;
 
         fieldParserArr[1]=byteFieldParser;
         fieldParserArr[2]=shortFieldParser;
@@ -87,6 +89,7 @@ public abstract class Parser{
         fieldParserArr[12]=shortArrayFieldParser;
         fieldParserArr[13]=integerArrayFieldParser;
         fieldParserArr[14]=longArrayFieldParser;
+        fieldParserArr[15]=byteBufFieldParser;
     }
 
     protected abstract void initHandler();
@@ -407,6 +410,9 @@ public abstract class Parser{
                             } else {
                                 throw BaseRuntimeException.getException("Class[" + clazz.getClass().getName() + "] Field[" + field.getName() + "] List Type[" + listType.getName() + "] Not Support");
                             }
+                        } else if(ByteBuf.class.isAssignableFrom(fieldType)){
+                            //ByteBuf类型
+                            type=15;
                         } else {
                             //实体类型
                             type = 100;

@@ -1,6 +1,7 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.nettyserver.tcp.anno.PacketField;
+import io.netty.buffer.ByteBuf;
 
 public class Packet {
     //头 0-2
@@ -23,7 +24,7 @@ public class Packet {
     int contentLength;
     //数据单元
     @PacketField(index = 7,lenExpr = "len")
-    byte[] dataContent;
+    ByteBuf dataContent;
     PacketData data;
     //异或校验位
     @PacketField(index = 8,len = 1)
@@ -79,11 +80,11 @@ public class Packet {
         this.contentLength = contentLength;
     }
 
-    public byte[] getDataContent() {
+    public ByteBuf getDataContent() {
         return dataContent;
     }
 
-    public void setDataContent(byte[] dataContent) {
+    public void setDataContent(ByteBuf dataContent) {
         this.dataContent = dataContent;
     }
 

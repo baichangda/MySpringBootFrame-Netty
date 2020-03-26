@@ -28,6 +28,8 @@ public class FieldInfo {
      * 13、List<Integer>
      * 14、List<Long>
      *
+     * 15、ByteBuf
+     *
      * 100、实体类型,例如TestBean
      * 101、集合实体类型,例如List<TestBean>
      *

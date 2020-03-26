@@ -39,16 +39,14 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
                 "1403190F0507010203010000000469B00EE5271055020F1FFF000002010103424E1E4E2045FFFF2710050006BE437001CF306A060160FFFF0101FFFF0118FF01010E070000000000000000000801010EE527100060000160FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF09010100180EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED";
         System.out.println(data.length());
         long t1=System.currentTimeMillis();
+        byte [] bytes= ByteBufUtil.decodeHexDump(data);
         for(int i=1;i<=1000000;i++) {
-            ByteBuf byteBuf= Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(data));
+            ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
             Packet packet = parser.parse(Packet.class, byteBuf);
-            byte[] content = packet.getDataContent();
-            ByteBuf contentByteBuf = Unpooled.wrappedBuffer(content);
-            PacketData packetData = packetDataFieldHandler.handle(contentByteBuf, packet);
+            PacketData packetData = packetDataFieldHandler.handle(packet.getDataContent(), packet);
 //            String hex=parser.toHex(packetData);
 //            System.out.println(hex);
 //            System.out.println(data.contains(hex.toUpperCase()));
-            byteBuf.release();
         }
         long t2=System.currentTimeMillis();
         System.out.println(t2-t1);
