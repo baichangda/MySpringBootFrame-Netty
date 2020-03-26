@@ -5,7 +5,7 @@ import com.bcd.nettyserver.tcp.anno.PacketField;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class FieldInfo {
+public class PacketFieldInfo {
     public Field field;
 
     public PacketField packetField;
@@ -36,7 +36,7 @@ public class FieldInfo {
     /**
      * {@link PacketField#var()} 属性不为空
      * 只有当
-     * {@link FieldInfo#type} 为数字类型(1、2、3、4)时候,才可能是true
+     * {@link PacketFieldInfo#type} 为数字类型(1、2、3、4)时候,才可能是true
      */
     public boolean isVar;
 
@@ -49,7 +49,7 @@ public class FieldInfo {
     public Class clazz;
 
     /**
-     * 逆波兰表达式
+     * 长度的逆波兰表达式
      * rpns[0] 对应 {@link PacketField#lenExpr()}表达式
      * rpns[1] 对应 {@link PacketField#listLenExpr()}表达式
      */
