@@ -5,7 +5,7 @@ import com.bcd.nettyserver.tcp.anno.PacketField;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class PacketFieldInfo {
+public class FieldInfo {
     public Field field;
 
     public PacketField packetField;
@@ -36,7 +36,7 @@ public class PacketFieldInfo {
     /**
      * {@link PacketField#var()} 属性不为空
      * 只有当
-     * {@link PacketFieldInfo#type} 为数字类型(1、2、3、4)时候,才可能是true
+     * {@link FieldInfo#type} 为数字类型(1、2、3、4)时候,才可能是true
      */
     public boolean isVar;
 

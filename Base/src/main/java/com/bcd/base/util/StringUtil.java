@@ -152,7 +152,7 @@ public class StringUtil {
      */
     public static Double calcRPN(List<String> list,Map<String,Double> map){
         int stackIndex=-1;
-        Double[] stack=new Double[list.size()];
+        double[] stack=new double[list.size()];
         for (String s : list) {
             switch (s){
                 case "+":{

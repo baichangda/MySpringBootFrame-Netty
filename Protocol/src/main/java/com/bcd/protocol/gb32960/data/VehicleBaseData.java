@@ -1,5 +1,6 @@
 package com.bcd.protocol.gb32960.data;
 
+import com.bcd.nettyserver.tcp.anno.OffsetField;
 import com.bcd.nettyserver.tcp.anno.PacketField;
 
 /**
@@ -21,10 +22,14 @@ public class VehicleBaseData {
     //车速
     @PacketField(index = 4,len=2)
     int vehicleSpeed;
+    @OffsetField(sourceField = "vehicleSpeed",expr = "x*0.1")
+    float vehicleSpeedOffset;
 
     //累计里程
     @PacketField(index = 5,len=4)
     int totalMileage;
+    @OffsetField(sourceField = "totalMileage",expr = "x*0.1")
+    float totalMileageOffset;
 
     //总电压
     @PacketField(index = 6,len=2)
@@ -160,5 +165,21 @@ public class VehicleBaseData {
 
     public void setPedalStatus(short pedalStatus) {
         this.pedalStatus = pedalStatus;
+    }
+
+    public float getVehicleSpeedOffset() {
+        return vehicleSpeedOffset;
+    }
+
+    public void setVehicleSpeedOffset(float vehicleSpeedOffset) {
+        this.vehicleSpeedOffset = vehicleSpeedOffset;
+    }
+
+    public float getTotalMileageOffset() {
+        return totalMileageOffset;
+    }
+
+    public void setTotalMileageOffset(float totalMileageOffset) {
+        this.totalMileageOffset = totalMileageOffset;
     }
 }

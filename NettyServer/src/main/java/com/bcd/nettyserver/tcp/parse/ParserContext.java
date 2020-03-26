@@ -5,8 +5,10 @@ import com.bcd.base.util.ClassUtil;
 import com.bcd.base.util.ProxyUtil;
 import com.bcd.base.util.SpringUtil;
 import com.bcd.base.util.StringUtil;
+import com.bcd.nettyserver.tcp.anno.OffsetField;
 import com.bcd.nettyserver.tcp.anno.PacketField;
 import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.info.OffsetFieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
 import io.netty.buffer.ByteBuf;
@@ -363,6 +365,44 @@ public abstract class ParserContext {
                 }
                 fieldInfo.getField().set(instance,val);
             }
+
+            //偏移量值计算
+            List<OffsetFieldInfo> offsetFieldInfoList= packetInfo.getOffsetFieldInfoList();
+            if(offsetFieldInfoList!=null&&!offsetFieldInfoList.isEmpty()) {
+                Map<String, Double> map = new HashMap<>();
+                for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
+                    Object sourceVal = offsetFieldInfo.getSourceField().get(instance);
+                    map.put("x", ((Number) sourceVal).doubleValue());
+                    Double val = StringUtil.calcRPN(offsetFieldInfo.getRpn(), map);
+                    switch (offsetFieldInfo.getFieldType()){
+                        case 1:{
+                            offsetFieldInfo.getField().set(instance, val.byteValue());
+                            break;
+                        }
+                        case 2:{
+                            offsetFieldInfo.getField().set(instance, val.shortValue());
+                            break;
+                        }
+                        case 3:{
+                            offsetFieldInfo.getField().set(instance, val.intValue());
+                            break;
+                        }
+                        case 4:{
+                            offsetFieldInfo.getField().set(instance, val.longValue());
+                            break;
+                        }
+                        case 5:{
+                            offsetFieldInfo.getField().set(instance, val.floatValue());
+                            break;
+                        }
+                        case 6:{
+                            offsetFieldInfo.getField().set(instance, val);
+                            break;
+                        }
+                    }
+                }
+            }
+
             return instance;
         } catch (InstantiationException |IllegalAccessException e) {
             throw BaseRuntimeException.getException(e);
@@ -473,8 +513,44 @@ public abstract class ParserContext {
                 return fieldInfo;
             }).collect(Collectors.toList());
 
+            //解析offsetField注解字段
+            List<OffsetFieldInfo> offsetFieldInfoList= allFieldList.stream().filter(field->field.getAnnotation(OffsetField.class)!=null).map(field->{
+                try {
+                    OffsetField offsetField= field.getAnnotation(OffsetField.class);
+                    OffsetFieldInfo offsetFieldInfo=new OffsetFieldInfo();
+                    offsetFieldInfo.setField(field);
+                    offsetFieldInfo.setSourceField(clazz.getDeclaredField(offsetField.sourceField()));
+                    offsetFieldInfo.setOffsetField(offsetField);
+                    offsetFieldInfo.setRpn(StringUtil.parseArithmeticToRPN(offsetField.expr()));
+                    offsetFieldInfo.getField().setAccessible(true);
+                    offsetFieldInfo.getSourceField().setAccessible(true);
+                    Class fieldType= field.getType();
+                    int type;
+                    if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
+                        type = 1;
+                    } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
+                        type = 2;
+                    } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
+                        type = 3;
+                    } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
+                        type = 4;
+                    } else if (Float.class.isAssignableFrom(fieldType) || Float.TYPE.isAssignableFrom(fieldType)) {
+                        type = 4;
+                    } else if (Double.class.isAssignableFrom(fieldType) || Double.TYPE.isAssignableFrom(fieldType)) {
+                        type = 4;
+                    } else{
+                        throw BaseRuntimeException.getException("class["+className+"],field["+field.getName()+"],fieldType["+fieldType.getName()+"] not support");
+                    }
+                    offsetFieldInfo.setFieldType(type);
+                    return offsetFieldInfo;
+                } catch (NoSuchFieldException e) {
+                    throw BaseRuntimeException.getException(e);
+                }
+            }).collect(Collectors.toList());
+
             PacketInfo packetInfo=new PacketInfo();
             packetInfo.setFieldInfoList(fieldInfoList);
+            packetInfo.setOffsetFieldInfoList(offsetFieldInfoList);
             return packetInfo;
         });
     }
