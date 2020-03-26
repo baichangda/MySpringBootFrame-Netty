@@ -85,11 +85,7 @@ public abstract class Parser{
         fieldParserArr[8]=shortArrayFieldParser;
         fieldParserArr[9]=integerArrayFieldParser;
         fieldParserArr[10]=longArrayFieldParser;
-        fieldParserArr[11]=byteArrayFieldParser;
-        fieldParserArr[12]=shortArrayFieldParser;
-        fieldParserArr[13]=integerArrayFieldParser;
-        fieldParserArr[14]=longArrayFieldParser;
-        fieldParserArr[15]=byteBufFieldParser;
+        fieldParserArr[11]=byteBufFieldParser;
     }
 
     protected abstract void initHandler();
@@ -396,23 +392,9 @@ public abstract class Parser{
                             } else {
                                 throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Array Type[" + arrType.getName() + "] Not Support");
                             }
-                        } else if (List.class.isAssignableFrom(fieldType)) {
-                            //简单类型的集合
-                            Class listType = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                            if (Byte.class.isAssignableFrom(listType) || Byte.TYPE.isAssignableFrom(listType)) {
-                                type = 11;
-                            } else if (Short.class.isAssignableFrom(listType) || Short.TYPE.isAssignableFrom(listType)) {
-                                type = 12;
-                            } else if (Integer.class.isAssignableFrom(listType) || Integer.TYPE.isAssignableFrom(listType)) {
-                                type = 13;
-                            } else if (Long.class.isAssignableFrom(listType) || Long.TYPE.isAssignableFrom(listType)) {
-                                type = 14;
-                            } else {
-                                throw BaseRuntimeException.getException("Class[" + clazz.getClass().getName() + "] Field[" + field.getName() + "] List Type[" + listType.getName() + "] Not Support");
-                            }
                         } else if(ByteBuf.class.isAssignableFrom(fieldType)){
                             //ByteBuf类型
-                            type=15;
+                            type=11;
                         } else {
                             //实体类型
                             type = 100;

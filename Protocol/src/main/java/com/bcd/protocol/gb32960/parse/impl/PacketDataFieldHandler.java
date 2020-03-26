@@ -22,7 +22,7 @@ public class PacketDataFieldHandler implements FieldHandler<PacketData> {
 
     @Override
     public PacketData handle(ByteBuf data,Object instance,Object ... ext) {
-        Packet packet=(Packet)ext[0];
+        Packet packet=(Packet)instance;
         PacketData packetData=null;
         switch (packet.getFlag()){
             //车辆登入

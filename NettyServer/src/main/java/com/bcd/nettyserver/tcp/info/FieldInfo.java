@@ -23,12 +23,7 @@ public class FieldInfo {
      * 9、int[]/Integer[]
      * 10、long[]/Long[]
      *
-     * 11、List<Byte>
-     * 12、List<Short>
-     * 13、List<Integer>
-     * 14、List<Long>
-     *
-     * 15、ByteBuf
+     * 11、ByteBuf
      *
      * 100、实体类型,例如TestBean
      * 101、集合实体类型,例如List<TestBean>
