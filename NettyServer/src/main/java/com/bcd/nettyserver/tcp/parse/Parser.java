@@ -10,6 +10,7 @@ import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.impl.*;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -452,20 +453,7 @@ public abstract class Parser{
             }
             //头解析
             if(headPacketField!=null){
-                byte[] header=null;
-                String val=headPacketField.headValue();
-                Integer headerVal=Integer.parseInt(val,16);
-                ByteBuf byteBuf= Unpooled.buffer();
-                if(headerVal<Byte.MAX_VALUE&&headerVal>=Byte.MIN_VALUE){
-                    byteBuf.writeByte(headerVal);
-                }else if(headerVal<Short.MAX_VALUE&&headerVal>=Short.MIN_VALUE){
-                    byteBuf.writeShort(headerVal);
-                }else if(headerVal<Integer.MAX_VALUE&&headerVal>=Integer.MIN_VALUE){
-                    byteBuf.writeInt(headerVal);
-                }
-                while(byteBuf.isReadable()){
-                    header= ArrayUtils.add(header,byteBuf.readByte());
-                }
+                byte[] header=ByteBufUtil.decodeHexDump(headPacketField.headValue());
                 packetInfo.setHeader(header);
             }
             //长度解析
@@ -480,7 +468,7 @@ public abstract class Parser{
                     }
                 }
                 packetInfo.setLengthFieldStart(len);
-                packetInfo.setLengthFieldEnd(packetInfo.getLengthFieldStart()+contentLengthPacketField.len());
+                packetInfo.setLengthFieldLength(contentLengthPacketField.len());
             }
             packetInfo.setFieldInfoList(fieldInfoList);
             return packetInfo;

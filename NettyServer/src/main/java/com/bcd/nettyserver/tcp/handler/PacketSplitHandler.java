@@ -1,7 +1,7 @@
 package com.bcd.nettyserver.tcp.handler;
 
-import com.bcd.nettyserver.tcp.info.PacketInfo;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.DecoderException;
@@ -15,15 +15,17 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
     Logger logger= LoggerFactory.getLogger(PacketSplitHandler.class);
 
     private byte[] header;
+    //include
     private int lengthFieldStart;
+    //exclude
     private int lengthFieldEnd;
     private int lengthFieldLength;
 
-    public PacketSplitHandler(byte[] header,int lengthFieldStart,int lengthFieldEnd) {
+    public PacketSplitHandler(byte[] header,int lengthFieldStart,int lengthFieldLength) {
         this.header=header;
         this.lengthFieldStart=lengthFieldStart;
-        this.lengthFieldEnd=lengthFieldEnd;
-        this.lengthFieldLength=lengthFieldEnd-lengthFieldStart;
+        this.lengthFieldLength=lengthFieldLength;
+        this.lengthFieldEnd=lengthFieldStart+lengthFieldLength+1;
     }
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -34,7 +36,7 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
     }
 
     private boolean checkReadableLength(ByteBuf in){
-        return in.readableBytes()>=(lengthFieldEnd+1);
+        return in.readableBytes()>=lengthFieldEnd;
     }
 
     private Object decode(ChannelHandlerContext ctx, ByteBuf in) {
@@ -44,7 +46,7 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
         }
         //2、检测报文头
         byte[] temp=new byte[header.length];
-        int readIndex=header.length;
+        int readLen=header.length;
         in.getBytes(0,temp);
         while(true){
             //2.1、循环检测
@@ -59,22 +61,25 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
             if(checkRes){
                 break;
             }else{
-                if(readIndex<in.readableBytes()){
+                if(readLen<in.readableBytes()){
                     //2.3、检测不通过且有可读的字节,则把检测数组向前移动一位,最后一位填充读出来的新字节
                     for(int i=0;i<=temp.length-2;i++){
                         temp[i]=temp[i+1];
                     }
-                    temp[temp.length-1]=in.getByte(readIndex++);
+                    temp[temp.length-1]=in.getByte(readLen++);
                 }else{
-                    //2.4、此时说明此段报文中不包含头,不过有可能最后一部分包含部分头,此时保留头长度-1的报文,其他丢弃掉
-                    in.readBytes((readIndex+1)-header.length+1).discardReadBytes();
+                    //2.4、此时说明不包含完整头,不过有可能最后一部分包含部分头,此时保留头长度-1的报文,其他丢弃掉
+                    in.readBytes(readLen-header.length);
+                    in.discardReadBytes();
                     return null;
                 }
             }
         }
         //3、找到头则废弃之前的无用字节
-        in.readBytes(readIndex-header.length);
-        in.discardReadBytes();
+        if(readLen>header.length) {
+            in.readBytes(readLen - header.length);
+            in.discardReadBytes();
+        }
         //4、此时开始正式拆解报文
         //4.1、再次检测余下的长度是否满足解析需要
         if(!checkReadableLength(in)){
@@ -83,14 +88,16 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
         //4.2、读取长度字段
         long len=getUnadjustedFrameLength(in, lengthFieldStart, lengthFieldLength);
         //4.3、读取完整的报文
-        int readLength=(int)(lengthFieldEnd+len+1);
+        int readLength=(int)(lengthFieldEnd+len);
         if(readLength<=in.readableBytes()){
             ByteBuf res= in.readBytes(readLength);
             in.discardReadBytes();
+            //4.3.1检查异或
             boolean checkRes=checkXor(res);
             if(checkRes){
                 return res;
             }else{
+                logger.warn("xor error,[{}]", ByteBufUtil.hexDump(res));
                 return null;
             }
         }else{
@@ -111,8 +118,8 @@ public abstract class PacketSplitHandler extends ByteToMessageDecoder {
     }
 
     public static class Default extends PacketSplitHandler{
-        public Default(byte[] header, int lengthFieldStart, int lengthFieldEnd) {
-            super(header, lengthFieldStart, lengthFieldEnd);
+        public Default(byte[] header, int lengthFieldStart, int lengthFieldLength) {
+            super(header, lengthFieldStart, lengthFieldLength);
         }
 
         @Override

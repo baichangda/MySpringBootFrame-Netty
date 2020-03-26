@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@ConditionalOnProperty("netty.tcp")
 @Component("tcpStarter")
 public class Starter implements CommandLineRunner{
     Logger logger= LoggerFactory.getLogger(Starter.class);

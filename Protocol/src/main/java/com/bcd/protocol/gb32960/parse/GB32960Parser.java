@@ -1,10 +1,8 @@
 package com.bcd.protocol.gb32960.parse;
 
-import com.bcd.nettyserver.tcp.info.PacketInfo;
 import com.bcd.nettyserver.tcp.parse.Parser;
 import com.bcd.protocol.gb32960.data.Packet;
 import com.bcd.protocol.gb32960.data.PacketData;
-import com.bcd.protocol.gb32960.data.VehicleAlarmData;
 import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;

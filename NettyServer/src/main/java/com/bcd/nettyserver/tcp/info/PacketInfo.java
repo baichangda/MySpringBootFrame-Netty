@@ -6,7 +6,7 @@ import java.util.List;
 public class PacketInfo {
     private byte[] header;
     private Integer lengthFieldStart;
-    private Integer lengthFieldEnd;
+    private Integer lengthFieldLength;
     //解析的字段信息集合
     private List<FieldInfo> fieldInfoList;
 
@@ -29,12 +29,12 @@ public class PacketInfo {
         this.lengthFieldStart = lengthFieldStart;
     }
 
-    public Integer getLengthFieldEnd() {
-        return lengthFieldEnd;
+    public Integer getLengthFieldLength() {
+        return lengthFieldLength;
     }
 
-    public void setLengthFieldEnd(Integer lengthFieldEnd) {
-        this.lengthFieldEnd = lengthFieldEnd;
+    public void setLengthFieldLength(Integer lengthFieldLength) {
+        this.lengthFieldLength = lengthFieldLength;
     }
 
     public List<FieldInfo> getFieldInfoList() {

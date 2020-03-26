@@ -60,7 +60,7 @@ public class TcpServer_32960 extends TcpServer{
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
                             ch.pipeline().addLast(new ReadTimeoutHandler(60*10));
-                            ch.pipeline().addLast(new PacketSplitHandler.Default(packetInfo.getHeader(),packetInfo.getLengthFieldStart(),packetInfo.getLengthFieldEnd()));
+                            ch.pipeline().addLast(new PacketSplitHandler.Default(packetInfo.getHeader(),packetInfo.getLengthFieldStart(),packetInfo.getLengthFieldLength()));
                             ch.pipeline().addLast(packetParseHandler);
                             ch.pipeline().addLast(packetContentParseHandler);
                             ch.pipeline().addLast(businessHandler);
