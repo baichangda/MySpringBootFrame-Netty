@@ -6,7 +6,14 @@ import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 
 public interface FieldHandler<T> {
-    T handle(ByteBuf data, Object... ext);
+    /**
+     * 处理数据
+     * @param data 数据源
+     * @param instance 当前字段解析所属的对象
+     * @param ext 附加信息
+     * @return
+     */
+    T handle(ByteBuf data,Object instance, Object... ext);
 
     void setParser(Parser parser);
 

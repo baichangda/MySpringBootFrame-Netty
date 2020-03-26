@@ -21,7 +21,7 @@ public class PacketDataFieldHandler implements FieldHandler<PacketData> {
     }
 
     @Override
-    public PacketData handle(ByteBuf data,Object ... ext) {
+    public PacketData handle(ByteBuf data,Object instance,Object ... ext) {
         Packet packet=(Packet)ext[0];
         PacketData packetData=null;
         switch (packet.getFlag()){

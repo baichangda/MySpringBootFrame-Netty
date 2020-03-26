@@ -16,7 +16,7 @@ public class VehicleCommonDataFieldHandler implements FieldHandler<VehicleCommon
     Parser parser;
 
     @Override
-    public VehicleCommonData handle(ByteBuf data,Object ...ext) {
+    public VehicleCommonData handle(ByteBuf data,Object instance,Object ...ext) {
         return parseVehicleData(data);
     }
 
