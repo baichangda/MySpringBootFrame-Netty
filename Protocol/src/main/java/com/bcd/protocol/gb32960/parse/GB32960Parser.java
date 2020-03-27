@@ -31,7 +31,7 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
                 initHandlerByScanClass("com.bcd");
             }
         };
-//        context.withEnableOffsetField(true);
+        context.withEnableOffsetField(true);
         context.init();
         packetDataFieldParser.setContext(context);
         String data="232303FE4C534A4132343033304853313932393639010135" +
@@ -39,7 +39,7 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         System.out.println(data.length());
         long t1=System.currentTimeMillis();
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
-        for(int i=1;i<=3000000;i++) {
+        for(int i=1;i<=1000000;i++) {
             ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
             Packet packet = context.parse(Packet.class, byteBuf);
             PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getDataContent().readableBytes(), packet);

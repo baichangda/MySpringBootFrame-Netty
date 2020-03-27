@@ -25,6 +25,17 @@ public class OffsetFieldInfo {
      */
     int fieldType;
 
+    /**
+     * source字段类型
+     * 1、byte/Byte
+     * 2、short/Short
+     * 3、int/Integer
+     * 4、long/Long
+     * 5、float/Float
+     * 6、double/Double
+     */
+    int sourceFieldType;
+
     public Field getSourceField() {
         return sourceField;
     }
@@ -63,5 +74,19 @@ public class OffsetFieldInfo {
 
     public void setFieldType(int fieldType) {
         this.fieldType = fieldType;
+    }
+
+    public int getSourceFieldType() {
+        return sourceFieldType;
+    }
+
+    public void setSourceFieldType(int sourceFieldType) {
+        this.sourceFieldType = sourceFieldType;
+    }
+
+    public static void main(String[] args){
+        long l=0xffffffffL;
+        System.out.println(l&0xfffffff5);
+        System.out.println(0xfffffff5);
     }
 }
