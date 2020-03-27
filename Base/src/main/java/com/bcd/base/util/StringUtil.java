@@ -140,7 +140,7 @@ public class StringUtil {
      * @param map
      * @return
      */
-    public static Double calcArithmetic(String str,Map<String,Double> map){
+    public static Double calcArithmetic(String str,Map<String,Number> map){
         return calcRPN(parseArithmeticToRPN(str),map);
     }
 
@@ -150,7 +150,7 @@ public class StringUtil {
      * @param map 字段和值对应map
      * @return
      */
-    public static double calcRPN(List<String> list,Map<String,Double> map){
+    public static double calcRPN(List<String> list,Map<String,Number> map){
         int stackIndex=-1;
         double[] stack=new double[list.size()];
         for (int i=0,end=list.size();i<end;i++) {
@@ -185,11 +185,11 @@ public class StringUtil {
                     if(NUMBER_PATTERN.matcher(s).matches()){
                         stack[++stackIndex]=Double.parseDouble(s);
                     }else{
-                        Double val=map.get(s);
+                        Number val=map.get(s);
                         if(val==null){
                             throw BaseRuntimeException.getException("map val["+s+"] not exists");
                         }
-                        stack[++stackIndex]=val;
+                        stack[++stackIndex]=val.doubleValue();
                     }
                     break;
                 }

@@ -29,7 +29,7 @@ public abstract class TcpServer implements Runnable{
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
         String eval="a+b*((c-3*f+b*c)+d/2)";
         List<String> rpn= StringUtil.parseArithmeticToRPN(eval);
-        Map<String,Double> map=new HashMap<>();
+        Map<String,Number> map=new HashMap<>();
         map.put("a",1d);
         map.put("b",2d);
         map.put("c",-5d);

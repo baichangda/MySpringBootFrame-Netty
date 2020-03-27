@@ -157,7 +157,7 @@ public abstract class ParserContext {
                 StringBuilder sb=new StringBuilder();
                 Class clazz= t.getClass();
                 //解析包
-                Map<String,Double> valMap=new HashMap<>();
+                Map<String,Number> valMap=new HashMap<>();
                 PacketInfo packetInfo=toPacketInfo(clazz);
                 List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
                 for (int i=0,end=fieldInfoList.size();i<end;i++) {
@@ -227,7 +227,7 @@ public abstract class ParserContext {
                                  * 说明是变量
                                  */
                                 if(fieldInfo.isVar()){
-                                    valMap.put(packetField.var(),((Number)data).doubleValue());
+                                    valMap.put(packetField.var(),(Number)data);
                                 }
 
                             }
@@ -258,7 +258,7 @@ public abstract class ParserContext {
             T instance= clazz.newInstance();
             //进行解析
             List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
-            Map<String,Double> valMap=new HashMap<>();
+            Map<String,Number> valMap=new HashMap<>();
             for (int i=0,end=fieldInfoList.size();i<end;i++) {
                 FieldInfo fieldInfo=fieldInfoList.get(i);
                 int type=fieldInfo.getType();
@@ -324,7 +324,7 @@ public abstract class ParserContext {
                              * 说明是变量
                              */
                             if(fieldInfo.isVar()){
-                                valMap.put(packetField.var(),((Number)val).doubleValue());
+                                valMap.put(packetField.var(),(Number)val);
                             }
 
                         }
@@ -337,7 +337,7 @@ public abstract class ParserContext {
                 //偏移量值计算
                 List<OffsetFieldInfo> offsetFieldInfoList = packetInfo.getOffsetFieldInfoList();
                 if (offsetFieldInfoList != null && !offsetFieldInfoList.isEmpty()) {
-                    Map<String, Double> map = new HashMap<>();
+                    Map<String, Number> map = new HashMap<>();
                     //define temp var
                     Object sourceVal;
                     double destVal;
@@ -345,7 +345,7 @@ public abstract class ParserContext {
                     for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
                         fieldType=offsetFieldInfo.getFieldType();
                         sourceVal = offsetFieldInfo.getSourceField().get(instance);
-                        map.put("x", ((Number) sourceVal).doubleValue());
+                        map.put("x", ((Number) sourceVal));
                         destVal = StringUtil.calcRPN(offsetFieldInfo.getRpn(), map);
                         switch (fieldType) {
                             case 1: {
