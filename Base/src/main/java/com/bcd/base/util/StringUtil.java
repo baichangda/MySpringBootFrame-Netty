@@ -150,10 +150,11 @@ public class StringUtil {
      * @param map 字段和值对应map
      * @return
      */
-    public static Double calcRPN(List<String> list,Map<String,Double> map){
+    public static double calcRPN(List<String> list,Map<String,Double> map){
         int stackIndex=-1;
         double[] stack=new double[list.size()];
-        for (String s : list) {
+        for (int i=0,end=list.size();i<end;i++) {
+            String s=list.get(i);
             switch (s){
                 case "+":{
                     double num2=stack[stackIndex--];

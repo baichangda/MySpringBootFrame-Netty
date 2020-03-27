@@ -28,6 +28,10 @@ import java.util.stream.Collectors;
 public abstract class ParserContext {
     public final static Map<String,PacketInfo> PACKET_INFO_CACHE=new ConcurrentHashMap<>();
 
+    /**
+     * 启用偏移字段值处理
+     */
+    protected boolean enableOffsetField=false;
 
     protected FieldParser<Byte> byteFieldParser;
     protected FieldParser<byte[]> byteArrayFieldParser;
@@ -49,7 +53,7 @@ public abstract class ParserContext {
     /**
      * {@link PacketField#parserClass()} 对应的处理类
      */
-    protected Map<Class,FieldParser> classToHandler =new HashMap<>();
+    protected Map<Class,FieldParser> classToParser =new HashMap<>();
 
     public ParserContext() {
     }
@@ -114,7 +118,7 @@ public abstract class ParserContext {
 
     protected void afterInit(){
         //为handler设置parser
-        classToHandler.values().forEach(e->{
+        classToParser.values().forEach(e->{
             e.setContext(this);
         });
     }
@@ -126,7 +130,7 @@ public abstract class ParserContext {
     protected void initHandlerBySpring(){
         SpringUtil.applicationContext.getBeansOfType(FieldParser.class).values().forEach(e->{
             Class clazz= ProxyUtil.getSource(e).getClass();
-            classToHandler.put(clazz,e);
+            classToParser.put(clazz,e);
         });
     }
 
@@ -138,51 +142,11 @@ public abstract class ParserContext {
     protected void initHandlerByScanClass(String packageName){
         try {
             for (Class e : ClassUtil.getClassesByParentClass(FieldParser.class, packageName)) {
-                classToHandler.put(e,(FieldParser) e.newInstance());
+                classToParser.put(e,(FieldParser) e.newInstance());
             }
         } catch (IOException | ClassNotFoundException |IllegalAccessException |InstantiationException e) {
             throw BaseRuntimeException.getException(e);
         }
-    }
-
-    public FieldParser<Byte> getByteFieldParser() {
-        return byteFieldParser;
-    }
-
-    public FieldParser<byte[]> getByteArrayFieldParser() {
-        return byteArrayFieldParser;
-    }
-
-    public FieldParser<Short> getShortFieldParser() {
-        return shortFieldParser;
-    }
-
-    public FieldParser<short[]> getShortArrayFieldParser() {
-        return shortArrayFieldParser;
-    }
-
-    public FieldParser<Integer> getIntegerFieldParser() {
-        return integerFieldParser;
-    }
-
-    public FieldParser<int[]> getIntegerArrayFieldParser() {
-        return integerArrayFieldParser;
-    }
-
-    public FieldParser<Long> getLongFieldParser() {
-        return longFieldParser;
-    }
-
-    public FieldParser<long[]> getLongArrayFieldParser() {
-        return longArrayFieldParser;
-    }
-
-    public FieldParser<String> getStringFieldParser() {
-        return stringFieldParser;
-    }
-
-    public FieldParser<Date> getDateFieldParser() {
-        return dateFieldParser;
     }
 
     public <T>String toHex(T t){
@@ -196,10 +160,8 @@ public abstract class ParserContext {
                 Map<String,Double> valMap=new HashMap<>();
                 PacketInfo packetInfo=toPacketInfo(clazz);
                 List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
-                for(int i=0;i<=fieldInfoList.size()-1;i++){
-                    StringBuilder val=new StringBuilder();
-                    FieldInfo fieldInfo= fieldInfoList.get(i);
-                    Object data=fieldInfo.getField().get(t);
+                for (int i=0,end=fieldInfoList.size();i<end;i++) {
+                    FieldInfo fieldInfo=fieldInfoList.get(i);
                     int type=fieldInfo.getType();
                     PacketField packetField= fieldInfo.getPacketField();
                     /**
@@ -207,13 +169,18 @@ public abstract class ParserContext {
                      * rpns[1] 代表 {@link PacketField#listLenExpr()}
                      */
                     List<String>[] rpns= fieldInfo.getRpns();
+                    Object data;
+
+                    StringBuilder val=new StringBuilder();
+                    data=fieldInfo.getField().get(t);
+
                     if(type==0){
                         /**
                          * {@link PacketField#parserClass()} 不为空
                          * 特殊处理
                          */
                         Class handleClass=fieldInfo.getClazz();
-                        FieldParser fieldParser= classToHandler.get(handleClass);
+                        FieldParser fieldParser= classToParser.get(handleClass);
                         if(fieldParser==null){
                             throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
                         }
@@ -224,7 +191,7 @@ public abstract class ParserContext {
                         if(rpns[0]==null){
                             len=packetField.len();
                         }else{
-                            len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                            len=(int)StringUtil.calcRPN(rpns[0],valMap);
                         }
                         val.append(fieldParser.toHex(data,len));
                     }else{
@@ -233,7 +200,7 @@ public abstract class ParserContext {
                              * 如果{@link PacketField#listLenExpr()} ()} 不为空
                              * 处理List<Bean>类型字段
                              */
-                            int listLen = StringUtil.calcRPN(rpns[1],valMap).intValue();
+                            int listLen = (int)StringUtil.calcRPN(rpns[1],valMap);
                             List list = (List)data;
                             for (int j = 0; j <= listLen-1; j++) {
                                 val.append(toHex(list.get(j)));
@@ -252,7 +219,7 @@ public abstract class ParserContext {
                                 if(rpns[0]==null){
                                     len=packetField.len();
                                 }else{
-                                    len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                                    len=(int)StringUtil.calcRPN(rpns[0],valMap);
                                 }
                                 val.append(fieldParserArr[type].toHex(data,len,packetField.singleLen()));
                                 /**
@@ -292,9 +259,8 @@ public abstract class ParserContext {
             //进行解析
             List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
             Map<String,Double> valMap=new HashMap<>();
-            for(int i=0;i<=fieldInfoList.size()-1;i++){
-                FieldInfo fieldInfo= fieldInfoList.get(i);
-                Object val;
+            for (int i=0,end=fieldInfoList.size();i<end;i++) {
+                FieldInfo fieldInfo=fieldInfoList.get(i);
                 int type=fieldInfo.getType();
                 PacketField packetField= fieldInfo.getPacketField();
                 /**
@@ -302,13 +268,14 @@ public abstract class ParserContext {
                  * rpns[1] 代表 {@link PacketField#listLenExpr()}
                  */
                 List<String>[] rpns= fieldInfo.getRpns();
+                Object val;
                 if(type==0){
                     /**
                      * {@link PacketField#parserClass()} 不为空
                      * 特殊处理
                      */
                     Class parserClass=fieldInfo.getClazz();
-                    FieldParser fieldParser= classToHandler.get(parserClass);
+                    FieldParser fieldParser= classToParser.get(parserClass);
                     if(fieldParser==null){
                         throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
                     }
@@ -319,7 +286,7 @@ public abstract class ParserContext {
                     if(rpns[0]==null){
                         len=packetField.len();
                     }else{
-                        len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                        len=(int)StringUtil.calcRPN(rpns[0],valMap);
                     }
                     val=fieldParser.parse(data,len,instance);
                 }else{
@@ -328,7 +295,7 @@ public abstract class ParserContext {
                          * 如果{@link PacketField#listLenExpr()} ()} 不为空
                          * 处理List<Bean>类型字段
                          */
-                        int listLen = StringUtil.calcRPN(rpns[1],valMap).intValue();
+                        int listLen = (int)StringUtil.calcRPN(rpns[1],valMap);
                         List list = new ArrayList(listLen);
                         for (int j = 1; j <= listLen; j++) {
                             list.add(parse(fieldInfo.getClazz(), data));
@@ -348,7 +315,7 @@ public abstract class ParserContext {
                             if(rpns[0]==null){
                                 len=packetField.len();
                             }else{
-                                len=StringUtil.calcRPN(rpns[0],valMap).intValue();
+                                len=(int)StringUtil.calcRPN(rpns[0],valMap);
                             }
                             val=fieldParserArr[type].parse(data,len,instance,packetField.singleLen());
 
@@ -366,38 +333,45 @@ public abstract class ParserContext {
                 fieldInfo.getField().set(instance,val);
             }
 
-            //偏移量值计算
-            List<OffsetFieldInfo> offsetFieldInfoList= packetInfo.getOffsetFieldInfoList();
-            if(offsetFieldInfoList!=null&&!offsetFieldInfoList.isEmpty()) {
-                Map<String, Double> map = new HashMap<>();
-                for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
-                    Object sourceVal = offsetFieldInfo.getSourceField().get(instance);
-                    map.put("x", ((Number) sourceVal).doubleValue());
-                    Double val = StringUtil.calcRPN(offsetFieldInfo.getRpn(), map);
-                    switch (offsetFieldInfo.getFieldType()){
-                        case 1:{
-                            offsetFieldInfo.getField().set(instance, val.byteValue());
-                            break;
-                        }
-                        case 2:{
-                            offsetFieldInfo.getField().set(instance, val.shortValue());
-                            break;
-                        }
-                        case 3:{
-                            offsetFieldInfo.getField().set(instance, val.intValue());
-                            break;
-                        }
-                        case 4:{
-                            offsetFieldInfo.getField().set(instance, val.longValue());
-                            break;
-                        }
-                        case 5:{
-                            offsetFieldInfo.getField().set(instance, val.floatValue());
-                            break;
-                        }
-                        case 6:{
-                            offsetFieldInfo.getField().set(instance, val);
-                            break;
+            if(enableOffsetField) {
+                //偏移量值计算
+                List<OffsetFieldInfo> offsetFieldInfoList = packetInfo.getOffsetFieldInfoList();
+                if (offsetFieldInfoList != null && !offsetFieldInfoList.isEmpty()) {
+                    Map<String, Double> map = new HashMap<>();
+                    //define temp var
+                    Object sourceVal;
+                    double destVal;
+                    int fieldType;
+                    for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
+                        fieldType=offsetFieldInfo.getFieldType();
+                        sourceVal = offsetFieldInfo.getSourceField().get(instance);
+                        map.put("x", ((Number) sourceVal).doubleValue());
+                        destVal = StringUtil.calcRPN(offsetFieldInfo.getRpn(), map);
+                        switch (fieldType) {
+                            case 1: {
+                                offsetFieldInfo.getField().set(instance, (byte)destVal);
+                                break;
+                            }
+                            case 2: {
+                                offsetFieldInfo.getField().set(instance, (short)destVal);
+                                break;
+                            }
+                            case 3: {
+                                offsetFieldInfo.getField().set(instance, (int)destVal);
+                                break;
+                            }
+                            case 4: {
+                                offsetFieldInfo.getField().set(instance, (long)destVal);
+                                break;
+                            }
+                            case 5: {
+                                offsetFieldInfo.getField().set(instance, (float)destVal);
+                                break;
+                            }
+                            case 6: {
+                                offsetFieldInfo.getField().set(instance, destVal);
+                                break;
+                            }
                         }
                     }
                 }
@@ -417,6 +391,7 @@ public abstract class ParserContext {
      */
     public PacketInfo toPacketInfo(Class clazz){
         return PACKET_INFO_CACHE.computeIfAbsent(clazz.getName(),(className)->{
+            PacketInfo packetInfo=new PacketInfo();
             List<Field> allFieldList= FieldUtils.getAllFieldsList(clazz);
             /**
              * 1、过滤所有带{@link PacketField}的字段
@@ -512,45 +487,45 @@ public abstract class ParserContext {
                 fieldInfo.setRpns(rpns);
                 return fieldInfo;
             }).collect(Collectors.toList());
-
-            //解析offsetField注解字段
-            List<OffsetFieldInfo> offsetFieldInfoList= allFieldList.stream().filter(field->field.getAnnotation(OffsetField.class)!=null).map(field->{
-                try {
-                    OffsetField offsetField= field.getAnnotation(OffsetField.class);
-                    OffsetFieldInfo offsetFieldInfo=new OffsetFieldInfo();
-                    offsetFieldInfo.setField(field);
-                    offsetFieldInfo.setSourceField(clazz.getDeclaredField(offsetField.sourceField()));
-                    offsetFieldInfo.setOffsetField(offsetField);
-                    offsetFieldInfo.setRpn(StringUtil.parseArithmeticToRPN(offsetField.expr()));
-                    offsetFieldInfo.getField().setAccessible(true);
-                    offsetFieldInfo.getSourceField().setAccessible(true);
-                    Class fieldType= field.getType();
-                    int type;
-                    if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
-                        type = 1;
-                    } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
-                        type = 2;
-                    } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
-                        type = 3;
-                    } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
-                    } else if (Float.class.isAssignableFrom(fieldType) || Float.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
-                    } else if (Double.class.isAssignableFrom(fieldType) || Double.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
-                    } else{
-                        throw BaseRuntimeException.getException("class["+className+"],field["+field.getName()+"],fieldType["+fieldType.getName()+"] not support");
-                    }
-                    offsetFieldInfo.setFieldType(type);
-                    return offsetFieldInfo;
-                } catch (NoSuchFieldException e) {
-                    throw BaseRuntimeException.getException(e);
-                }
-            }).collect(Collectors.toList());
-
-            PacketInfo packetInfo=new PacketInfo();
             packetInfo.setFieldInfoList(fieldInfoList);
-            packetInfo.setOffsetFieldInfoList(offsetFieldInfoList);
+
+            if(enableOffsetField) {
+                //解析offsetField注解字段
+                List<OffsetFieldInfo> offsetFieldInfoList = allFieldList.stream().filter(field -> field.getAnnotation(OffsetField.class) != null).map(field -> {
+                    try {
+                        OffsetField offsetField = field.getAnnotation(OffsetField.class);
+                        OffsetFieldInfo offsetFieldInfo = new OffsetFieldInfo();
+                        offsetFieldInfo.setField(field);
+                        offsetFieldInfo.setSourceField(clazz.getDeclaredField(offsetField.sourceField()));
+                        offsetFieldInfo.setOffsetField(offsetField);
+                        offsetFieldInfo.setRpn(StringUtil.parseArithmeticToRPN(offsetField.expr()));
+                        offsetFieldInfo.getField().setAccessible(true);
+                        offsetFieldInfo.getSourceField().setAccessible(true);
+                        Class fieldType = field.getType();
+                        int type;
+                        if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
+                            type = 1;
+                        } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
+                            type = 2;
+                        } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
+                            type = 3;
+                        } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
+                            type = 4;
+                        } else if (Float.class.isAssignableFrom(fieldType) || Float.TYPE.isAssignableFrom(fieldType)) {
+                            type = 4;
+                        } else if (Double.class.isAssignableFrom(fieldType) || Double.TYPE.isAssignableFrom(fieldType)) {
+                            type = 4;
+                        } else {
+                            throw BaseRuntimeException.getException("class[" + className + "],field[" + field.getName() + "],fieldType[" + fieldType.getName() + "] not support");
+                        }
+                        offsetFieldInfo.setFieldType(type);
+                        return offsetFieldInfo;
+                    } catch (NoSuchFieldException e) {
+                        throw BaseRuntimeException.getException(e);
+                    }
+                }).collect(Collectors.toList());
+                packetInfo.setOffsetFieldInfoList(offsetFieldInfoList);
+            }
             return packetInfo;
         });
     }
@@ -605,6 +580,64 @@ public abstract class ParserContext {
         return this;
     }
 
+    public ParserContext withEnableOffsetField(boolean enableOffsetField){
+        this.enableOffsetField=enableOffsetField;
+        return this;
+    }
 
+    public boolean isEnableOffsetField() {
+        return enableOffsetField;
+    }
 
+    public FieldParser<Byte> getByteFieldParser() {
+        return byteFieldParser;
+    }
+
+    public FieldParser<byte[]> getByteArrayFieldParser() {
+        return byteArrayFieldParser;
+    }
+
+    public FieldParser<Short> getShortFieldParser() {
+        return shortFieldParser;
+    }
+
+    public FieldParser<short[]> getShortArrayFieldParser() {
+        return shortArrayFieldParser;
+    }
+
+    public FieldParser<Integer> getIntegerFieldParser() {
+        return integerFieldParser;
+    }
+
+    public FieldParser<int[]> getIntegerArrayFieldParser() {
+        return integerArrayFieldParser;
+    }
+
+    public FieldParser<Long> getLongFieldParser() {
+        return longFieldParser;
+    }
+
+    public FieldParser<long[]> getLongArrayFieldParser() {
+        return longArrayFieldParser;
+    }
+
+    public FieldParser<String> getStringFieldParser() {
+        return stringFieldParser;
+    }
+
+    public FieldParser<Date> getDateFieldParser() {
+        return dateFieldParser;
+    }
+
+    public FieldParser<ByteBuf> getByteBufFieldParser() {
+        return byteBufFieldParser;
+    }
+
+    public FieldParser[] getFieldParserArr() {
+        return fieldParserArr;
+    }
+
+    public Map<Class, FieldParser> getClassToParser() {
+        return classToParser;
+    }
 }
