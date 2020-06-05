@@ -153,44 +153,49 @@ public class StringUtil {
     public static double calcRPN(List<String> list,Map<String,Number> map){
         int stackIndex=-1;
         double[] stack=new double[list.size()];
-        for (int i=0,end=list.size();i<end;i++) {
-            String s=list.get(i);
-            switch (s){
-                case "+":{
-                    double num2=stack[stackIndex--];
-                    double num1=stack[stackIndex--];
-                    stack[++stackIndex]=num1+num2;
+        for (String s : list) {
+            switch (s) {
+                case "+": {
+                    double num2 = stack[stackIndex--];
+                    double num1 = stack[stackIndex--];
+                    stack[++stackIndex] = num1 + num2;
                     break;
                 }
-                case "-":{
-                    double num2=stack[stackIndex--];
-                    double num1=stack[stackIndex--];
-                    stack[++stackIndex]=num1-num2;
+                case "-": {
+                    double num2 = stack[stackIndex--];
+                    double num1 = stack[stackIndex--];
+                    stack[++stackIndex] = num1 - num2;
                     break;
                 }
-                case "*":{
-                    double num2=stack[stackIndex--];
-                    double num1=stack[stackIndex--];
-                    stack[++stackIndex]=num1*num2;
+                case "*": {
+                    double num2 = stack[stackIndex--];
+                    double num1 = stack[stackIndex--];
+                    stack[++stackIndex] = num1 * num2;
                     break;
                 }
-                case "/":{
-                    double num2=stack[stackIndex--];
-                    double num1=stack[stackIndex--];
-                    stack[++stackIndex]=num1/num2;
+                case "/": {
+                    double num2 = stack[stackIndex--];
+                    double num1 = stack[stackIndex--];
+                    stack[++stackIndex] = num1 / num2;
                     break;
                 }
-                default:{
-                    //如果是数字
-                    if(NUMBER_PATTERN.matcher(s).matches()){
-                        stack[++stackIndex]=Double.parseDouble(s);
+                default: {
+                    Number val = map.get(s);
+                    if(val==null){
+                        stack[++stackIndex] = Double.parseDouble(s);
                     }else{
-                        Number val=map.get(s);
-                        if(val==null){
-                            throw BaseRuntimeException.getException("map val["+s+"] not exists");
-                        }
-                        stack[++stackIndex]=val.doubleValue();
+                        stack[++stackIndex] = val.doubleValue();
                     }
+                    //如果是数字
+//                    if (NUMBER_PATTERN.matcher(s).matches()) {
+//                        stack[++stackIndex] = Double.parseDouble(s);
+//                    } else {
+//                        Number val = map.get(s);
+//                        if (val == null) {
+//                            throw BaseRuntimeException.getException("map val[" + s + "] not exists");
+//                        }
+//                        stack[++stackIndex] = val.doubleValue();
+//                    }
                     break;
                 }
             }

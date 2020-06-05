@@ -163,7 +163,6 @@ public abstract class ParserContext {
                 for (int i=0,end=fieldInfoList.size();i<end;i++) {
                     FieldInfo fieldInfo=fieldInfoList.get(i);
                     int type=fieldInfo.getType();
-                    PacketField packetField= fieldInfo.getPacketField();
                     /**
                      * rpns[0] 代表 {@link PacketField#lenExpr()}
                      * rpns[1] 代表 {@link PacketField#listLenExpr()}
@@ -189,7 +188,7 @@ public abstract class ParserContext {
                          * 如果{@link PacketField#lenExpr()} 为空
                          */
                         if(rpns[0]==null){
-                            len=packetField.len();
+                            len=fieldInfo.getPacketField_len();
                         }else{
                             len=(int)StringUtil.calcRPN(rpns[0],valMap);
                         }
@@ -217,17 +216,17 @@ public abstract class ParserContext {
                                  * 如果{@link PacketField#lenExpr()} 为空
                                  */
                                 if(rpns[0]==null){
-                                    len=packetField.len();
+                                    len=fieldInfo.getPacketField_len();
                                 }else{
                                     len=(int)StringUtil.calcRPN(rpns[0],valMap);
                                 }
-                                val.append(fieldParserArr[type].toHex(data,len,packetField.singleLen()));
+                                val.append(fieldParserArr[type].toHex(data,len,fieldInfo.getPacketField_singleLen()));
                                 /**
                                  * 如果 {@link PacketField#var()} 不为空
                                  * 说明是变量
                                  */
                                 if(fieldInfo.isVar()){
-                                    valMap.put(packetField.var(),(Number)data);
+                                    valMap.put(fieldInfo.getPacketField_var(),(Number)data);
                                 }
 
                             }
@@ -262,7 +261,6 @@ public abstract class ParserContext {
             for (int i=0,end=fieldInfoList.size();i<end;i++) {
                 FieldInfo fieldInfo=fieldInfoList.get(i);
                 int type=fieldInfo.getType();
-                PacketField packetField= fieldInfo.getPacketField();
                 /**
                  * rpns[0] 代表 {@link PacketField#lenExpr()}
                  * rpns[1] 代表 {@link PacketField#listLenExpr()}
@@ -284,7 +282,7 @@ public abstract class ParserContext {
                      * 如果{@link PacketField#lenExpr()} 为空
                      */
                     if(rpns[0]==null){
-                        len=packetField.len();
+                        len=fieldInfo.getPacketField_len();
                     }else{
                         len=(int)StringUtil.calcRPN(rpns[0],valMap);
                     }
@@ -313,18 +311,18 @@ public abstract class ParserContext {
                              * 如果{@link PacketField#lenExpr()} 为空
                              */
                             if(rpns[0]==null){
-                                len=packetField.len();
+                                len=fieldInfo.getPacketField_len();
                             }else{
                                 len=(int)StringUtil.calcRPN(rpns[0],valMap);
                             }
-                            val=fieldParserArr[type].parse(data,len,instance,packetField.singleLen());
+                            val=fieldParserArr[type].parse(data,len,instance,fieldInfo.getPacketField_singleLen());
 
                             /**
                              * 如果 {@link PacketField#var()} 不为空
                              * 说明是变量
                              */
                             if(fieldInfo.isVar()){
-                                valMap.put(packetField.var(),(Number)val);
+                                valMap.put(fieldInfo.getPacketField_var(),(Number)val);
                             }
 
                         }
@@ -483,8 +481,14 @@ public abstract class ParserContext {
                 fieldInfo.setType(type);
                 fieldInfo.setVar(isVar);
                 fieldInfo.setClazz(typeClazz);
-                fieldInfo.setPacketField(packetField);
                 fieldInfo.setRpns(rpns);
+                fieldInfo.setPacketField_index(packetField.index());
+                fieldInfo.setPacketField_len(packetField.len());
+                fieldInfo.setPacketField_lenExpr(packetField.lenExpr());
+                fieldInfo.setPacketField_listLenExpr(packetField.listLenExpr());
+                fieldInfo.setPacketField_singleLen(packetField.singleLen());
+                fieldInfo.setPacketField_var(packetField.var());
+                fieldInfo.setPacketField_parserClass(packetField.parserClass());
                 return fieldInfo;
             }).collect(Collectors.toList());
             packetInfo.setFieldInfoList(fieldInfoList);

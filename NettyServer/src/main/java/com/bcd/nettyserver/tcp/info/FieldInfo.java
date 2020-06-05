@@ -8,7 +8,16 @@ import java.util.List;
 public class FieldInfo {
     public Field field;
 
-    public PacketField packetField;
+    /**
+     * #{@link PacketField} 属性
+     */
+    public int packetField_index;
+    public int packetField_len;
+    public String packetField_var;
+    public String packetField_lenExpr;
+    public String packetField_listLenExpr;
+    public int packetField_singleLen;
+    public Class packetField_parserClass;
 
     /**
      * 1、byte/Byte
@@ -81,14 +90,6 @@ public class FieldInfo {
         this.clazz = clazz;
     }
 
-    public PacketField getPacketField() {
-        return packetField;
-    }
-
-    public void setPacketField(PacketField packetField) {
-        this.packetField = packetField;
-    }
-
     public List<String>[] getRpns() {
         return rpns;
     }
@@ -103,5 +104,61 @@ public class FieldInfo {
 
     public void setVar(boolean var) {
         isVar = var;
+    }
+
+    public int getPacketField_index() {
+        return packetField_index;
+    }
+
+    public int getPacketField_len() {
+        return packetField_len;
+    }
+
+    public String getPacketField_var() {
+        return packetField_var;
+    }
+
+    public String getPacketField_lenExpr() {
+        return packetField_lenExpr;
+    }
+
+    public String getPacketField_listLenExpr() {
+        return packetField_listLenExpr;
+    }
+
+    public int getPacketField_singleLen() {
+        return packetField_singleLen;
+    }
+
+    public Class getPacketField_parserClass() {
+        return packetField_parserClass;
+    }
+
+    public void setPacketField_index(int packetField_index) {
+        this.packetField_index = packetField_index;
+    }
+
+    public void setPacketField_len(int packetField_len) {
+        this.packetField_len = packetField_len;
+    }
+
+    public void setPacketField_var(String packetField_var) {
+        this.packetField_var = packetField_var;
+    }
+
+    public void setPacketField_lenExpr(String packetField_lenExpr) {
+        this.packetField_lenExpr = packetField_lenExpr;
+    }
+
+    public void setPacketField_listLenExpr(String packetField_listLenExpr) {
+        this.packetField_listLenExpr = packetField_listLenExpr;
+    }
+
+    public void setPacketField_singleLen(int packetField_singleLen) {
+        this.packetField_singleLen = packetField_singleLen;
+    }
+
+    public void setPacketField_parserClass(Class packetField_parserClass) {
+        this.packetField_parserClass = packetField_parserClass;
     }
 }

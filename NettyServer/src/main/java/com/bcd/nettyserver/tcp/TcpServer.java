@@ -10,19 +10,13 @@ import java.util.Map;
 
 public abstract class TcpServer implements Runnable{
     protected int port;
-    protected ParserContext parser;
 
-    public TcpServer(int port, ParserContext parser) {
+    public TcpServer(int port) {
         this.port = port;
-        this.parser=parser;
     }
 
     public int getPort() {
         return port;
-    }
-
-    public ParserContext getParser() {
-        return parser;
     }
 
     public static void main(String[] args) throws ScriptException {

@@ -42,11 +42,8 @@ public class TcpServer_32960 extends TcpServer{
     @Autowired
     BusinessHandler businessHandler;
 
-    PacketInfo packetInfo;
-
-    public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port,@Qualifier("parser_32960") ParserContext parser){
-        super(port,parser);
-        packetInfo=parser.toPacketInfo(Packet.class);
+    public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port){
+        super(port);
     }
 
     public void run(){
