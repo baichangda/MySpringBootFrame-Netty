@@ -10,7 +10,11 @@ public class OffsetFieldInfo {
 
     Field sourceField;
 
-    OffsetField offsetField;
+    /**
+     * #{@link OffsetField} 属性
+     */
+    String offsetField_sourceField;
+    String offsetField_expr;
 
     List<String> rpn;
 
@@ -24,17 +28,6 @@ public class OffsetFieldInfo {
      * 6、double/Double
      */
     int fieldType;
-
-    /**
-     * source字段类型
-     * 1、byte/Byte
-     * 2、short/Short
-     * 3、int/Integer
-     * 4、long/Long
-     * 5、float/Float
-     * 6、double/Double
-     */
-    int sourceFieldType;
 
     public Field getSourceField() {
         return sourceField;
@@ -52,12 +45,20 @@ public class OffsetFieldInfo {
         this.field = field;
     }
 
-    public OffsetField getOffsetField() {
-        return offsetField;
+    public String getOffsetField_sourceField() {
+        return offsetField_sourceField;
     }
 
-    public void setOffsetField(OffsetField offsetField) {
-        this.offsetField = offsetField;
+    public void setOffsetField_sourceField(String offsetField_sourceField) {
+        this.offsetField_sourceField = offsetField_sourceField;
+    }
+
+    public String getOffsetField_expr() {
+        return offsetField_expr;
+    }
+
+    public void setOffsetField_expr(String offsetField_expr) {
+        this.offsetField_expr = offsetField_expr;
     }
 
     public List<String> getRpn() {
@@ -74,14 +75,6 @@ public class OffsetFieldInfo {
 
     public void setFieldType(int fieldType) {
         this.fieldType = fieldType;
-    }
-
-    public int getSourceFieldType() {
-        return sourceFieldType;
-    }
-
-    public void setSourceFieldType(int sourceFieldType) {
-        this.sourceFieldType = sourceFieldType;
     }
 
     public static void main(String[] args){

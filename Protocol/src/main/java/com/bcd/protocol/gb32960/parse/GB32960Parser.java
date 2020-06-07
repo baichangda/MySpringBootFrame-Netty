@@ -40,14 +40,14 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         long t1=System.currentTimeMillis();
-        for(int i=1;i<=1000000;i++) {
+//        for(int i=1;i<=1000000;i++) {
             ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
             Packet packet=context.parse(Packet.class, byteBuf);
             PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getDataContent().readableBytes(), packet);
-//            String hex=context.toHex(packetData);
-//            System.out.println(hex);
-//            System.out.println(data.contains(hex.toUpperCase()));
-        }
+            String hex=context.toHex(packetData);
+            System.out.println(data.toUpperCase());
+            System.out.println(hex.toUpperCase());
+//        }
         long t2=System.currentTimeMillis();
         System.out.println(t2-t1);
 
