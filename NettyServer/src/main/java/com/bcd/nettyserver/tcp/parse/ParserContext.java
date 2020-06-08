@@ -325,7 +325,7 @@ public abstract class ParserContext {
                         }
                         List list = new ArrayList(listLen);
                         for (int j = 1; j <= listLen; j++) {
-                            list.add(parse(fieldInfo.getClazz(), data));
+                            list.add(parse(fieldInfo.getClazz(), data,allLen));
                         }
                         val = list;
                     }else{
@@ -333,7 +333,7 @@ public abstract class ParserContext {
                             /**
                              * 处理Bean 类型数据
                              */
-                            val = parse(fieldInfo.getClazz(), data);
+                            val = parse(fieldInfo.getClazz(), data,allLen);
                         }else{
                             int len;
                             /**

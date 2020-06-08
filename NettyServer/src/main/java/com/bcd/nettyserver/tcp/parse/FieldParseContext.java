@@ -1,7 +1,9 @@
 package com.bcd.nettyserver.tcp.parse;
 
+import com.bcd.nettyserver.tcp.anno.PacketField;
 import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
+import io.netty.buffer.ByteBuf;
 
 public class FieldParseContext {
     /**
@@ -18,8 +20,11 @@ public class FieldParseContext {
     private PacketInfo packetInfo;
 
     /**
-     * 当前字段所属对象总长度
-     * 0代表无效
+     * 当前字段所属对象总长度(0代表无效)
+     * 判断是否为0,通过
+     * #{@link PacketField#len()}
+     * #{@link PacketField#lenExpr()}
+     *  或者当其调用者 #{@link ParserContext#parse(Class, ByteBuf, int)} 时候 allLen参数不为0
      */
     private int allLen;
 
