@@ -1,7 +1,10 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -12,8 +15,8 @@ import java.util.Objects;
 public class LongArrayFieldParser implements FieldParser<long[]> {
     public final static int BYTE_LENGTH=8;
     @Override
-    public long[] parse(ByteBuf data, int len,Object instance, Object... ext) {
-        int singleLen=(int)ext[0];
+    public long[] parse(ByteBuf data, int len, FieldParseContext context) {
+        int singleLen=context.getFieldInfo().getPacketField_singleLen();
         long[] res=new long[len/singleLen];
         //优化处理 int->long
         if(singleLen==4){
@@ -46,9 +49,9 @@ public class LongArrayFieldParser implements FieldParser<long[]> {
     }
 
     @Override
-    public String toHex(long[] data, int len, Object... ext) {
+    public String toHex(long[] data, int len, FieldToHexContext context) {
         checkHexData(data);
-        int singleLen=(int)ext[0];
+        int singleLen=context.getFieldInfo().getPacketField_singleLen();
         if(data.length*singleLen!=len){
             throw BaseRuntimeException.getException("toHex error,data length["+data.length+"],len["+len+"],singleLen["+singleLen+"]");
         }

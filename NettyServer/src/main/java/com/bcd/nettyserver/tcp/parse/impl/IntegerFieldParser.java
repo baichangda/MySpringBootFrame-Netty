@@ -1,19 +1,20 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 
-import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
-import java.util.Objects;
 
 public class IntegerFieldParser implements FieldParser<Integer> {
     public final static int BYTE_LENGTH=4;
 
     @Override
-    public Integer parse(ByteBuf data,int len,Object instance, Object ...ext) {
+    public Integer parse(ByteBuf data, int len, FieldParseContext context) {
         if(len==2){
             //优化处理 short->int
             return data.readUnsignedShort();
@@ -33,7 +34,7 @@ public class IntegerFieldParser implements FieldParser<Integer> {
     }
 
     @Override
-    public String toHex(Integer data, int len, Object... ext) {
+    public String toHex(Integer data, int len, FieldToHexContext context) {
         checkHexData(data);
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(len==BYTE_LENGTH){

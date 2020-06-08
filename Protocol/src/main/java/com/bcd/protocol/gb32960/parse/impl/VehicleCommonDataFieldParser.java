@@ -1,11 +1,15 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.nettyserver.tcp.parse.impl.IntegerFieldParser;
 import com.bcd.nettyserver.tcp.parse.impl.ShortFieldParser;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,8 +20,8 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     ParserContext context;
 
     @Override
-    public VehicleCommonData parse(ByteBuf data,int len,Object instance,Object ...ext) {
-        return parseVehicleData(data);
+    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) {
+        return parseVehicleData(data,len,fieldParseContext);
     }
 
     @Override
@@ -25,10 +29,16 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
         this.context =context;
     }
 
-    private VehicleCommonData parseVehicleData(ByteBuf byteBuf){
+    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
+        int allLen= fieldParseContext.getAllLen()-6;
+        int beginLeave=byteBuf.readableBytes();
         A:while(byteBuf.isReadable()) {
-            short flag = context.getShortFieldParser().parse(byteBuf,1,vehicleCommonData);
+            int curLeave=byteBuf.readableBytes();
+            if(beginLeave-curLeave>=allLen){
+                break;
+            }
+            short flag = byteBuf.readUnsignedByte();
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
@@ -88,9 +98,9 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
                     logger.warn("Parse Vehicle Common Data Interrupted,Unknown Flag["+flag+"]");
                     //2.8、如果是自定义数据,只做展现,不解析
                     //2.8.1、解析长度
-                    Integer len= context.getIntegerFieldParser().parse(byteBuf,2,vehicleCommonData);
+                    int dataLen= byteBuf.readUnsignedShort();
                     //2.8.2、获取接下来的报文
-                    byte[] content=new byte[len];
+                    byte[] content=new byte[dataLen];
                     byteBuf.getBytes(0,content);
                     break A;
 //                      throw BaseRuntimeException.getException("Parse Vehicle Data Failed,Unknown Flag["+flag+"]");
@@ -101,42 +111,42 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     }
 
     @Override
-    public String toHex(VehicleCommonData data,int len, Object... ext) {
+    public String toHex(VehicleCommonData data,int len, FieldToHexContext fieldToHexContext) {
         StringBuilder sb=new StringBuilder();
         if(data.getVehicleBaseData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)1,1));
+            sb.append("01");
             sb.append(context.toHex(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)2,1));
+            sb.append("02");
             sb.append(context.toHex(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)3,1));
+            sb.append("03");
             sb.append(context.toHex(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)4,1));
+            sb.append("04");
             sb.append(context.toHex(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)5,1));
+            sb.append("05");
             sb.append(context.toHex(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)6,1));
+            sb.append("06");
             sb.append(context.toHex(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)7,1));
+            sb.append("07");
             sb.append(context.toHex(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)8,1));
+            sb.append("08");
             sb.append(context.toHex(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
-            sb.append(context.getShortFieldParser().toHex((short)9,1));
+            sb.append("09");
             sb.append(context.toHex(data.getVehicleStorageTemperatureData()));
         }
         return sb.toString();

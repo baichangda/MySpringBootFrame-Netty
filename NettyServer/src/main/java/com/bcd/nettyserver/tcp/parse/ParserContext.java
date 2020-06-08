@@ -135,11 +135,11 @@ public abstract class ParserContext {
     }
 
     /**
-     * 初始化 classToHandler
+     * 初始化 classToParser
      * 去除接口和抽象类
      * 通过扫描
      */
-    protected void initHandlerByScanClass(String packageName){
+    protected void initParserByScanClass(String packageName){
         try {
             for (Class e : ClassUtil.getClassesByParentClass(FieldParser.class, packageName)) {
                 classToParser.put(e,(FieldParser) e.newInstance());
@@ -160,8 +160,10 @@ public abstract class ParserContext {
                 Map<String,Number> valMap=new HashMap<>();
                 PacketInfo packetInfo=toPacketInfo(clazz);
                 List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
+                FieldToHexContext context=new FieldToHexContext();
                 for (int i=0,end=fieldInfoList.size();i<end;i++) {
                     FieldInfo fieldInfo=fieldInfoList.get(i);
+                    context.setFieldInfo(fieldInfo);
                     int type=fieldInfo.getType();
                     /**
                      * rpns[0] 代表 {@link PacketField#lenExpr()}
@@ -196,7 +198,7 @@ public abstract class ParserContext {
                                 len = (int) StringUtil.calcRPN(rpns[0], valMap);
                             }
                         }
-                        val.append(fieldParser.toHex(data,len));
+                        val.append(fieldParser.toHex(data,len,context));
                     }else{
                         if(type==101){
                             /**
@@ -228,7 +230,7 @@ public abstract class ParserContext {
                                         len = (int) StringUtil.calcRPN(rpns[0], valMap);
                                     }
                                 }
-                                val.append(fieldParserArr[type].toHex(data,len,fieldInfo.getPacketField_singleLen()));
+                                val.append(fieldParserArr[type].toHex(data,len,context));
                                 /**
                                  * 如果 {@link PacketField#var()} 不为空
                                  * 说明是变量
@@ -249,15 +251,20 @@ public abstract class ParserContext {
         }
     }
 
+    public <T>T parse(Class<T> clazz,ByteBuf data){
+        return parse(clazz,data,0);
+    }
+
     /**
      * 根据类型和缓冲数据生成对应对象
      * 所有涉及解析对象必须有空参数的构造方法
      * @param clazz
      * @param data
+     * @param allLen 0代表无效,此时对象解析不依赖总长度
      * @param <T>
      * @return
      */
-    public <T>T parse(Class<T> clazz,ByteBuf data){
+    public <T>T parse(Class<T> clazz,ByteBuf data,int allLen){
         //解析包
         PacketInfo packetInfo=toPacketInfo(clazz);
         try {
@@ -266,8 +273,13 @@ public abstract class ParserContext {
             //进行解析
             List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
             Map<String,Number> valMap=new HashMap<>();
+            FieldParseContext context=new FieldParseContext();
+            context.setPacketInfo(packetInfo);
+            context.setInstance(instance);
+            context.setAllLen(allLen);
             for (int i=0,end=fieldInfoList.size();i<end;i++) {
                 FieldInfo fieldInfo=fieldInfoList.get(i);
+                context.setFieldInfo(fieldInfo);
                 int type=fieldInfo.getType();
                 /**
                  * rpns[0] 代表 {@link PacketField#lenExpr()}
@@ -298,7 +310,7 @@ public abstract class ParserContext {
                             len = (int) StringUtil.calcRPN(rpns[0], valMap);
                         }
                     }
-                    val=fieldParser.parse(data,len,instance);
+                    val=fieldParser.parse(data,len,context);
                 }else{
                     if(type==101){
                         /**
@@ -332,7 +344,7 @@ public abstract class ParserContext {
                             }else{
                                 len=(int)StringUtil.calcRPN(rpns[0],valMap);
                             }
-                            val=fieldParserArr[type].parse(data,len,instance,fieldInfo.getPacketField_singleLen());
+                            val=fieldParserArr[type].parse(data,len,context);
 
                             /**
                              * 如果 {@link PacketField#var()} 不为空

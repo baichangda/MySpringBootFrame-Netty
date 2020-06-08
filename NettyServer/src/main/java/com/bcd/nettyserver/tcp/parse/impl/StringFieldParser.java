@@ -1,15 +1,18 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
 public class StringFieldParser implements FieldParser<String> {
     @Override
-    public String parse(ByteBuf data,int len,Object instance, Object ...ext) {
+    public String parse(ByteBuf data,int len, FieldParseContext context) {
         int discardLen=0;
         byte[] bytes=new byte[len];
         data.readBytes(bytes);
@@ -24,7 +27,7 @@ public class StringFieldParser implements FieldParser<String> {
     }
 
     @Override
-    public String toHex(String data, int len, Object... ext) {
+    public String toHex(String data, int len, FieldToHexContext context) {
         checkHexData(data);
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         byte[] content=data.getBytes();
@@ -36,6 +39,6 @@ public class StringFieldParser implements FieldParser<String> {
         }else{
             throw BaseRuntimeException.getException("toHex error,data byte length["+content.length+"]>len["+len+"]");
         }
-        return null;
+        return ByteBufUtil.hexDump(byteBuf);
     }
 }

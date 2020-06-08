@@ -1,7 +1,10 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 
+import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -11,7 +14,7 @@ public class LongFieldParser implements FieldParser<Long> {
     public final static int BYTE_LENGTH=8;
 
     @Override
-    public Long parse(ByteBuf data,int len,Object instance, Object ...ext) {
+    public Long parse(ByteBuf data, int len, FieldParseContext context) {
         if(len==4){
             //优化处理 int->long
             return data.readUnsignedInt();
@@ -31,7 +34,7 @@ public class LongFieldParser implements FieldParser<Long> {
     }
 
     @Override
-    public String toHex(Long data, int len, Object... ext) {
+    public String toHex(Long data, int len, FieldToHexContext context) {
         checkHexData(data);
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(len==BYTE_LENGTH){

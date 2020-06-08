@@ -1,6 +1,6 @@
 package com.bcd.protocol.gb32960.parse;
 
-import com.bcd.nettyserver.tcp.info.PacketInfo;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.data.Packet;
 import com.bcd.protocol.gb32960.data.PacketData;
@@ -29,7 +29,7 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         ParserContext context= new ParserContext() {
             @Override
             protected void initHandler() {
-                initHandlerByScanClass("com.bcd");
+                initParserByScanClass("com.bcd");
             }
         };
         context.withEnableOffsetField(true);
@@ -42,11 +42,13 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         long t1=System.currentTimeMillis();
 //        for(int i=1;i<=1000000;i++) {
             ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
-            Packet packet=context.parse(Packet.class, byteBuf);
-            PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getDataContent().readableBytes(), packet);
+            Packet packet=context.parse(Packet.class, byteBuf,byteBuf.readableBytes());
+            PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
+
             String hex=context.toHex(packetData);
+            packet.setDataContent(Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(hex)));
             System.out.println(data.toUpperCase());
-            System.out.println(hex.toUpperCase());
+            System.out.println(context.toHex(packet).toUpperCase());
 //        }
         long t2=System.currentTimeMillis();
         System.out.println(t2-t1);

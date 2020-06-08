@@ -1,6 +1,8 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -10,7 +12,7 @@ public class ShortFieldParser implements FieldParser<Short> {
     public final static int BYTE_LENGTH=2;
 
     @Override
-    public Short parse(ByteBuf data,int len,Object instance, Object ...ext) {
+    public Short parse(ByteBuf data,int len, FieldParseContext context) {
         if(len==1){
             //优化处理 byte->short
             return data.readUnsignedByte();
@@ -30,7 +32,7 @@ public class ShortFieldParser implements FieldParser<Short> {
     }
 
     @Override
-    public String toHex(Short data, int len, Object... ext) {
+    public String toHex(Short data, int len, FieldToHexContext context) {
         checkHexData(data);
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(len==BYTE_LENGTH){

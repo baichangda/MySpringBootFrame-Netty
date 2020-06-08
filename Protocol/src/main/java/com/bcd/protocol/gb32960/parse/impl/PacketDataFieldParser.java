@@ -1,6 +1,8 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
@@ -18,44 +20,42 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
         this.context =context;
     }
 
-    @Override
-    public PacketData parse(ByteBuf data,int len,Object instance,Object ... ext) {
-        Packet packet=(Packet)instance;
+    public PacketData parse(ByteBuf data,int flag,int len){
         PacketData packetData=null;
-        switch (packet.getFlag()){
+        switch (flag){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= context.parse(VehicleLoginData.class, data);
+                VehicleLoginData vehicleLoginData= context.parse(VehicleLoginData.class, data,len);
                 packetData=vehicleLoginData;
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= context.parse(VehicleRealData.class,data);
+                VehicleRealData vehicleRealData= context.parse(VehicleRealData.class,data,len);
                 packetData=vehicleRealData;
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= context.parse(VehicleSupplementData.class,data);
+                VehicleSupplementData vehicleSupplementData= context.parse(VehicleSupplementData.class,data,len);
                 packetData=vehicleSupplementData;
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= context.parse(VehicleLogoutData.class,data);
+                VehicleLogoutData vehicleLogoutData= context.parse(VehicleLogoutData.class,data,len);
                 packetData=vehicleLogoutData;
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= context.parse(PlatformLoginData.class,data);
+                PlatformLoginData platformLoginData= context.parse(PlatformLoginData.class,data,len);
                 packetData=platformLoginData;
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= context.parse(PlatformLogoutData.class,data);
+                PlatformLogoutData platformLogoutData= context.parse(PlatformLogoutData.class,data,len);
                 packetData=platformLogoutData;
                 break;
             }
@@ -72,10 +72,16 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
     }
 
     @Override
-    public String toHex(PacketData data,int len, Object... ext) {
-        Packet packet=(Packet)ext[0];
+    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) {
+        Packet packet=(Packet)fieldParseContext.getInstance();
+        return parse(data,packet.getFlag(),len);
+    }
+
+    @Override
+    public String toHex(PacketData data, int len, FieldToHexContext fieldToHexContext) {
+        int flag=data.getFlag();
         String hex=null;
-        switch (packet.getFlag()){
+        switch (flag){
             //车辆登入
             case 1:{
                 hex= context.toHex(data);

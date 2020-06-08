@@ -29,7 +29,7 @@ public class PacketParseHandler extends ChannelInboundHandlerAdapter {
         byteBuf.getBytes(0,content);
         String hex= ByteBufUtil.hexDump(content);
         //3、解析成实体
-        Packet packet= parser.parse(Packet.class,byteBuf);
+        Packet packet= parser.parse(Packet.class,byteBuf,byteBuf.readableBytes());
         packet.setHex(hex);
         super.channelRead(ctx, packet);
     }

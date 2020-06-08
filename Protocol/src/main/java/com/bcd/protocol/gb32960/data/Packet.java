@@ -1,6 +1,7 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldParser;
 import io.netty.buffer.ByteBuf;
 
 public class Packet {
@@ -23,6 +24,7 @@ public class Packet {
     @PacketField(index = 6,len = 2,var = "len")
     int contentLength;
     //数据单元
+//    @PacketField(index = 7,lenExpr = "len",parserClass = PacketDataFieldParser.class)
     @PacketField(index = 7,lenExpr = "len")
     ByteBuf dataContent;
     PacketData data;

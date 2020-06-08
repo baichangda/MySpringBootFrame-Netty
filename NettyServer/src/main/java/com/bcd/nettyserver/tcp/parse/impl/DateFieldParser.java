@@ -2,7 +2,10 @@ package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.DateZoneUtil;
+import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
+import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -21,7 +24,7 @@ public class DateFieldParser implements FieldParser<Date>{
 
     Logger logger= LoggerFactory.getLogger(DateFieldParser.class);
     @Override
-    public Date parse(ByteBuf data,int len,Object instance, Object ...ext) {
+    public Date parse(ByteBuf data,int len, FieldParseContext context) {
         if(len==6){
             byte year=data.readByte();
             int month=data.readByte();
@@ -36,7 +39,7 @@ public class DateFieldParser implements FieldParser<Date>{
     }
 
     @Override
-    public String toHex(Date data, int len, Object... ext) {
+    public String toHex(Date data, int len, FieldToHexContext context) {
         checkHexData(data);
         if(len==6){
             LocalDateTime ldt= LocalDateTime.ofInstant(data.toInstant(),DateZoneUtil.ZONE_ID);
