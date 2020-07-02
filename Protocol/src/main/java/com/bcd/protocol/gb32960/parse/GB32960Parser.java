@@ -49,121 +49,16 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
-//        long t1=System.currentTimeMillis();
-        FieldParseContext fieldParseContext1= new FieldParseContext();
-        FieldInfo fieldInfo=new FieldInfo();
-        fieldInfo.setPacketField_singleLen(1);
-        fieldParseContext1.setFieldInfo(fieldInfo);
-//        for(int i=1;i<=10000000;i++) {
-//            byteBuf.resetReaderIndex();
-//            byteBuf.resetWriterIndex();
-//            test1(byteBuf);
-//            test2(byteBuf,context);
-//            test3(byteBuf,context,fieldParseContext1);
-//        }
         long t2=System.currentTimeMillis();
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-//            test1(byteBuf);
             test2(byteBuf,context,packetDataFieldParser);
-//            test3(byteBuf,context,fieldParseContext1);
         }
         long t3=System.currentTimeMillis();
-//        for(int i=1;i<=10000000;i++) {
-//            byteBuf.resetReaderIndex();
-//            byteBuf.resetWriterIndex();
-//            test1(byteBuf);
-//            test2(byteBuf,context);
 
-//            test3(byteBuf,context,fieldParseContext1);
-//        }
-//        long t4=System.currentTimeMillis();
-//        System.out.println(t2-t1);
         System.out.println(t3-t2);
-//        System.out.println(t4-t3);
 
-    }
-
-    private static Packet test1(ByteBuf byteBuf){
-        Packet packet=new Packet();
-
-        byte[] header=new byte[2];
-        byteBuf.readBytes(header);
-        packet.setHeader(header);
-
-        packet.setFlag(byteBuf.readUnsignedByte());
-
-        packet.setReplyFlag(byteBuf.readUnsignedByte());
-
-        byte[] vinBytes=new byte[17];
-        byteBuf.readBytes(vinBytes);
-        int discardLen=0;
-        for(int i=vinBytes.length-1;i>=0;i--){
-            if(vinBytes[i]==0){
-                discardLen++;
-            }else{
-                break;
-            }
-        }
-        packet.setVin(new String(vinBytes,0,vinBytes.length-discardLen));
-
-        packet.setEncodeWay(byteBuf.readUnsignedByte());
-
-        packet.setContentLength(byteBuf.readUnsignedShort());
-
-        ByteBuf content=Unpooled.buffer(packet.getContentLength());
-        byteBuf.readBytes(content);
-        packet.setDataContent(content);
-
-        packet.setCode(byteBuf.readByte());
-
-        return packet;
-    }
-
-    private static Packet test3(ByteBuf byteBuf,ParserContext context,FieldParseContext fieldParseContext1)throws Exception{
-        Packet packet= null;
-//        try {
-//            packet = Packet.class.newInstance();
-//        } catch (InstantiationException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//
-//        packet.setHeader(context.getByteArrayFieldParser().parse(byteBuf,2,null));
-//
-//        packet.setFlag(context.getShortFieldParser().parse(byteBuf,1,null));
-//
-//        packet.setReplyFlag(context.getShortFieldParser().parse(byteBuf,1,null));
-//
-//        packet.setVin(context.getStringFieldParser().parse(byteBuf,17,null));
-//
-//        packet.setEncodeWay(context.getShortFieldParser().parse(byteBuf,1,null));
-//
-//        packet.setContentLength(context.getIntegerFieldParser().parse(byteBuf,2,null));
-//
-//        packet.setDataContent(context.getByteBufFieldParser().parse(byteBuf,packet.getContentLength(),null));
-//
-//        packet.setCode(context.getByteFieldParser().parse(byteBuf,1,null));
-
-        context.getByteArrayFieldParser().parse(byteBuf,2,null);
-
-        context.getShortFieldParser().parse(byteBuf,1,null);
-
-        context.getShortFieldParser().parse(byteBuf,1,null);
-
-        context.getStringFieldParser().parse(byteBuf,17,null);
-
-        context.getShortFieldParser().parse(byteBuf,1,null);
-
-        context.getIntegerFieldParser().parse(byteBuf,2,null);
-
-        context.getByteBufFieldParser().parse(byteBuf,309,null);
-
-        context.getByteFieldParser().parse(byteBuf,1,null);
-
-        return packet;
     }
 
     private static Packet test2(ByteBuf byteBuf,ParserContext context,PacketDataFieldParser packetDataFieldParser) throws Exception{

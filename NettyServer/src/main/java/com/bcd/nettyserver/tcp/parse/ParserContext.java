@@ -291,7 +291,7 @@ public abstract class ParserContext {
         }
     }
 
-    public final <T>T parse(Class<T> clazz,ByteBuf data) throws Exception{
+    public final <T>T parse(Class<T> clazz,ByteBuf data){
         return parse(clazz,data,0);
     }
 
@@ -304,17 +304,16 @@ public abstract class ParserContext {
      * @param <T>
      * @return
      */
-    public final <T>T parse(Class<T> clazz,ByteBuf data,int allLen) throws Exception{
+    public final <T>T parse(Class<T> clazz,ByteBuf data,int allLen){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
-        if(packetInfo==null){
-            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
-        }
+//        if(packetInfo==null){
+//            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
+//        }
         try {
             //构造实例
             T instance= clazz.newInstance();
             //进行解析
-            List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
             Map<String,Integer> valMap=null;
             if(packetInfo.getVarCount()>0){
                 valMap=new HashMap<>();
@@ -323,7 +322,7 @@ public abstract class ParserContext {
             context.setPacketInfo(packetInfo);
             context.setInstance(instance);
             context.setAllLen(allLen);
-            for (FieldInfo fieldInfo : fieldInfoList) {
+            for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 context.setFieldInfo(fieldInfo);
                 int type=fieldInfo.getType();
                 /**
@@ -340,9 +339,9 @@ public abstract class ParserContext {
                          */
                         Class parserClass=fieldInfo.getClazz();
                         FieldParser fieldParser= classToParser.get(parserClass);
-                        if(fieldParser==null){
-                            throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
-                        }
+//                        if(fieldParser==null){
+//                            throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
+//                        }
                         int len;
                         /**
                          * 如果{@link PacketField#lenExpr()} 为空
@@ -421,7 +420,7 @@ public abstract class ParserContext {
                          * 说明是变量
                          */
                         if(fieldInfo.isVar()){
-                            valMap.put(fieldInfo.getPacketField_var(),((Number) val).intValue());
+                            valMap.put(fieldInfo.getPacketField_var(),((Number)val).intValue());
                         }
                     }
                 }

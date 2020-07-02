@@ -38,7 +38,7 @@ public class ParseUtil {
                         break;
                     }
                     default: {
-                        Double val = map.get(s.toString());
+                        Double val = map.get(s);
                         stack[++stackIndex] = val;
                         break;
                     }
@@ -81,7 +81,7 @@ public class ParseUtil {
                         break;
                     }
                     default: {
-                        Integer val = map.get(s.toString());
+                        Integer val = map.get(s);
                         stack[++stackIndex] = val;
                         break;
                     }

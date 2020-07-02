@@ -20,7 +20,7 @@ public interface FieldParser<T> {
      * @param context 解析上下文环境
      * @return
      */
-    T parse(ByteBuf data, int len, FieldParseContext context) throws Exception;
+    T parse(ByteBuf data, int len, FieldParseContext context);
 
     /**
      * 把对象转换为ByteBuf对象

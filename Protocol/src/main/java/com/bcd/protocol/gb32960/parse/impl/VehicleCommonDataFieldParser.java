@@ -17,7 +17,7 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     ParserContext context;
 
     @Override
-    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) throws Exception{
+    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext){
         return parseVehicleData(data,len,fieldParseContext);
     }
 
@@ -26,7 +26,7 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
         this.context =context;
     }
 
-    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext) throws Exception{
+    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
         int allLen= fieldParseContext.getAllLen()-6;
         int beginLeave=byteBuf.readableBytes();

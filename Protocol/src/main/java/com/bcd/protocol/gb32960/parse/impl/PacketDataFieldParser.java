@@ -20,7 +20,7 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
         this.context =context;
     }
 
-    public PacketData parse(ByteBuf data,int flag,int len) throws Exception{
+    public PacketData parse(ByteBuf data,int flag,int len){
         PacketData packetData=null;
         switch (flag){
             //车辆登入
@@ -72,7 +72,7 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
     }
 
     @Override
-    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) throws Exception{
+    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext){
         Packet packet=(Packet)fieldParseContext.getInstance();
         return parse(data,packet.getFlag(),len);
     }
