@@ -363,7 +363,20 @@ public abstract class ParserContext {
                         /**
                          * 处理Bean 类型数据
                          */
-                        val = parse(fieldInfo.getClazz(), data,allLen);
+                        int len;
+                        /**
+                         * 如果{@link PacketField#lenExpr()} 为空
+                         */
+                        if(rpns[0]==null){
+                            len=fieldInfo.getPacketField_len();
+                        }else{
+                            if(rpns[0].size()==1){
+                                len=valMap.get(rpns[0].get(0));
+                            }else{
+                                len=(int) ParseUtil.calcRPNWithInteger(rpns[0],valMap);
+                            }
+                        }
+                        val = parse(fieldInfo.getClazz(), data,len);
                         break;
                     }
                     case 101:{
@@ -383,7 +396,7 @@ public abstract class ParserContext {
                         }
                         List list = new ArrayList(listLen);
                         for (int j = 1; j <= listLen; j++) {
-                            list.add(parse(fieldInfo.getClazz(), data,allLen));
+                            list.add(parse(fieldInfo.getClazz(), data));
                         }
                         val = list;
                         break;

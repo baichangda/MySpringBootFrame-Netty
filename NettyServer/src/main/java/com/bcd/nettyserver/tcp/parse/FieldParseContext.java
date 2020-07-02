@@ -22,9 +22,7 @@ public class FieldParseContext {
     /**
      * 当前字段所属对象总长度(0代表无效)
      * 判断是否为0,通过
-     * #{@link PacketField#len()}
-     * #{@link PacketField#lenExpr()}
-     *  或者当其调用者 #{@link ParserContext#parse(Class, ByteBuf, int)} 时候 allLen参数不为0
+     *  当其调用者 #{@link ParserContext#parse(Class, ByteBuf, int)} 时候 allLen参数不为0
      */
     private int allLen;
 
