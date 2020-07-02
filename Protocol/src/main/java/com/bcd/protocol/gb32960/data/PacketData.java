@@ -1,7 +1,10 @@
 package com.bcd.protocol.gb32960.data;
 
+import com.bcd.nettyserver.tcp.anno.ParseAble;
+
 import java.util.Date;
 
+@ParseAble
 public class PacketData {
     protected String vin;
     protected Date createTime;

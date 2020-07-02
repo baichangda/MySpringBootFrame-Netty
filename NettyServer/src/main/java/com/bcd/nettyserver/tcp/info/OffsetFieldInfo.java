@@ -16,7 +16,7 @@ public class OffsetFieldInfo {
     String offsetField_sourceField;
     String offsetField_expr;
 
-    List<String> rpn;
+    List rpn;
 
     /**
      * 字段类型
@@ -61,11 +61,11 @@ public class OffsetFieldInfo {
         this.offsetField_expr = offsetField_expr;
     }
 
-    public List<String> getRpn() {
+    public List getRpn() {
         return rpn;
     }
 
-    public void setRpn(List<String> rpn) {
+    public void setRpn(List rpn) {
         this.rpn = rpn;
     }
 

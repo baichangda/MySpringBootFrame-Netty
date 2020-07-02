@@ -3,7 +3,7 @@ allprojects{
     version '1.0-SNAPSHOT'
     apply plugin: 'java'
     apply plugin: 'idea'
-    apply plugin: 'org.springframework.boot'
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -28,6 +28,14 @@ allprojects{
 
     jar {
         enabled = true
+    }
+}
+
+
+apply plugin: 'org.springframework.boot'
+bootJar {
+    manifest {
+        attributes 'Start-Class': 'com.bcd.Application'
     }
 }
 

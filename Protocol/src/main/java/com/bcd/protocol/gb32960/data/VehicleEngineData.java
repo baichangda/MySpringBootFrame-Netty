@@ -1,10 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.nettyserver.tcp.anno.ParseAble;
 
 /**
  * 发动机数据
  */
+@ParseAble
 public class VehicleEngineData {
     //发动机状态
     @PacketField(index = 1,len = 1)

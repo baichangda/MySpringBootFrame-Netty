@@ -2,13 +2,10 @@ package com.bcd.protocol.gb32960.parse.impl;
 
 import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
+import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
 import com.bcd.nettyserver.tcp.parse.ParserContext;
-import com.bcd.nettyserver.tcp.parse.impl.IntegerFieldParser;
-import com.bcd.nettyserver.tcp.parse.impl.ShortFieldParser;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +17,7 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     ParserContext context;
 
     @Override
-    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) {
+    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) throws Exception{
         return parseVehicleData(data,len,fieldParseContext);
     }
 
@@ -29,7 +26,7 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
         this.context =context;
     }
 
-    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext){
+    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext) throws Exception{
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
         int allLen= fieldParseContext.getAllLen()-6;
         int beginLeave=byteBuf.readableBytes();
@@ -111,44 +108,44 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     }
 
     @Override
-    public String toHex(VehicleCommonData data,int len, FieldToHexContext fieldToHexContext) {
-        StringBuilder sb=new StringBuilder();
+    public ByteBuf toByteBuf(VehicleCommonData data,int len, FieldToByteBufContext fieldToByteBufContext) {
+        ByteBuf byteBuf=Unpooled.buffer();
         if(data.getVehicleBaseData()!=null){
-            sb.append("01");
-            sb.append(context.toHex(data.getVehicleBaseData()));
+            byteBuf.writeByte(1);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
-            sb.append("02");
-            sb.append(context.toHex(data.getVehicleMotorData()));
+            byteBuf.writeByte(2);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
-            sb.append("03");
-            sb.append(context.toHex(data.getVehicleFuelBatteryData()));
+            byteBuf.writeByte(3);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
-            sb.append("04");
-            sb.append(context.toHex(data.getVehicleEngineData()));
+            byteBuf.writeByte(4);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
-            sb.append("05");
-            sb.append(context.toHex(data.getVehiclePositionData()));
+            byteBuf.writeByte(5);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
-            sb.append("06");
-            sb.append(context.toHex(data.getVehicleLimitValueData()));
+            byteBuf.writeByte(6);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
-            sb.append("07");
-            sb.append(context.toHex(data.getVehicleAlarmData()));
+            byteBuf.writeByte(7);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
-            sb.append("08");
-            sb.append(context.toHex(data.getVehicleStorageVoltageData()));
+            byteBuf.writeByte(8);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
-            sb.append("09");
-            sb.append(context.toHex(data.getVehicleStorageTemperatureData()));
+            byteBuf.writeByte(9);
+            byteBuf.writeBytes(context.toByteBuf(data.getVehicleStorageTemperatureData()));
         }
-        return sb.toString();
+        return byteBuf;
     }
 }

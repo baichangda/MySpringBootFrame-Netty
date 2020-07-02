@@ -92,7 +92,10 @@ public class ClassUtil {
         for (String packageName : packageNames) {
             classSet.addAll(getClasses(packageName));
         }
-        return classSet.stream().filter(e -> e.getAnnotation(annoClass) != null).collect(Collectors.toList());
+        return classSet.stream().filter(e -> {
+            int modifiers= e.getModifiers();
+            return e.getAnnotation(annoClass) != null&&!Modifier.isInterface(modifiers)&&!Modifier.isAbstract(modifiers);
+        }).collect(Collectors.toList());
     }
 
     /**

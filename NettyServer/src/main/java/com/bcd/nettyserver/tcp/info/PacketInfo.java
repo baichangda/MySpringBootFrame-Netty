@@ -1,6 +1,8 @@
 package com.bcd.nettyserver.tcp.info;
 
 
+import com.bcd.nettyserver.tcp.anno.PacketField;
+
 import java.util.List;
 
 public class PacketInfo {
@@ -8,6 +10,11 @@ public class PacketInfo {
     private List<FieldInfo> fieldInfoList;
     //计算偏移量字段集合
     private List<OffsetFieldInfo> offsetFieldInfoList;
+    /**
+     * 变量个数,包括变量个数
+     * {@link PacketField#var()}
+     */
+    public int varCount;
 
     public PacketInfo() {
     }
@@ -26,5 +33,13 @@ public class PacketInfo {
 
     public void setOffsetFieldInfoList(List<OffsetFieldInfo> offsetFieldInfoList) {
         this.offsetFieldInfoList = offsetFieldInfoList;
+    }
+
+    public int getVarCount() {
+        return varCount;
+    }
+
+    public void setVarCount(int varCount) {
+        this.varCount = varCount;
     }
 }

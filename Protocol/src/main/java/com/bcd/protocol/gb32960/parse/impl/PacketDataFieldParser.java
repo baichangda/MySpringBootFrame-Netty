@@ -2,7 +2,7 @@ package com.bcd.protocol.gb32960.parse.impl;
 
 import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
+import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
 import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
@@ -20,7 +20,7 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
         this.context =context;
     }
 
-    public PacketData parse(ByteBuf data,int flag,int len){
+    public PacketData parse(ByteBuf data,int flag,int len) throws Exception{
         PacketData packetData=null;
         switch (flag){
             //车辆登入
@@ -72,44 +72,44 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
     }
 
     @Override
-    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) {
+    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext) throws Exception{
         Packet packet=(Packet)fieldParseContext.getInstance();
         return parse(data,packet.getFlag(),len);
     }
 
     @Override
-    public String toHex(PacketData data, int len, FieldToHexContext fieldToHexContext) {
+    public ByteBuf toByteBuf(PacketData data, int len, FieldToByteBufContext fieldToByteBufContext) {
         int flag=data.getFlag();
-        String hex=null;
+        ByteBuf byteBuf=null;
         switch (flag){
             //车辆登入
             case 1:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //车辆实时信息
             case 2:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //补发信息上报
             case 3:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //车辆登出
             case 4:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //平台登入
             case 5:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //平台登出
             case 6:{
-                hex= context.toHex(data);
+                byteBuf= context.toByteBuf(data);
                 break;
             }
             //心跳
@@ -121,6 +121,6 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
                 break;
             }
         }
-        return hex;
+        return byteBuf;
     }
 }

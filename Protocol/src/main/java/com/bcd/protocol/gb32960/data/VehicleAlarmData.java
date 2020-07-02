@@ -1,10 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.nettyserver.tcp.anno.ParseAble;
 
 /**
  * 报警数据
  */
+@ParseAble
 public class VehicleAlarmData {
     //最高报警等级
     @PacketField(index = 1,len = 1)

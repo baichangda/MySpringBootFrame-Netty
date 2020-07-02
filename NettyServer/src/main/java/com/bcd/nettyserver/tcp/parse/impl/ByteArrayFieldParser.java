@@ -1,15 +1,11 @@
 package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
+import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-
-import java.util.Objects;
 
 
 public class ByteArrayFieldParser implements FieldParser<byte[]> {
@@ -17,25 +13,29 @@ public class ByteArrayFieldParser implements FieldParser<byte[]> {
     @Override
     public byte[] parse(ByteBuf data, int len, FieldParseContext context) {
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        byte[] res=new byte[len/singleLen];
+        byte[] res;
         if(singleLen==BYTE_LENGTH){
+            res=new byte[len];
             data.readBytes(res);
         }else if(singleLen>BYTE_LENGTH){
+            res=new byte[len/singleLen];
             int diff=singleLen-BYTE_LENGTH;
             for(int i=0;i<res.length;i++){
                 data.skipBytes(diff);
                 res[i]=data.readByte();
             }
+        }else{
+            throw BaseRuntimeException.getException("packetField_singleLen can not less than 1");
         }
         return res;
     }
 
     @Override
-    public String toHex(byte[] data, int len, FieldToHexContext context) {
-        checkHexData(data);
+    public ByteBuf toByteBuf(byte[] data, int len, FieldToByteBufContext context) {
+        checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
         if(data.length*singleLen!=len){
-            throw BaseRuntimeException.getException("toHex error,data length["+data.length+"],len["+len+"],singleLen["+singleLen+"]");
+            throw BaseRuntimeException.getException("toByteBuf error,data length["+data.length+"],len["+len+"],singleLen["+singleLen+"]");
         }
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
@@ -46,6 +46,6 @@ public class ByteArrayFieldParser implements FieldParser<byte[]> {
                 byteBuf.writeByte(num);
             }
         }
-        return ByteBufUtil.hexDump(byteBuf);
+        return byteBuf;
     }
 }

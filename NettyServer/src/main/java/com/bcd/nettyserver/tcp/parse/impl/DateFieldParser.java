@@ -2,24 +2,19 @@ package com.bcd.nettyserver.tcp.parse.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.DateZoneUtil;
-import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.parse.FieldParseContext;
 import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToHexContext;
+import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.DateFormatter;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Objects;
 
 
-public class DateFieldParser implements FieldParser<Date>{
+public class DateFieldParser implements FieldParser<Date> {
     public final static int BASE_YEAR=2000;
 
     Logger logger= LoggerFactory.getLogger(DateFieldParser.class);
@@ -39,10 +34,10 @@ public class DateFieldParser implements FieldParser<Date>{
     }
 
     @Override
-    public String toHex(Date data, int len, FieldToHexContext context) {
-        checkHexData(data);
+    public ByteBuf toByteBuf(Date data, int len, FieldToByteBufContext context) {
+        checkByteBufData(data);
         if(len==6){
-            LocalDateTime ldt= LocalDateTime.ofInstant(data.toInstant(),DateZoneUtil.ZONE_ID);
+            LocalDateTime ldt= LocalDateTime.ofInstant(data.toInstant(), DateZoneUtil.ZONE_ID);
             ByteBuf byteBuf= Unpooled.buffer(len,len);
             byteBuf.writeByte(ldt.getYear()-BASE_YEAR);
             byteBuf.writeByte(ldt.getMonthValue());
@@ -50,7 +45,7 @@ public class DateFieldParser implements FieldParser<Date>{
             byteBuf.writeByte(ldt.getHour());
             byteBuf.writeByte(ldt.getMinute());
             byteBuf.writeByte(ldt.getSecond());
-            return ByteBufUtil.hexDump(byteBuf);
+            return byteBuf;
         }else{
             throw BaseRuntimeException.getException("date length must be 6,actual "+len);
         }

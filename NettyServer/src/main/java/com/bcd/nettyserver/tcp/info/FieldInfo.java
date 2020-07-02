@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class FieldInfo {
+
     public Field field;
 
     /**
@@ -18,6 +19,8 @@ public class FieldInfo {
     public String packetField_listLenExpr;
     public int packetField_singleLen;
     public Class packetField_parserClass;
+
+
 
     /**
      * 1、byte/Byte
@@ -62,7 +65,7 @@ public class FieldInfo {
      * rpns[0] 对应 {@link PacketField#lenExpr()}表达式
      * rpns[1] 对应 {@link PacketField#listLenExpr()}表达式
      */
-    public List<String>[] rpns;
+    public List[] rpns;
 
 
 
@@ -90,11 +93,11 @@ public class FieldInfo {
         this.clazz = clazz;
     }
 
-    public List<String>[] getRpns() {
+    public List[] getRpns() {
         return rpns;
     }
 
-    public void setRpns(List<String>[] rpns) {
+    public void setRpns(List[] rpns) {
         this.rpns = rpns;
     }
 
@@ -161,4 +164,5 @@ public class FieldInfo {
     public void setPacketField_parserClass(Class packetField_parserClass) {
         this.packetField_parserClass = packetField_parserClass;
     }
+
 }
