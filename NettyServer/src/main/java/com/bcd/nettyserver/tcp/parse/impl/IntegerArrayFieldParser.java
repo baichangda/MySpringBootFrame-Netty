@@ -45,27 +45,25 @@ public class IntegerArrayFieldParser implements FieldParser<int[]> {
     }
 
     @Override
-    public ByteBuf toByteBuf(int[] data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(int[] data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
             for (int num : data) {
-                byteBuf.writeInt(num);
+                result.writeInt(num);
             }
         }else if(singleLen>BYTE_LENGTH){
             for (int num : data) {
-                byteBuf.writeBytes(new byte[singleLen-BYTE_LENGTH]);
-                byteBuf.writeInt(num);
+                result.writeBytes(new byte[singleLen-BYTE_LENGTH]);
+                result.writeInt(num);
             }
         }else{
             for (int num : data) {
                 for(int i=singleLen;i>=1;i--){
                     int move=8*(i-1);
-                    byteBuf.writeByte((byte)(num>>>move));
+                    result.writeByte((byte)(num>>>move));
                 }
             }
         }
-        return byteBuf;
     }
 }

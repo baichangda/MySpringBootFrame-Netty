@@ -15,8 +15,8 @@ public class ByteBufFieldParser implements FieldParser<ByteBuf> {
     }
 
     @Override
-    public ByteBuf toByteBuf(ByteBuf data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(ByteBuf data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
-        return data;
+        result.writeBytes(data);
     }
 }

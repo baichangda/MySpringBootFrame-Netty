@@ -34,18 +34,16 @@ public class DateFieldParser implements FieldParser<Date> {
     }
 
     @Override
-    public ByteBuf toByteBuf(Date data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(Date data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
         if(len==6){
             LocalDateTime ldt= LocalDateTime.ofInstant(data.toInstant(), DateZoneUtil.ZONE_ID);
-            ByteBuf byteBuf= Unpooled.buffer(len,len);
-            byteBuf.writeByte(ldt.getYear()-BASE_YEAR);
-            byteBuf.writeByte(ldt.getMonthValue());
-            byteBuf.writeByte(ldt.getDayOfMonth());
-            byteBuf.writeByte(ldt.getHour());
-            byteBuf.writeByte(ldt.getMinute());
-            byteBuf.writeByte(ldt.getSecond());
-            return byteBuf;
+            result.writeByte(ldt.getYear()-BASE_YEAR);
+            result.writeByte(ldt.getMonthValue());
+            result.writeByte(ldt.getDayOfMonth());
+            result.writeByte(ldt.getHour());
+            result.writeByte(ldt.getMinute());
+            result.writeByte(ldt.getSecond());
         }else{
             throw BaseRuntimeException.getException("date length must be 6,actual "+len);
         }

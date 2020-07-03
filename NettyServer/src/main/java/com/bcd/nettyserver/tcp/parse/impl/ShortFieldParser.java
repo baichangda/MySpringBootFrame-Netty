@@ -31,20 +31,18 @@ public class ShortFieldParser implements FieldParser<Short> {
     }
 
     @Override
-    public ByteBuf toByteBuf(Short data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(Short data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(len==BYTE_LENGTH){
-            byteBuf.writeShort(data);
+            result.writeShort(data);
         }else if(len>BYTE_LENGTH){
-            byteBuf.writeBytes(new byte[len-BYTE_LENGTH]);
-            byteBuf.writeShort(data);
+            result.writeBytes(new byte[len-BYTE_LENGTH]);
+            result.writeShort(data);
         }else{
             for(int i=len;i>=1;i--){
                 int move=8*(i-1);
-                byteBuf.writeByte((byte)(data>>>move));
+                result.writeByte((byte)(data>>>move));
             }
         }
-        return byteBuf;
     }
 }

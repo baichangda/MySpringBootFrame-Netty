@@ -31,18 +31,16 @@ public class ByteArrayFieldParser implements FieldParser<byte[]> {
     }
 
     @Override
-    public ByteBuf toByteBuf(byte[] data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(byte[] data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
-            byteBuf.writeBytes(data);
+            result.writeBytes(data);
         }else if(singleLen>BYTE_LENGTH){
             for (byte num : data) {
-                byteBuf.writeBytes(new byte[singleLen-BYTE_LENGTH]);
-                byteBuf.writeByte(num);
+                result.writeBytes(new byte[singleLen-BYTE_LENGTH]);
+                result.writeByte(num);
             }
         }
-        return byteBuf;
     }
 }

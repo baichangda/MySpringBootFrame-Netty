@@ -22,10 +22,10 @@ public class ByteFieldParser implements FieldParser<Byte> {
     }
 
     @Override
-    public ByteBuf toByteBuf(Byte data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(Byte data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
         byte[] content=new byte[len];
         content[len-BYTE_LENGTH]=data;
-        return Unpooled.wrappedBuffer(content);
+        result.writeBytes(content);
     }
 }

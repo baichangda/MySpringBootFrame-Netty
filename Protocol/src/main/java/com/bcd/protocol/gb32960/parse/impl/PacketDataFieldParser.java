@@ -78,38 +78,37 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
     }
 
     @Override
-    public ByteBuf toByteBuf(PacketData data, int len, FieldToByteBufContext fieldToByteBufContext) {
+    public void toByteBuf(PacketData data, int len, FieldToByteBufContext fieldToByteBufContext,ByteBuf result) {
         int flag=data.getFlag();
-        ByteBuf byteBuf=null;
         switch (flag){
             //车辆登入
             case 1:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //车辆实时信息
             case 2:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //补发信息上报
             case 3:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //车辆登出
             case 4:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //平台登入
             case 5:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //平台登出
             case 6:{
-                byteBuf= context.toByteBuf(data);
+                result.writeBytes(context.toByteBuf(data));
                 break;
             }
             //心跳
@@ -121,6 +120,5 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
                 break;
             }
         }
-        return byteBuf;
     }
 }

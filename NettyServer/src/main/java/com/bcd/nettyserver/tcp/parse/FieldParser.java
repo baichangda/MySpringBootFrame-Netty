@@ -27,9 +27,10 @@ public interface FieldParser<T> {
      * @param data 数据集
      * @param len 数据长度 (len=0时表示无效,是否无效取决于字段注解 {@link PacketField#len()} ,{@link PacketField#lenExpr()} 是否有值)
      * @param context toByteBuf上下文环境
+     * @param result 结果集
      * @return
      */
-    default ByteBuf toByteBuf(T data, int len, FieldToByteBufContext context){
+    default void toByteBuf(T data, int len, FieldToByteBufContext context,ByteBuf result){
         throw BaseRuntimeException.getException("toByteBuf not support");
     }
 

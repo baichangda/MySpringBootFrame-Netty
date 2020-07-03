@@ -32,20 +32,18 @@ public class LongFieldParser implements FieldParser<Long> {
     }
 
     @Override
-    public ByteBuf toByteBuf(Long data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(Long data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(len==BYTE_LENGTH){
-            byteBuf.writeLong(data);
+            result.writeLong(data);
         }else if(len>BYTE_LENGTH){
-            byteBuf.writeBytes(new byte[len-BYTE_LENGTH]);
-            byteBuf.writeLong(data);
+            result.writeBytes(new byte[len-BYTE_LENGTH]);
+            result.writeLong(data);
         }else{
             for(int i=len;i>=1;i--){
                 int move=8*(i-1);
-                byteBuf.writeByte((byte)(data>>>move));
+                result.writeByte((byte)(data>>>move));
             }
         }
-        return byteBuf;
     }
 }

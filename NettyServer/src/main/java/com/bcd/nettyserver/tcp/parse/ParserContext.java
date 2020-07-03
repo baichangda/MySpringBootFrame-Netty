@@ -185,107 +185,118 @@ public abstract class ParserContext {
         }
     }
 
-    public final <T>ByteBuf toByteBuf(T t){
-        try{
-            if(t==null){
-                return null;
-            }else{
-                ByteBuf res= Unpooled.buffer();
-                Class clazz= t.getClass();
-                PacketInfo packetInfo=packetInfoCache.get(clazz);
-                //解析包
-                int [] vals=null;
-                int varValArrLen=packetInfo.getVarValArrLen();
-                int varValArrOffset=packetInfo.getVarValArrOffset();
-                if(varValArrLen!=0){
-                    vals=new int[varValArrLen];
-                }
-                List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
-                FieldToByteBufContext context=new FieldToByteBufContext();
-                for (int i=0,end=fieldInfoList.size();i<end;i++) {
-                    FieldInfo fieldInfo=fieldInfoList.get(i);
-                    context.setFieldInfo(fieldInfo);
-                    int type=fieldInfo.getType();
-                    /**
-                     * rpns[0] 代表 {@link PacketField#lenExpr()}
-                     * rpns[1] 代表 {@link PacketField#listLenExpr()}
-                     */
-                    List[] rpns= fieldInfo.getRpns();
-                    Object data;
+    public final ByteBuf toByteBuf(Object t){
+        if(t==null){
+            return null;
+        }else {
+            ByteBuf res = Unpooled.buffer();
+            toByteBuf(t, res);
+            return res;
+        }
+    }
 
-                    data=fieldInfo.getField().get(t);
-                    switch (type){
-                        case 0:{
-                            /**
-                             * {@link PacketField#parserClass()} 不为空
-                             * 特殊处理
-                             */
-                            Class handleClass=fieldInfo.getClazz();
-                            FieldParser fieldParser= classToParser.get(handleClass);
+    /**
+     * 将对象转换为byteBuf
+     * @param t 不能为null
+     * @param res
+     */
+    public final void toByteBuf(Object t,ByteBuf res){
+        try{
+            if(res==null){
+                res=Unpooled.buffer();
+            }
+            Class clazz= t.getClass();
+            PacketInfo packetInfo=packetInfoCache.get(clazz);
+            //解析包
+            int [] vals=null;
+            int varValArrLen=packetInfo.getVarValArrLen();
+            int varValArrOffset=packetInfo.getVarValArrOffset();
+            if(varValArrLen!=0){
+                vals=new int[varValArrLen];
+            }
+            List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
+            FieldToByteBufContext context=new FieldToByteBufContext();
+            for (int i=0,end=fieldInfoList.size();i<end;i++) {
+                FieldInfo fieldInfo=fieldInfoList.get(i);
+                context.setFieldInfo(fieldInfo);
+                int type=fieldInfo.getType();
+                /**
+                 * rpns[0] 代表 {@link PacketField#lenExpr()}
+                 * rpns[1] 代表 {@link PacketField#listLenExpr()}
+                 */
+                List[] rpns= fieldInfo.getRpns();
+                Object data;
+                data=fieldInfo.getField().get(t);
+                switch (type){
+                    case 0:{
+                        /**
+                         * {@link PacketField#parserClass()} 不为空
+                         * 特殊处理
+                         */
+                        Class handleClass=fieldInfo.getClazz();
+                        FieldParser fieldParser= classToParser.get(handleClass);
 //                            if(fieldParser==null){
 //                                throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
 //                            }
-                            int len;
-                            /**
-                             * 如果{@link PacketField#lenExpr()} 为空
-                             */
-                            if(rpns[0]==null){
-                                len=fieldInfo.getPacketField_len();
-                            }else{
-                                if(rpns[0].size()==1){
-                                    len= vals[(char)rpns[0].get(0)-varValArrOffset];
-                                }else {
-                                    len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
-                                }
+                        int len;
+                        /**
+                         * 如果{@link PacketField#lenExpr()} 为空
+                         */
+                        if(rpns[0]==null){
+                            len=fieldInfo.getPacketField_len();
+                        }else{
+                            if(rpns[0].size()==1){
+                                len= vals[(char)rpns[0].get(0)-varValArrOffset];
+                            }else {
+                                len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                             }
-                            res.writeBytes(fieldParser.toByteBuf(data,len,context));
-                            break;
                         }
-                        case 100:{
-                            /**
-                             * 处理Bean 类型数据
-                             */
-                            res.writeBytes(toByteBuf(data));
-                            break;
+                        fieldParser.toByteBuf(data,len,context,res);
+                        break;
+                    }
+                    case 100:{
+                        /**
+                         * 处理Bean 类型数据
+                         */
+                        toByteBuf(data,res);
+                        break;
+                    }
+                    case 101:{
+                        /**
+                         * 如果{@link PacketField#listLenExpr()} ()} 不为空
+                         * 处理List<Bean>类型字段
+                         */
+                        int listLen = RpnUtil.calcRPN_char_int(rpns[1],vals,varValArrOffset);
+                        List list = (List)data;
+                        for (int j = 0; j <= listLen-1; j++) {
+                            toByteBuf(list.get(j),res);
                         }
-                        case 101:{
-                            /**
-                             * 如果{@link PacketField#listLenExpr()} ()} 不为空
-                             * 处理List<Bean>类型字段
-                             */
-                            int listLen = RpnUtil.calcRPN_char_int(rpns[1],vals,varValArrOffset);
-                            List list = (List)data;
-                            for (int j = 0; j <= listLen-1; j++) {
-                                res.writeBytes(toByteBuf(list.get(j)));
+                        break;
+                    }
+                    default:{
+                        int len;
+                        /**
+                         * 如果{@link PacketField#lenExpr()} 为空
+                         */
+                        if(rpns[0]==null){
+                            len=fieldInfo.getPacketField_len();
+                        }else{
+                            if(rpns[0].size()==1){
+                                len= vals[(char)rpns[0].get(0)-varValArrOffset];
+                            }else {
+                                len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                             }
-                            break;
                         }
-                        default:{
-                            int len;
-                            /**
-                             * 如果{@link PacketField#lenExpr()} 为空
-                             */
-                            if(rpns[0]==null){
-                                len=fieldInfo.getPacketField_len();
-                            }else{
-                                if(rpns[0].size()==1){
-                                    len= vals[(char)rpns[0].get(0)-varValArrOffset];
-                                }else {
-                                    len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
-                                }
-                            }
-                            res.writeBytes(fieldParserArr[type].toByteBuf(data,len,context));
-                            /**
-                             * 如果 {@link PacketField#var()} 不为空
-                             * 说明是变量
-                             */
-                            if(fieldInfo.isVar()){
-                                vals[fieldInfo.getPacketField_var()-varValArrOffset]=((Number)data).intValue();
-                            }
+                        fieldParserArr[type].toByteBuf(data,len,context,res);
+                        /**
+                         * 如果 {@link PacketField#var()} 不为空
+                         * 说明是变量
+                         */
+                        if(fieldInfo.isVar()){
+                            vals[fieldInfo.getPacketField_var()-varValArrOffset]=((Number)data).intValue();
                         }
                     }
                 }
-                return res;
             }
         } catch (IllegalAccessException e) {
             throw BaseRuntimeException.getException(e);

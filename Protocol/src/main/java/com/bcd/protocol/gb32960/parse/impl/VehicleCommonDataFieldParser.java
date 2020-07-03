@@ -108,44 +108,42 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     }
 
     @Override
-    public ByteBuf toByteBuf(VehicleCommonData data,int len, FieldToByteBufContext fieldToByteBufContext) {
-        ByteBuf byteBuf=Unpooled.buffer();
+    public void toByteBuf(VehicleCommonData data,int len, FieldToByteBufContext fieldToByteBufContext,ByteBuf result) {
         if(data.getVehicleBaseData()!=null){
-            byteBuf.writeByte(1);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleBaseData()));
+            result.writeByte(1);
+            result.writeBytes(context.toByteBuf(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
-            byteBuf.writeByte(2);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleMotorData()));
+            result.writeByte(2);
+            result.writeBytes(context.toByteBuf(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
-            byteBuf.writeByte(3);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleFuelBatteryData()));
+            result.writeByte(3);
+            result.writeBytes(context.toByteBuf(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
-            byteBuf.writeByte(4);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleEngineData()));
+            result.writeByte(4);
+            result.writeBytes(context.toByteBuf(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
-            byteBuf.writeByte(5);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehiclePositionData()));
+            result.writeByte(5);
+            result.writeBytes(context.toByteBuf(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
-            byteBuf.writeByte(6);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleLimitValueData()));
+            result.writeByte(6);
+            result.writeBytes(context.toByteBuf(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
-            byteBuf.writeByte(7);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleAlarmData()));
+            result.writeByte(7);
+            result.writeBytes(context.toByteBuf(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
-            byteBuf.writeByte(8);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleStorageVoltageData()));
+            result.writeByte(8);
+            result.writeBytes(context.toByteBuf(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
-            byteBuf.writeByte(9);
-            byteBuf.writeBytes(context.toByteBuf(data.getVehicleStorageTemperatureData()));
+            result.writeByte(9);
+            result.writeBytes(context.toByteBuf(data.getVehicleStorageTemperatureData()));
         }
-        return byteBuf;
     }
 }

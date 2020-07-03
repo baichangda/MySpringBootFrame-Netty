@@ -24,18 +24,16 @@ public class StringFieldParser implements FieldParser<String> {
     }
 
     @Override
-    public ByteBuf toByteBuf(String data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(String data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         byte[] content=data.getBytes();
         if(content.length==len){
-            byteBuf.writeBytes(content);
+            result.writeBytes(content);
         }else if(content.length<len){
-            byteBuf.writeBytes(content);
-            byteBuf.writeBytes(new byte[len-content.length]);
+            result.writeBytes(content);
+            result.writeBytes(new byte[len-content.length]);
         }else{
             throw BaseRuntimeException.getException("toByteBuf error,data byte length["+content.length+"]>len["+len+"]");
         }
-        return byteBuf;
     }
 }

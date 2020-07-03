@@ -49,27 +49,25 @@ public class ShortArrayFieldParser implements FieldParser<short[]> {
     }
 
     @Override
-    public ByteBuf toByteBuf(short[] data, int len, FieldToByteBufContext context) {
+    public void toByteBuf(short[] data, int len, FieldToByteBufContext context,ByteBuf result) {
         checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
             for (short num : data) {
-                byteBuf.writeShort(num);
+                result.writeShort(num);
             }
         }else if(singleLen>BYTE_LENGTH){
             for (short num : data) {
-                byteBuf.writeBytes(new byte[singleLen-BYTE_LENGTH]);
-                byteBuf.writeShort(num);
+                result.writeBytes(new byte[singleLen-BYTE_LENGTH]);
+                result.writeShort(num);
             }
         }else{
             for (short num : data) {
                 for(int i=singleLen;i>=1;i--){
                     int move=8*(i-1);
-                    byteBuf.writeByte((byte)(num>>>move));
+                    result.writeByte((byte)(num>>>move));
                 }
             }
         }
-        return byteBuf;
     }
 }

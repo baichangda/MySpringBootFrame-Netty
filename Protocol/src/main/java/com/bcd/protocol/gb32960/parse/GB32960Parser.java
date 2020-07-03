@@ -44,13 +44,16 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
+        Packet packet= context.parse(Packet.class, byteBuf,0);
+        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
         long t2=System.currentTimeMillis();
-        for(int i=1;i<=100000;i++) {
+        for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-            test2(byteBuf,context,packetDataFieldParser);
+//            test2(byteBuf,context,packetDataFieldParser);
+            test3(packet,packetData,context,data);
         }
         long t3=System.currentTimeMillis();
 
@@ -61,11 +64,16 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
     private static Packet test2(ByteBuf byteBuf,ParserContext context,PacketDataFieldParser packetDataFieldParser) throws Exception{
         Packet packet= context.parse(Packet.class, byteBuf,0);
         PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
-            String hex=context.toHex(packetData);
-//            packet.setDataContent(Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(hex)));
-//            System.out.println(data.toUpperCase());
-//            System.out.println(context.toHex(packet).toUpperCase());
         return packet;
+    }
+
+    private static void test3(Packet packet,PacketData packetData,ParserContext context,String oHex) throws Exception{
+        ByteBuf byteBuf=context.toByteBuf(packetData);
+        packet.setDataContent(byteBuf);
+        ByteBuf byteBuf2=context.toByteBuf(packet);
+//        String hex=context.toHex(packet);
+//        System.out.println(hex.toUpperCase());
+//        System.out.println(oHex.toUpperCase());
     }
 
 
