@@ -75,7 +75,7 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
 
     private static Packet test2(ByteBuf byteBuf, Processor processor, PacketDataFieldParser packetDataFieldParser) throws Exception{
         Packet packet= processor.process(Packet.class, byteBuf,0);
-        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
+//        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         return packet;
     }
 

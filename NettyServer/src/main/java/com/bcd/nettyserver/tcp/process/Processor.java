@@ -166,11 +166,11 @@ public abstract class Processor {
      * 所有涉及解析对象必须有空参数的构造方法
      * @param clazz
      * @param data
-     * @param allLen 0代表无效,此时对象解析不依赖总长度
+     * @param instanceLen 0代表无效,此时对象解析不依赖总长度
      * @param <T>
      * @return
      */
-    public final <T>T process(Class<T> clazz, ByteBuf data, int allLen){
+    public final <T>T process(Class<T> clazz, ByteBuf data, int instanceLen){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
 //        if(packetInfo==null){
@@ -187,6 +187,7 @@ public abstract class Processor {
                 vals=new int[varValArrLen];
             }
             FieldProcessContext processContext=new FieldProcessContext();
+            processContext.setInstanceLen(instanceLen);
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 /**
