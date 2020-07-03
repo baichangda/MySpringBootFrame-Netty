@@ -4,7 +4,7 @@ import com.bcd.nettyserver.tcp.anno.PacketField;
 import com.bcd.nettyserver.tcp.info.FieldInfo;
 import io.netty.buffer.ByteBuf;
 
-public class FieldProcessContext {
+public class FieldDeProcessContext {
     /**
      * 字段信息
      */
@@ -29,11 +29,6 @@ public class FieldProcessContext {
      */
     Object instance;
 
-    /**
-     * 对象占用字节长度
-     * 0时候不可用,依赖于{@link Processor#process(Class, ByteBuf, int)} 中第三个参数
-     */
-    int instanceLen;
 
     public FieldInfo getFieldInfo() {
         return fieldInfo;
@@ -57,14 +52,6 @@ public class FieldProcessContext {
 
     public void setListLen(int listLen) {
         this.listLen = listLen;
-    }
-
-    public int getInstanceLen() {
-        return instanceLen;
-    }
-
-    public void setInstanceLen(int instanceLen) {
-        this.instanceLen = instanceLen;
     }
 
     public Object getInstance() {

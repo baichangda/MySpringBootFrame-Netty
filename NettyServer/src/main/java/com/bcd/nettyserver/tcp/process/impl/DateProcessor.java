@@ -3,6 +3,7 @@ package com.bcd.nettyserver.tcp.process.impl;
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.DateZoneUtil;
 import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -19,7 +20,7 @@ public class DateProcessor extends FieldProcessor<Date> {
     }
 
     @Override
-    public Date process(ByteBuf data, Object instance, FieldProcessContext processContext){
+    public Date process(ByteBuf data, FieldProcessContext processContext){
         if(processContext.getLen()==6){
             byte year=data.readByte();
             int month=data.readByte();
@@ -34,7 +35,7 @@ public class DateProcessor extends FieldProcessor<Date> {
     }
 
     @Override
-    public void deProcess(Date data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(Date data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         if(processContext.getLen()==6){
             LocalDateTime ldt= LocalDateTime.ofInstant(data.toInstant(), DateZoneUtil.ZONE_ID);

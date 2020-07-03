@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +16,7 @@ public class ByteArrayProcessor extends FieldProcessor<byte[]> {
     }
 
     @Override
-    public byte[] process(ByteBuf data, Object instance, FieldProcessContext processContext)  {
+    public byte[] process(ByteBuf data, FieldProcessContext processContext)  {
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         byte[] res;
         if(singleLen==BYTE_LENGTH){
@@ -35,7 +36,7 @@ public class ByteArrayProcessor extends FieldProcessor<byte[]> {
     }
 
     @Override
-    public void deProcess(byte[] data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(byte[] data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         if(singleLen==BYTE_LENGTH){

@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
 import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -17,7 +18,7 @@ public class LongArrayProcessor extends FieldProcessor<long[]> {
     }
 
     @Override
-    public long[] process(ByteBuf data, Object instance, FieldProcessContext processContext){
+    public long[] process(ByteBuf data, FieldProcessContext processContext){
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         int len= processContext.getLen();
         long[] res=new long[len/singleLen];
@@ -52,7 +53,7 @@ public class LongArrayProcessor extends FieldProcessor<long[]> {
     }
 
     @Override
-    public void deProcess(long[] data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(long[] data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         if(singleLen==BYTE_LENGTH){

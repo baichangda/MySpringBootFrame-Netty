@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
 import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -17,7 +18,7 @@ public class LongProcessor extends FieldProcessor {
     }
 
     @Override
-    public Object process(ByteBuf data, Object instance, FieldProcessContext processContext){
+    public Object process(ByteBuf data, FieldProcessContext processContext){
         int len=processContext.getLen();
         if(len==4){
             //优化处理 int->long
@@ -38,7 +39,7 @@ public class LongProcessor extends FieldProcessor {
     }
 
     @Override
-    public void deProcess(Object data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(Object data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){

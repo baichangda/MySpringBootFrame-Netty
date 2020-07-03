@@ -1,5 +1,6 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import com.bcd.protocol.gb32960.data.*;
@@ -17,7 +18,7 @@ public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonDa
     }
 
     @Override
-    public VehicleCommonData process(ByteBuf data, Object instance, FieldProcessContext processContext) {
+    public VehicleCommonData process(ByteBuf data, FieldProcessContext processContext) {
         return parseVehicleData(data,processContext.getLen(),processContext);
     }
 
@@ -104,7 +105,7 @@ public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonDa
     }
 
     @Override
-    public void deProcess(VehicleCommonData data,ByteBuf result,FieldProcessContext processContext) {
+    public void deProcess(VehicleCommonData data, ByteBuf result, FieldDeProcessContext processContext) {
         if(data.getVehicleBaseData()!=null){
             result.writeByte(1);
             result.writeBytes(processor.toByteBuf(data.getVehicleBaseData()));

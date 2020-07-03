@@ -24,11 +24,10 @@ public abstract class FieldProcessor<T> {
     /**
      * 读取byteBuf数据转换成对象
      * @param data
-     * @param instance
      * @param processContext
      * @return
      */
-    public abstract T process(ByteBuf data, Object instance, FieldProcessContext processContext);
+    public abstract T process(ByteBuf data, FieldProcessContext processContext);
 
     /**
      * 解析对象转换为byteBuf
@@ -36,6 +35,6 @@ public abstract class FieldProcessor<T> {
      * @param dest
      * @param processContext
      */
-    public abstract void deProcess(T data, ByteBuf dest, FieldProcessContext processContext);
+    public abstract void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext);
 
 }

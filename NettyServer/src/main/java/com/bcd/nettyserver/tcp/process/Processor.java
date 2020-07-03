@@ -188,6 +188,7 @@ public abstract class Processor {
             }
             FieldProcessContext processContext=new FieldProcessContext();
             processContext.setInstanceLen(instanceLen);
+            processContext.setInstance(instance);
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 /**
@@ -216,7 +217,7 @@ public abstract class Processor {
                 processContext.setFieldInfo(fieldInfo);
                 processContext.setLen(len);
                 processContext.setListLen(listLen);
-                Object val=fieldProcessors[processorIndex].process(data,instance,processContext);
+                Object val=fieldProcessors[processorIndex].process(data,processContext);
                 if(fieldInfo.isVar()){
                     vals[fieldInfo.getPacketField_var()-varValArrOffset]=((Number)val).intValue();
                 }
@@ -294,6 +295,8 @@ public abstract class Processor {
             if(varValArrLen!=0){
                 vals=new int[varValArrLen];
             }
+            FieldDeProcessContext processContext=new FieldDeProcessContext();
+            processContext.setInstance(t);
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 Object data=fieldInfo.getField().get(t);
@@ -321,7 +324,6 @@ public abstract class Processor {
                     }
                 }
 
-                FieldProcessContext processContext=new FieldProcessContext();
                 processContext.setFieldInfo(fieldInfo);
                 processContext.setLen(len);
                 processContext.setListLen(listLen);

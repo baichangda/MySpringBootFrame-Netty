@@ -56,7 +56,7 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
-//        Packet packet= processor.process(Packet.class, byteBuf,0);
+        Packet packet= processor.process(Packet.class, byteBuf,0);
 //        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
@@ -64,8 +64,8 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-            test2(byteBuf,processor,packetDataFieldParser);
-//            test3(packet,packetData,processor,data);
+//            test2(byteBuf,processor,packetDataFieldParser);
+            test3(packet,processor,data);
         }
         long t3=System.currentTimeMillis();
 
@@ -79,11 +79,9 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
         return packet;
     }
 
-    private static void test3(Packet packet,PacketData packetData,Processor processor,String oHex) throws Exception{
-        ByteBuf byteBuf=processor.toByteBuf(packetData);
-        packet.setDataContent(byteBuf);
-        ByteBuf byteBuf2=processor.toByteBuf(packet);
-//        String hex=context.toHex(packet);
+    private static void test3(Packet packet,Processor processor,String oHex) throws Exception{
+        ByteBuf byteBuf=processor.toByteBuf(packet);
+//        String hex=ByteBufUtil.hexDump(byteBuf);
 //        System.out.println(hex.toUpperCase());
 //        System.out.println(oHex.toUpperCase());
     }

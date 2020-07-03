@@ -1,5 +1,6 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import com.bcd.protocol.gb32960.data.*;
@@ -66,18 +67,18 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
 
     @Override
     public boolean support(Class clazz) {
-        return clazz==ByteBuf.class;
+        return clazz==PacketData.class;
     }
 
     @Override
-    public PacketData process(ByteBuf data, Object instance, FieldProcessContext processContext) {
-        Packet packet=(Packet)instance;
+    public PacketData process(ByteBuf data, FieldProcessContext processContext) {
+        Packet packet=(Packet)processContext.getInstance();
         return parse(data,packet.getFlag(),processContext.getLen());
     }
 
     @Override
-    public void deProcess(PacketData data, ByteBuf dest, FieldProcessContext processContext) {
-        int flag=data.getFlag();
+    public void deProcess(PacketData data, ByteBuf dest, FieldDeProcessContext processContext) {
+        int flag=((Packet)processContext.getInstance()).getFlag();
         switch (flag){
             //车辆登入
             case 1:{

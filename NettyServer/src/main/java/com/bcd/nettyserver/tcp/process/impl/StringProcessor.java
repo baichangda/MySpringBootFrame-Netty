@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -14,7 +15,7 @@ public class StringProcessor extends FieldProcessor<String> {
     }
 
     @Override
-    public String process(ByteBuf data, Object instance, FieldProcessContext processContext) {
+    public String process(ByteBuf data, FieldProcessContext processContext) {
         int discardLen=0;
         int len =processContext.getLen();
         byte[] bytes=new byte[len];
@@ -30,7 +31,7 @@ public class StringProcessor extends FieldProcessor<String> {
     }
 
     @Override
-    public void deProcess(String data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(String data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int len=processContext.getLen();
         byte[] content=data.getBytes();

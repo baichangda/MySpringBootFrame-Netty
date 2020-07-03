@@ -1,6 +1,7 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
 import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +16,7 @@ public class ByteBufProcessor extends FieldProcessor<ByteBuf> {
     }
 
     @Override
-    public ByteBuf process(ByteBuf data, Object instance, FieldProcessContext processContext) {
+    public ByteBuf process(ByteBuf data, FieldProcessContext processContext) {
         int len=processContext.getLen();
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         byteBuf.writeBytes(data,len);
@@ -23,7 +24,7 @@ public class ByteBufProcessor extends FieldProcessor<ByteBuf> {
     }
 
     @Override
-    public void deProcess(ByteBuf data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(ByteBuf data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         dest.writeBytes(data);
     }

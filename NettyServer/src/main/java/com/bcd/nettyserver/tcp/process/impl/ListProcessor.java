@@ -1,5 +1,6 @@
 package com.bcd.nettyserver.tcp.process.impl;
 
+import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessContext;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +16,7 @@ public class ListProcessor extends FieldProcessor<List> {
     }
 
     @Override
-    public List process(ByteBuf data, Object instance, FieldProcessContext processContext) {
+    public List process(ByteBuf data, FieldProcessContext processContext) {
         int listLen=processContext.getListLen();
         List list=new ArrayList(listLen);
         for (int i = 0; i < listLen; i++) {
@@ -25,7 +26,7 @@ public class ListProcessor extends FieldProcessor<List> {
     }
 
     @Override
-    public void deProcess(List data, ByteBuf dest, FieldProcessContext processContext) {
+    public void deProcess(List data, ByteBuf dest, FieldDeProcessContext processContext) {
         for (Object o : data) {
             processor.deProcess(o,dest);
         }
