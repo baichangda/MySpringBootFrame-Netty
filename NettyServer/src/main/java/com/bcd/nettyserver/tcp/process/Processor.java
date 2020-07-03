@@ -157,7 +157,7 @@ public abstract class Processor {
     }
 
     public final <T>T process(Class<T> clazz, ByteBuf data){
-        return process(clazz,data,0);
+        return process(clazz,data,null);
     }
 
 
@@ -166,11 +166,11 @@ public abstract class Processor {
      * 所有涉及解析对象必须有空参数的构造方法
      * @param clazz
      * @param data
-     * @param instanceLen 0代表无效,此时对象解析不依赖总长度
+     * @param parentContext 当前对象作为其他类的字段解析时候 的环境
      * @param <T>
      * @return
      */
-    public final <T>T process(Class<T> clazz, ByteBuf data, int instanceLen){
+    public final <T>T process(Class<T> clazz, ByteBuf data, FieldProcessContext parentContext){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
 //        if(packetInfo==null){
@@ -187,7 +187,7 @@ public abstract class Processor {
                 vals=new int[varValArrLen];
             }
             FieldProcessContext processContext=new FieldProcessContext();
-            processContext.setInstanceLen(instanceLen);
+            processContext.setParentContext(parentContext);
             processContext.setInstance(instance);
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
@@ -275,13 +275,17 @@ public abstract class Processor {
     }
 
 
+    public final void deProcess(Object t, ByteBuf res){
+        deProcess(t, res,null);
+    }
 
     /**
      * 将对象转换为byteBuf
      * @param t 不能为null
      * @param res
+     * @param parentContext
      */
-    public final void deProcess(Object t, ByteBuf res){
+    public final void deProcess(Object t, ByteBuf res,FieldDeProcessContext parentContext){
         try{
             if(res==null){
                 res= Unpooled.buffer();
@@ -297,6 +301,7 @@ public abstract class Processor {
             }
             FieldDeProcessContext processContext=new FieldDeProcessContext();
             processContext.setInstance(t);
+            processContext.setParentContext(parentContext);
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 Object data=fieldInfo.getField().get(t);
@@ -323,7 +328,6 @@ public abstract class Processor {
                         listLen = RpnUtil.calcRPN_char_int(rpns[1], vals,varValArrOffset);
                     }
                 }
-
                 processContext.setFieldInfo(fieldInfo);
                 processContext.setLen(len);
                 processContext.setListLen(listLen);

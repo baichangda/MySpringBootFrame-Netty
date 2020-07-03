@@ -14,42 +14,42 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
     public PacketDataFieldParser() {
     }
 
-    public PacketData parse(ByteBuf data,int flag,int len){
+    public PacketData parse(ByteBuf data,int flag,FieldProcessContext processContext){
         PacketData packetData=null;
         switch (flag){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= processor.process(VehicleLoginData.class, data,len);
+                VehicleLoginData vehicleLoginData= processor.process(VehicleLoginData.class, data,processContext);
                 packetData=vehicleLoginData;
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= processor.process(VehicleRealData.class,data,len);
+                VehicleRealData vehicleRealData= processor.process(VehicleRealData.class,data,processContext);
                 packetData=vehicleRealData;
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= processor.process(VehicleSupplementData.class,data,len);
+                VehicleSupplementData vehicleSupplementData= processor.process(VehicleSupplementData.class,data,processContext);
                 packetData=vehicleSupplementData;
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= processor.process(VehicleLogoutData.class,data,len);
+                VehicleLogoutData vehicleLogoutData= processor.process(VehicleLogoutData.class,data,processContext);
                 packetData=vehicleLogoutData;
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= processor.process(PlatformLoginData.class,data,len);
+                PlatformLoginData platformLoginData= processor.process(PlatformLoginData.class,data,processContext);
                 packetData=platformLoginData;
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= processor.process(PlatformLogoutData.class,data,len);
+                PlatformLogoutData platformLogoutData= processor.process(PlatformLogoutData.class,data,processContext);
                 packetData=platformLogoutData;
                 break;
             }
@@ -73,7 +73,7 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
     @Override
     public PacketData process(ByteBuf data, FieldProcessContext processContext) {
         Packet packet=(Packet)processContext.getInstance();
-        return parse(data,packet.getFlag(),processContext.getLen());
+        return parse(data,packet.getFlag(),processContext);
     }
 
     @Override
@@ -82,32 +82,32 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
         switch (flag){
             //车辆登入
             case 1:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //车辆实时信息
             case 2:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //补发信息上报
             case 3:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //车辆登出
             case 4:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //平台登入
             case 5:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //平台登出
             case 6:{
-                dest.writeBytes(processor.toByteBuf(data));
+                processor.deProcess(data,dest,processContext);
                 break;
             }
             //心跳

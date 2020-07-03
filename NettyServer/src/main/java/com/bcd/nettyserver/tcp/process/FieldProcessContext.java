@@ -30,10 +30,11 @@ public class FieldProcessContext {
     Object instance;
 
     /**
-     * 对象占用字节长度
-     * 0时候不可用,依赖于{@link Processor#process(Class, ByteBuf, int)} 中第三个参数
+     * 当前字段所属对象所属字段的 环境变量
+     * 即父环境
+     * 如果是顶级,则为null
      */
-    int instanceLen;
+    FieldProcessContext parentContext;
 
     public FieldInfo getFieldInfo() {
         return fieldInfo;
@@ -59,19 +60,19 @@ public class FieldProcessContext {
         this.listLen = listLen;
     }
 
-    public int getInstanceLen() {
-        return instanceLen;
-    }
-
-    public void setInstanceLen(int instanceLen) {
-        this.instanceLen = instanceLen;
-    }
-
     public Object getInstance() {
         return instance;
     }
 
     public void setInstance(Object instance) {
         this.instance = instance;
+    }
+
+    public FieldProcessContext getParentContext() {
+        return parentContext;
+    }
+
+    public void setParentContext(FieldProcessContext parentContext) {
+        this.parentContext = parentContext;
     }
 }

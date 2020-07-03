@@ -29,6 +29,13 @@ public class FieldDeProcessContext {
      */
     Object instance;
 
+    /**
+     * 当前字段所属对象所属字段的 环境变量
+     * 即父环境
+     * 如果是顶级,则为null
+     */
+    FieldDeProcessContext parentContext;
+
 
     public FieldInfo getFieldInfo() {
         return fieldInfo;
@@ -60,5 +67,13 @@ public class FieldDeProcessContext {
 
     public void setInstance(Object instance) {
         this.instance = instance;
+    }
+
+    public FieldDeProcessContext getParentContext() {
+        return parentContext;
+    }
+
+    public void setParentContext(FieldDeProcessContext parentContext) {
+        this.parentContext = parentContext;
     }
 }

@@ -56,16 +56,15 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
-        Packet packet= processor.process(Packet.class, byteBuf,0);
-//        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
+//        Packet packet= processor.process(Packet.class, byteBuf);
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
         long t2=System.currentTimeMillis();
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-//            test2(byteBuf,processor,packetDataFieldParser);
-            test3(packet,processor,data);
+            test2(byteBuf,processor,packetDataFieldParser);
+//            test3(packet,processor,data);
         }
         long t3=System.currentTimeMillis();
 
@@ -74,7 +73,7 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
     }
 
     private static Packet test2(ByteBuf byteBuf, Processor processor, PacketDataFieldParser packetDataFieldParser) throws Exception{
-        Packet packet= processor.process(Packet.class, byteBuf,0);
+        Packet packet= processor.process(Packet.class, byteBuf);
 //        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         return packet;
     }

@@ -25,7 +25,7 @@ public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonDa
 
     private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldProcessContext processContext){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
-        int allLen= processContext.getInstanceLen()-6;
+        int allLen= ((Packet)processContext.getParentContext().getInstance()).getContentLength()-6;
         int beginLeave=byteBuf.readableBytes();
         A:while(byteBuf.isReadable()) {
             int curLeave=byteBuf.readableBytes();

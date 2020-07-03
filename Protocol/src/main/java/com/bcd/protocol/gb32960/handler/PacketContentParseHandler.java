@@ -23,7 +23,7 @@ public class PacketContentParseHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Packet packet=(Packet)msg;
-        PacketData packetData= packetDataFieldHandler.parse(packet.getDataContent(),packet.getFlag(),packet.getDataContent().readableBytes());
+        PacketData packetData= packetDataFieldHandler.parse(packet.getDataContent(),packet.getFlag(),null);
         packet.setData(packetData);
         super.channelRead(ctx, msg);
     }
