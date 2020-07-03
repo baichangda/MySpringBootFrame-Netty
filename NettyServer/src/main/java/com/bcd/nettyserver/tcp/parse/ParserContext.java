@@ -192,7 +192,7 @@ public abstract class ParserContext {
             }else{
                 ByteBuf res= Unpooled.buffer();
                 Class clazz= t.getClass();
-                PacketInfo packetInfo=toPacketInfo(clazz);
+                PacketInfo packetInfo=packetInfoCache.get(clazz);
                 //解析包
                 int [] vals=null;
                 int varValArrLen=packetInfo.getVarValArrLen();
