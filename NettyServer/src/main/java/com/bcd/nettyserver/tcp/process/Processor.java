@@ -5,7 +5,7 @@ import com.bcd.base.util.ClassUtil;
 import com.bcd.base.util.ProxyUtil;
 import com.bcd.base.util.RpnUtil;
 import com.bcd.base.util.SpringUtil;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.nettyserver.tcp.anno.Processable;
 import com.bcd.nettyserver.tcp.info.FieldInfo;
 import com.bcd.nettyserver.tcp.info.OffsetFieldInfo;
 import com.bcd.nettyserver.tcp.info.PacketInfo;
@@ -137,18 +137,18 @@ public abstract class Processor {
     }
 
     /**
-     * 加载所有 {@link ParseAble} 注解的类并转换为 {@link PacketInfo}
+     * 加载所有 {@link Processable} 注解的类并转换为 {@link PacketInfo}
      */
     protected abstract void initPacketInfo();
 
     /**
-     * 加载所有 {@link ParseAble} 注解的类并转换为 {@link com.bcd.nettyserver.tcp.info.PacketInfo}
+     * 加载所有 {@link Processable} 注解的类并转换为 {@link com.bcd.nettyserver.tcp.info.PacketInfo}
      * 存储在map中
      * @param packageName
      */
     protected void initPacketInfoByScanClass(String packageName){
         try {
-            for (Class e : ClassUtil.getClassesWithAnno(ParseAble.class, packageName)) {
+            for (Class e : ClassUtil.getClassesWithAnno(Processable.class, packageName)) {
                 packetInfoCache.put(e,ProcessUtil.toPacketInfo(e,enableOffsetField,fieldProcessors));
             }
         } catch (IOException | ClassNotFoundException e) {

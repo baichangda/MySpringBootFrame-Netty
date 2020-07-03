@@ -53,7 +53,7 @@ public class ProcessUtil {
             boolean isVar=false;
             int processorIndex;
             //判断是否特殊处理
-            if(packetField.parserClass()==Void.class){
+            if(packetField.processorClass()==Void.class){
                 //判断是否是List<Bean>(Bean代表自定义实体类型,不包括Byte、Short、Integer、Long)
                 if(packetField.listLenExpr().isEmpty()) {
                     if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
@@ -98,7 +98,7 @@ public class ProcessUtil {
             }else{
                 //特殊处理,自定义实体类型
                 typeClazz=fieldType;
-                processorIndex=findProcessorIndexByFieldProcessorClass(packetField.parserClass(),processors);
+                processorIndex=findProcessorIndexByFieldProcessorClass(packetField.processorClass(),processors);
             }
 
             //转换逆波兰表达式
@@ -143,7 +143,7 @@ public class ProcessUtil {
             fieldInfo.setPacketField_listLenExpr(packetField.listLenExpr());
             fieldInfo.setPacketField_singleLen(packetField.singleLen());
             fieldInfo.setPacketField_var(packetField.var());
-            fieldInfo.setPacketField_parserClass(packetField.parserClass());
+            fieldInfo.setPacketField_parserClass(packetField.processorClass());
             return fieldInfo;
         }).collect(Collectors.toList());
         packetInfo.setFieldInfoList(fieldInfoList);

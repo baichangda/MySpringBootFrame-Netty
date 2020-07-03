@@ -10,17 +10,17 @@ import java.lang.annotation.*;
  * short/Short
  * int/Integer
  * long/Long
- * String
- * Date
  * byte[]
  * short[]
  * int[]
  * long[]
+ * String
+ * Date
  * ByteBuf
+ * List
  * 自定义类型,TestBean
- * 自定义类型集合,List<TestBean>
  *
- * 如果以上类型不满足解析需求,可以自行设置{@link #parserClass()}属性定义自定义解析器
+ * 如果以上类型不满足解析需求,可以自行设置{@link #processorClass()}属性定义自定义解析器
  *
  */
 @Target({ElementType.FIELD})
@@ -80,7 +80,7 @@ public @interface PacketField {
 
     /**
      * 处理类
-     * 用于处理特殊情况,class类型必须是{@link com.bcd.nettyserver.tcp.parse.FieldParser}子类
+     * 用于处理特殊情况,class类型必须是{@link com.bcd.nettyserver.tcp.process.FieldProcessor}子类
      */
-    Class parserClass() default Void.class;
+    Class processorClass() default Void.class;
 }

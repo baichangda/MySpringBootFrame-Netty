@@ -1,12 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.nettyserver.tcp.anno.Processable;
 import com.bcd.nettyserver.tcp.anno.PacketField;
 
 /**
  * 每个驱动电机数据格式
  */
-@ParseAble
+@Processable
 public class MotorData {
     //驱动电机序号
     @PacketField(index = 1,len = 1)
