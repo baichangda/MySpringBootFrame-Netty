@@ -1,34 +1,30 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
-import com.bcd.nettyserver.tcp.parse.FieldParseContext;
-import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
-import com.bcd.nettyserver.tcp.parse.ParserContext;
+import com.bcd.nettyserver.tcp.process.FieldProcessContext;
+import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 @Component
-public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonData> {
+public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonData> {
     Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldParser.class);
 
-    ParserContext context;
-
     @Override
-    public VehicleCommonData parse(ByteBuf data, int len, FieldParseContext fieldParseContext){
-        return parseVehicleData(data,len,fieldParseContext);
+    public boolean support(Class clazz) {
+        return clazz==VehicleCommonData.class;
     }
 
     @Override
-    public void setContext(ParserContext context) {
-        this.context =context;
+    public VehicleCommonData process(ByteBuf data, Object instance, FieldProcessContext processContext) {
+        return parseVehicleData(data,processContext.getLen(),processContext);
     }
 
-    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldParseContext fieldParseContext){
+
+    private VehicleCommonData parseVehicleData(ByteBuf byteBuf, int len, FieldProcessContext processContext){
         VehicleCommonData vehicleCommonData=new VehicleCommonData();
-        int allLen= fieldParseContext.getAllLen()-6;
+        int allLen= 309-6;
         int beginLeave=byteBuf.readableBytes();
         A:while(byteBuf.isReadable()) {
             int curLeave=byteBuf.readableBytes();
@@ -39,55 +35,55 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
-                    VehicleBaseData data = context.parse(VehicleBaseData.class,byteBuf);
+                    VehicleBaseData data = processor.process(VehicleBaseData.class,byteBuf);
                     vehicleCommonData.setVehicleBaseData(data);
                     break;
                 }
                 case 2: {
                     //2.2、驱动电机数据
-                    VehicleMotorData vehicleMotorData= context.parse(VehicleMotorData.class,byteBuf);
+                    VehicleMotorData vehicleMotorData= processor.process(VehicleMotorData.class,byteBuf);
                     vehicleCommonData.setVehicleMotorData(vehicleMotorData);
                     break;
                 }
                 case 3: {
                     //2.3、燃料电池数据
-                    VehicleFuelBatteryData vehicleFuelBatteryData= context.parse(VehicleFuelBatteryData.class,byteBuf);
+                    VehicleFuelBatteryData vehicleFuelBatteryData= processor.process(VehicleFuelBatteryData.class,byteBuf);
                     vehicleCommonData.setVehicleFuelBatteryData(vehicleFuelBatteryData);
                     break;
                 }
                 case 4: {
                     //2.4、发动机数据
-                    VehicleEngineData data= context.parse(VehicleEngineData.class,byteBuf);
+                    VehicleEngineData data= processor.process(VehicleEngineData.class,byteBuf);
                     vehicleCommonData.setVehicleEngineData(data);
                     break;
                 }
                 case 5: {
                     //2.5、车辆位置数据
-                    VehiclePositionData data= context.parse(VehiclePositionData.class,byteBuf);
+                    VehiclePositionData data= processor.process(VehiclePositionData.class,byteBuf);
                     vehicleCommonData.setVehiclePositionData(data);
                     break;
                 }
                 case 6: {
                     //2.6、极值数据
-                    VehicleLimitValueData data= context.parse(VehicleLimitValueData.class,byteBuf);
+                    VehicleLimitValueData data= processor.process(VehicleLimitValueData.class,byteBuf);
                     vehicleCommonData.setVehicleLimitValueData(data);
                     break;
                 }
                 case 7: {
                     //2.7、报警数据
-                    VehicleAlarmData vehicleAlarmData= context.parse(VehicleAlarmData.class,byteBuf);
+                    VehicleAlarmData vehicleAlarmData= processor.process(VehicleAlarmData.class,byteBuf);
                     vehicleCommonData.setVehicleAlarmData(vehicleAlarmData);
                     break;
                 }
                 case 8:{
                     //2.8、可充电储能装置电压数据
-                    VehicleStorageVoltageData vehicleStorageVoltageData= context.parse(VehicleStorageVoltageData.class,byteBuf);
+                    VehicleStorageVoltageData vehicleStorageVoltageData= processor.process(VehicleStorageVoltageData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageVoltageData(vehicleStorageVoltageData);
                     break;
                 }
                 case 9:{
                     //2.9、可充电储能装置温度数据
-                    VehicleStorageTemperatureData vehicleStorageTemperatureData= context.parse(VehicleStorageTemperatureData.class,byteBuf);
+                    VehicleStorageTemperatureData vehicleStorageTemperatureData= processor.process(VehicleStorageTemperatureData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageTemperatureData(vehicleStorageTemperatureData);
                     break;
                 }
@@ -108,42 +104,42 @@ public class VehicleCommonDataFieldParser implements FieldParser<VehicleCommonDa
     }
 
     @Override
-    public void toByteBuf(VehicleCommonData data,int len, FieldToByteBufContext fieldToByteBufContext,ByteBuf result) {
+    public void deProcess(VehicleCommonData data,ByteBuf result,FieldProcessContext processContext) {
         if(data.getVehicleBaseData()!=null){
             result.writeByte(1);
-            result.writeBytes(context.toByteBuf(data.getVehicleBaseData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleBaseData()));
         }
         if(data.getVehicleMotorData()!=null){
             result.writeByte(2);
-            result.writeBytes(context.toByteBuf(data.getVehicleMotorData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleMotorData()));
         }
         if(data.getVehicleFuelBatteryData()!=null){
             result.writeByte(3);
-            result.writeBytes(context.toByteBuf(data.getVehicleFuelBatteryData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleFuelBatteryData()));
         }
         if(data.getVehicleEngineData()!=null){
             result.writeByte(4);
-            result.writeBytes(context.toByteBuf(data.getVehicleEngineData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleEngineData()));
         }
         if(data.getVehiclePositionData()!=null){
             result.writeByte(5);
-            result.writeBytes(context.toByteBuf(data.getVehiclePositionData()));
+            result.writeBytes(processor.toByteBuf(data.getVehiclePositionData()));
         }
         if(data.getVehicleLimitValueData()!=null){
             result.writeByte(6);
-            result.writeBytes(context.toByteBuf(data.getVehicleLimitValueData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleLimitValueData()));
         }
         if(data.getVehicleAlarmData()!=null){
             result.writeByte(7);
-            result.writeBytes(context.toByteBuf(data.getVehicleAlarmData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleAlarmData()));
         }
         if(data.getVehicleStorageVoltageData()!=null){
             result.writeByte(8);
-            result.writeBytes(context.toByteBuf(data.getVehicleStorageVoltageData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleStorageVoltageData()));
         }
         if(data.getVehicleStorageTemperatureData()!=null){
             result.writeByte(9);
-            result.writeBytes(context.toByteBuf(data.getVehicleStorageTemperatureData()));
+            result.writeBytes(processor.toByteBuf(data.getVehicleStorageTemperatureData()));
         }
     }
 }

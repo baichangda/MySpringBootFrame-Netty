@@ -3,13 +3,10 @@ package com.bcd.protocol.gb32960;
 
 import com.bcd.base.util.ExceptionUtil;
 import com.bcd.nettyserver.tcp.TcpServer;
-import com.bcd.nettyserver.tcp.info.PacketInfo;
-import com.bcd.nettyserver.tcp.parse.ParserContext;
 import com.bcd.protocol.gb32960.handler.BusinessHandler;
 import com.bcd.protocol.gb32960.handler.PacketContentParseHandler;
 import com.bcd.protocol.gb32960.handler.PacketParseHandler;
 import com.bcd.nettyserver.tcp.handler.PacketSplitHandler;
-import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -19,7 +16,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

@@ -5,7 +5,7 @@ import com.bcd.nettyserver.tcp.anno.PacketField;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class FieldProcessContext {
+public class FieldInfo {
 
     public Field field;
 
@@ -43,7 +43,7 @@ public class FieldProcessContext {
     /**
      * {@link PacketField#var()} 属性不为空
      * 只有当
-     * {@link FieldProcessContext#processorIndex} 为数字类型(0、1、2、3)时候,才可能是true
+     * {@link FieldInfo#processorIndex} 为数字类型(0、1、2、3)时候,才可能是true
      */
     public boolean isVar;
 

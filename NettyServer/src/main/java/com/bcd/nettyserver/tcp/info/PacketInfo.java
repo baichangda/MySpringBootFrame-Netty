@@ -1,8 +1,6 @@
 package com.bcd.nettyserver.tcp.info;
 
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-
 import java.util.List;
 
 public class PacketInfo {

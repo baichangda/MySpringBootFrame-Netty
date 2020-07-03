@@ -1,6 +1,6 @@
 package com.bcd.protocol.gb32960.handler;
 
-import com.bcd.nettyserver.tcp.parse.ParserContext;
+import com.bcd.nettyserver.tcp.process.Processor;
 import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class PacketParseHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     @Qualifier("parser_32960")
-    ParserContext parser;
+    Processor parser;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -29,7 +29,7 @@ public class PacketParseHandler extends ChannelInboundHandlerAdapter {
         byteBuf.getBytes(0,content);
         String hex= ByteBufUtil.hexDump(content);
         //3、解析成实体
-        Packet packet= parser.parse(Packet.class,byteBuf,byteBuf.readableBytes());
+        Packet packet= parser.process(Packet.class,byteBuf,byteBuf.readableBytes());
         packet.setHex(hex);
         super.channelRead(ctx, packet);
     }
