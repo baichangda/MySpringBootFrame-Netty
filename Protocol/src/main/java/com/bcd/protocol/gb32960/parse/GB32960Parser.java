@@ -36,7 +36,6 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
     }
 
     public static void main(String[] args) throws Exception{
-        PacketDataFieldParser packetDataFieldParser=new PacketDataFieldParser();
         Processor processor= new Processor() {
             @Override
             protected void initPacketInfo() {
@@ -49,7 +48,6 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
             }
         };
 //        context.withEnableOffsetField(true);
-        packetDataFieldParser.setProcessor(processor);
         processor.init();
         String data="232303FE4C534A4132343033304853313932393639010135" +
                 "1403190F0507010203010000000469B00EE5271055020F1FFF000002010103424E1E4E2045FFFF2710050006BE437001CF306A060160FFFF0101FFFF0118FF01010E070000000000000000000801010EE527100060000160FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF09010100180EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED";
@@ -63,7 +61,7 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-            test2(byteBuf,processor,packetDataFieldParser);
+            test2(byteBuf,processor);
 //            test3(packet,processor,data);
         }
         long t3=System.currentTimeMillis();
@@ -72,13 +70,12 @@ public class GB32960Parser extends Processor implements ApplicationListener<Cont
 
     }
 
-    private static Packet test2(ByteBuf byteBuf, Processor processor, PacketDataFieldParser packetDataFieldParser) throws Exception{
+    private static Packet test2(ByteBuf byteBuf, Processor processor){
         Packet packet= processor.process(Packet.class, byteBuf);
-//        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         return packet;
     }
 
-    private static void test3(Packet packet,Processor processor,String oHex) throws Exception{
+    private static void test3(Packet packet,Processor processor,String oHex){
         ByteBuf byteBuf=processor.toByteBuf(packet);
 //        String hex=ByteBufUtil.hexDump(byteBuf);
 //        System.out.println(hex.toUpperCase());
