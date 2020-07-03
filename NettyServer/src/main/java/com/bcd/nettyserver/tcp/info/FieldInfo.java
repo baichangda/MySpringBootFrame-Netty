@@ -5,7 +5,7 @@ import com.bcd.nettyserver.tcp.anno.PacketField;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class FieldInfo {
+public class FieldProcessContext {
 
     public Field field;
 
@@ -20,43 +20,36 @@ public class FieldInfo {
     public int packetField_singleLen;
     public Class packetField_parserClass;
 
-
-
     /**
-     * 1、byte/Byte
-     * 2、short/Short
-     * 3、int/Integer
-     * 4、long/Long
-     * 5、String
-     * 6、Date
+     * {@link com.bcd.nettyserver.tcp.process.Processor#fieldProcessors} 索引
+     * 0、byte/Byte
+     * 1、short/Short
+     * 2、int/Integer
+     * 3、long/Long
+     * 4、byte[]
+     * 5、short[]
+     * 6、int[]
+     * 7、long[]
+     * 8、String
+     * 9、Date
+     * 10、ByteBuf
+     * 11、List
      *
-     * 7、byte[]
-     * 8、short[]
-     * 9、int[]
-     * 10、long[]
-     *
-     * 11、ByteBuf
-     *
-     * 100、实体类型,例如TestBean
-     * 101、集合实体类型,例如List<TestBean>
-     *
-     * 0、通用解析方法失效、此时采用对应{@link PacketField#parserClass()}处理类处理
+     * >11、代表自定义的类型
      *
      */
-    public int type;
+    public int processorIndex;
 
     /**
      * {@link PacketField#var()} 属性不为空
      * 只有当
-     * {@link FieldInfo#type} 为数字类型(1、2、3、4)时候,才可能是true
+     * {@link FieldProcessContext#processorIndex} 为数字类型(0、1、2、3)时候,才可能是true
      */
     public boolean isVar;
 
     /**
-     * 当type=100/101时候才有值,为实体类型
-     * type=100,代表实体类型
-     * type=101,代表集合泛型
-     * type=0,代表{@link PacketField#parserClass()}处理类类型
+     * processorIndex=11时候代表集合泛型
+     * processorIndex>11代表实体类型
      */
     public Class clazz;
 
@@ -68,23 +61,12 @@ public class FieldInfo {
     public List[] rpns;
 
 
-
-
-
     public Field getField() {
         return field;
     }
 
     public void setField(Field field) {
         this.field = field;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public Class getClazz() {
@@ -167,4 +149,11 @@ public class FieldInfo {
         this.packetField_parserClass = packetField_parserClass;
     }
 
+    public int getProcessorIndex() {
+        return processorIndex;
+    }
+
+    public void setProcessorIndex(int processorIndex) {
+        this.processorIndex = processorIndex;
+    }
 }
