@@ -31,7 +31,7 @@ public class IntegerProcessor extends FieldProcessor {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return data.readInt();
+                return temp.readInt();
             }
         }
     }

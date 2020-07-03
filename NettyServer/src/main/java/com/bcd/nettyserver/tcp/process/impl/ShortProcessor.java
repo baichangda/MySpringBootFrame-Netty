@@ -32,7 +32,7 @@ public class ShortProcessor extends FieldProcessor {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return data.readShort();
+                return temp.readShort();
             }
         }
     }

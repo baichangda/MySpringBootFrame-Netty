@@ -186,6 +186,7 @@ public abstract class Processor {
             if(varValArrLen!=0){
                 vals=new int[varValArrLen];
             }
+            FieldProcessContext processContext=new FieldProcessContext();
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 /**
@@ -211,8 +212,6 @@ public abstract class Processor {
                         listLen = RpnUtil.calcRPN_char_int(rpns[1], vals,varValArrOffset);
                     }
                 }
-
-                FieldProcessContext processContext=new FieldProcessContext();
                 processContext.setFieldInfo(fieldInfo);
                 processContext.setLen(len);
                 processContext.setListLen(listLen);
