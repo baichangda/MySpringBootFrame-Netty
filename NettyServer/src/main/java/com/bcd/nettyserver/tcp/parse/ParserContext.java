@@ -1,10 +1,7 @@
 package com.bcd.nettyserver.tcp.parse;
 
 import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.base.util.ClassUtil;
-import com.bcd.base.util.ProxyUtil;
-import com.bcd.base.util.SpringUtil;
-import com.bcd.base.util.StringUtil;
+import com.bcd.base.util.*;
 import com.bcd.nettyserver.tcp.anno.OffsetField;
 import com.bcd.nettyserver.tcp.anno.ParseAble;
 import com.bcd.nettyserver.tcp.anno.PacketField;
@@ -32,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("unchecked")
 public abstract class ParserContext {
+
     public final Map<Class, PacketInfo> packetInfoCache =new HashMap<>();
 
     /**
@@ -194,9 +192,14 @@ public abstract class ParserContext {
             }else{
                 ByteBuf res= Unpooled.buffer();
                 Class clazz= t.getClass();
-                //解析包
-                Map<String,Integer> valMap=new HashMap<>();
                 PacketInfo packetInfo=toPacketInfo(clazz);
+                //解析包
+                int [] vals=null;
+                int varValArrLen=packetInfo.getVarValArrLen();
+                int varValArrOffset=packetInfo.getVarValArrOffset();
+                if(varValArrLen!=0){
+                    vals=new int[varValArrLen];
+                }
                 List<FieldInfo> fieldInfoList=packetInfo.getFieldInfoList();
                 FieldToByteBufContext context=new FieldToByteBufContext();
                 for (int i=0,end=fieldInfoList.size();i<end;i++) {
@@ -210,7 +213,6 @@ public abstract class ParserContext {
                     List[] rpns= fieldInfo.getRpns();
                     Object data;
 
-                    ByteBuf val=Unpooled.buffer();
                     data=fieldInfo.getField().get(t);
                     switch (type){
                         case 0:{
@@ -220,9 +222,9 @@ public abstract class ParserContext {
                              */
                             Class handleClass=fieldInfo.getClazz();
                             FieldParser fieldParser= classToParser.get(handleClass);
-                            if(fieldParser==null){
-                                throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
-                            }
+//                            if(fieldParser==null){
+//                                throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
+//                            }
                             int len;
                             /**
                              * 如果{@link PacketField#lenExpr()} 为空
@@ -231,19 +233,19 @@ public abstract class ParserContext {
                                 len=fieldInfo.getPacketField_len();
                             }else{
                                 if(rpns[0].size()==1){
-                                    len= valMap.get(rpns[0].get(0));
+                                    len= vals[(char)rpns[0].get(0)-varValArrOffset];
                                 }else {
-                                    len = (int) ParseUtil.calcRPNWithInteger(rpns[0], valMap);
+                                    len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                                 }
                             }
-                            val.writeBytes(fieldParser.toByteBuf(data,len,context));
+                            res.writeBytes(fieldParser.toByteBuf(data,len,context));
                             break;
                         }
                         case 100:{
                             /**
                              * 处理Bean 类型数据
                              */
-                            val.writeBytes(toByteBuf(data));
+                            res.writeBytes(toByteBuf(data));
                             break;
                         }
                         case 101:{
@@ -251,10 +253,10 @@ public abstract class ParserContext {
                              * 如果{@link PacketField#listLenExpr()} ()} 不为空
                              * 处理List<Bean>类型字段
                              */
-                            int listLen = (int) ParseUtil.calcRPNWithInteger(rpns[1],valMap);
+                            int listLen = RpnUtil.calcRPN_char_int(rpns[1],vals,varValArrOffset);
                             List list = (List)data;
                             for (int j = 0; j <= listLen-1; j++) {
-                                val.writeBytes(toByteBuf(list.get(j)));
+                                res.writeBytes(toByteBuf(list.get(j)));
                             }
                             break;
                         }
@@ -267,22 +269,21 @@ public abstract class ParserContext {
                                 len=fieldInfo.getPacketField_len();
                             }else{
                                 if(rpns[0].size()==1){
-                                    len= valMap.get(rpns[0].get(0));
+                                    len= vals[(char)rpns[0].get(0)-varValArrOffset];
                                 }else {
-                                    len = (int) ParseUtil.calcRPNWithInteger(rpns[0], valMap);
+                                    len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                                 }
                             }
-                            val.writeBytes(fieldParserArr[type].toByteBuf(data,len,context));
+                            res.writeBytes(fieldParserArr[type].toByteBuf(data,len,context));
                             /**
                              * 如果 {@link PacketField#var()} 不为空
                              * 说明是变量
                              */
                             if(fieldInfo.isVar()){
-                                valMap.put(fieldInfo.getPacketField_var(),(Integer) data);
+                                vals[fieldInfo.getPacketField_var()-varValArrOffset]=((Number)data).intValue();
                             }
                         }
                     }
-                    res.writeBytes(val);
                 }
                 return res;
             }
@@ -314,9 +315,11 @@ public abstract class ParserContext {
             //构造实例
             T instance= clazz.newInstance();
             //进行解析
-            Map<String,Integer> valMap=null;
-            if(packetInfo.getVarCount()>0){
-                valMap=new HashMap<>();
+            int [] vals=null;
+            int varValArrLen=packetInfo.getVarValArrLen();
+            int varValArrOffset=packetInfo.getVarValArrOffset();
+            if(varValArrLen!=0){
+                vals=new int[varValArrLen];
             }
             FieldParseContext context=new FieldParseContext();
             context.setPacketInfo(packetInfo);
@@ -350,9 +353,9 @@ public abstract class ParserContext {
                             len=fieldInfo.getPacketField_len();
                         }else{
                             if(rpns[0].size()==1){
-                                len= valMap.get(rpns[0].get(0));
+                                len=vals[(char)rpns[0].get(0)-varValArrOffset];
                             }else {
-                                len = (int) ParseUtil.calcRPNWithInteger(rpns[0], valMap);
+                                len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                             }
                         }
                         val=fieldParser.parse(data,len,context);
@@ -370,9 +373,9 @@ public abstract class ParserContext {
                             len=fieldInfo.getPacketField_len();
                         }else{
                             if(rpns[0].size()==1){
-                                len=valMap.get(rpns[0].get(0));
+                                len=vals[(char)rpns[0].get(0)-varValArrOffset];
                             }else{
-                                len=(int) ParseUtil.calcRPNWithInteger(rpns[0],valMap);
+                                len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                             }
                         }
                         val = parse(fieldInfo.getClazz(), data,len);
@@ -388,9 +391,9 @@ public abstract class ParserContext {
                             listLen=fieldInfo.getPacketField_len();
                         }else{
                             if(rpns[1].size()==1){
-                                listLen=valMap.get(rpns[1].get(0));
+                                listLen=vals[(char)rpns[1].get(0)-varValArrOffset];
                             }else{
-                                listLen=(int) ParseUtil.calcRPNWithInteger(rpns[1],valMap);
+                                listLen = RpnUtil.calcRPN_char_int(rpns[1], vals,varValArrOffset);
                             }
                         }
                         List list = new ArrayList(listLen);
@@ -409,9 +412,9 @@ public abstract class ParserContext {
                             len=fieldInfo.getPacketField_len();
                         }else{
                             if(rpns[0].size()==1){
-                                len=valMap.get(rpns[0].get(0));
+                                len=vals[(char)rpns[0].get(0)-varValArrOffset];
                             }else{
-                                len=(int) ParseUtil.calcRPNWithInteger(rpns[0],valMap);
+                                len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
                             }
                         }
                         val=fieldParserArr[type].parse(data,len,context);
@@ -420,7 +423,7 @@ public abstract class ParserContext {
                          * 说明是变量
                          */
                         if(fieldInfo.isVar()){
-                            valMap.put(fieldInfo.getPacketField_var(),((Number)val).intValue());
+                            vals[fieldInfo.getPacketField_var()-varValArrOffset]=((Number)val).intValue();
                         }
                     }
                 }
@@ -440,7 +443,7 @@ public abstract class ParserContext {
                         fieldType=offsetFieldInfo.getFieldType();
                         sourceVal = offsetFieldInfo.getSourceField().get(instance);
                         map.put("x", ((Number) sourceVal).doubleValue());
-                        destVal = ParseUtil.calcRPNWithDouble(offsetFieldInfo.getRpn(), map);
+                        destVal = RpnUtil.calcRPN_string_double(offsetFieldInfo.getRpn(), map);
                         switch (fieldType) {
                             case 1: {
                                 offsetFieldInfo.getField().set(instance, (byte)destVal);
@@ -488,7 +491,9 @@ public abstract class ParserContext {
         String className=clazz.getName();
         PacketInfo packetInfo=new PacketInfo();
         List<Field> allFieldList= FieldUtils.getAllFieldsList(clazz);
-        int[] varCount=new int[]{0};
+        //求出最小var char int和最大var char int
+        int[] maxVarInt=new int[1];
+        int[] minVarInt=new int[1];
         /**
          * 1、过滤所有带{@link PacketField}的字段
          * 2、将字段按照{@link PacketField#index()}正序
@@ -563,16 +568,31 @@ public abstract class ParserContext {
             //转换逆波兰表达式
             List[] rpns=new List[2];
             if(!packetField.lenExpr().isEmpty()){
-                rpns[0]= ParseUtil.doWithRpnListToInteger(StringUtil.parseArithmeticToRPN(packetField.lenExpr()));
+                rpns[0]= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.lenExpr()));
             }
             if(!packetField.listLenExpr().isEmpty()){
-                rpns[1]= ParseUtil.doWithRpnListToInteger(StringUtil.parseArithmeticToRPN(packetField.listLenExpr()));
+                rpns[1]= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.listLenExpr()));
             }
 
             //判断是否变量
-            if(!packetField.var().isEmpty()){
+            if(packetField.var()!='0'){
                 isVar=true;
-                varCount[0]++;
+            }
+
+            //求maxVarInt、minVarInt
+            for (List rpn : rpns) {
+                if(rpn!=null) {
+                    for (Object o : rpn) {
+                        if (o instanceof Character) {
+                            if (maxVarInt[0]==0||(char) o > maxVarInt[0]) {
+                                maxVarInt[0]=(char) o;
+                            }
+                            if( minVarInt[0]==0||(char) o < minVarInt[0]){
+                                minVarInt[0]=(char) o;
+                            }
+                        }
+                    }
+                }
             }
 
             FieldInfo fieldInfo=new FieldInfo();
@@ -591,7 +611,11 @@ public abstract class ParserContext {
             return fieldInfo;
         }).collect(Collectors.toList());
         packetInfo.setFieldInfoList(fieldInfoList);
-        packetInfo.setVarCount(varCount[0]);
+
+        if(maxVarInt[0]!=0){
+            packetInfo.setVarValArrLen(maxVarInt[0]-minVarInt[0]+1);
+            packetInfo.setVarValArrOffset(minVarInt[0]);
+        }
 
         if(enableOffsetField) {
             //解析offsetField注解字段
@@ -603,7 +627,7 @@ public abstract class ParserContext {
                     offsetFieldInfo.setSourceField(clazz.getDeclaredField(offsetField.sourceField()));
                     offsetFieldInfo.setOffsetField_sourceField(offsetField.sourceField());
                     offsetFieldInfo.setOffsetField_expr(offsetField.expr());
-                    offsetFieldInfo.setRpn(ParseUtil.doWithRpnListToDoubler(StringUtil.parseArithmeticToRPN(offsetField.expr())));
+                    offsetFieldInfo.setRpn(RpnUtil.doWithRpnList_string_double(RpnUtil.parseArithmeticToRPN(offsetField.expr())));
                     offsetFieldInfo.getField().setAccessible(true);
                     offsetFieldInfo.getSourceField().setAccessible(true);
                     Class fieldType = field.getType();

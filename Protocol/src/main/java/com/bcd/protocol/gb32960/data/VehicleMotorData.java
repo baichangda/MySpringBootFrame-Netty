@@ -12,11 +12,11 @@ import java.util.List;
 @ParseAble
 public class VehicleMotorData {
     //驱动电机个数
-    @PacketField(index = 1,len = 1,var = "len")
+    @PacketField(index = 1,len = 1,var = 'a')
     short num;
 
     //驱动电机总成信息列表
-    @PacketField(index = 2,listLenExpr = "len")
+    @PacketField(index = 2,listLenExpr = "a")
     List<MotorData> content=new ArrayList<>();
 
     public short getNum() {

@@ -20,11 +20,11 @@ public class VehicleLoginData extends PacketData{
     String iccid;
 
     //可充电储能子系统数
-    @PacketField(index = 4,len = 1,var = "n")
+    @PacketField(index = 4,len = 1,var = 'n')
     short subSystemNum;
 
     //可充电储能系统编码长度
-    @PacketField(index = 5,len = 1,var = "m")
+    @PacketField(index = 5,len = 1,var = 'm')
     byte systemCodeLen;
 
     //可充电储能系统编码

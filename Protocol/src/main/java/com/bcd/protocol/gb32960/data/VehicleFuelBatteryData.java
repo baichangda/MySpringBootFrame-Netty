@@ -21,7 +21,7 @@ public class VehicleFuelBatteryData {
     int consumptionRate;
 
     //燃料电池温度探针总数
-    @PacketField(index = 4,len = 2,var = "num")
+    @PacketField(index = 4,len = 2,var = 'a')
     int num;
 
     //探针温度值

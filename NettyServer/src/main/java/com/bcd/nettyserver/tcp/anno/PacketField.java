@@ -47,7 +47,7 @@ public @interface PacketField {
      * {@link #listLenExpr()}
      * 例如: m,n,a
      */
-    String var() default "";
+    char var() default '0';
 
     /**
      * 字段所占字节长度表达式

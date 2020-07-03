@@ -14,7 +14,7 @@ public class FieldInfo {
      */
     public int packetField_index;
     public int packetField_len;
-    public String packetField_var;
+    public char packetField_var;
     public String packetField_lenExpr;
     public String packetField_listLenExpr;
     public int packetField_singleLen;
@@ -69,6 +69,8 @@ public class FieldInfo {
 
 
 
+
+
     public Field getField() {
         return field;
     }
@@ -117,7 +119,7 @@ public class FieldInfo {
         return packetField_len;
     }
 
-    public String getPacketField_var() {
+    public char getPacketField_var() {
         return packetField_var;
     }
 
@@ -145,7 +147,7 @@ public class FieldInfo {
         this.packetField_len = packetField_len;
     }
 
-    public void setPacketField_var(String packetField_var) {
+    public void setPacketField_var(char packetField_var) {
         this.packetField_var = packetField_var;
     }
 

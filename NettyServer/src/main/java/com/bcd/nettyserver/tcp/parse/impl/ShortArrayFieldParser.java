@@ -52,9 +52,6 @@ public class ShortArrayFieldParser implements FieldParser<short[]> {
     public ByteBuf toByteBuf(short[] data, int len, FieldToByteBufContext context) {
         checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        if(data.length*singleLen!=len){
-            throw BaseRuntimeException.getException("toByteBuf error,data length["+data.length+"],len["+len+"],singleLen["+singleLen+"]");
-        }
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
             for (short num : data) {

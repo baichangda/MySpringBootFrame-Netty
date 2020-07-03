@@ -29,7 +29,7 @@ public class StorageVoltageData {
     int frameNo;
 
     //本帧单体电池总数
-    @PacketField(index = 6,len = 1,var = "m")
+    @PacketField(index = 6,len = 1,var = 'm')
     short frameTotal;
 
     //单体电池电压

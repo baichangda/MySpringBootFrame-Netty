@@ -22,11 +22,11 @@ public class Packet {
     @PacketField(index = 5,len = 1)
     short encodeWay;
     //数据单元长度 22-24
-    @PacketField(index = 6,len = 2,var = "len")
+    @PacketField(index = 6,len = 2,var = 'a')
     int contentLength;
     //数据单元
 //    @PacketField(index = 7,lenExpr = "len",parserClass = PacketDataFieldParser.class)
-    @PacketField(index = 7,lenExpr = "len")
+    @PacketField(index = 7,lenExpr = "a")
     ByteBuf dataContent;
     PacketData data;
     //异或校验位

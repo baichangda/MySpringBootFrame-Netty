@@ -48,9 +48,6 @@ public class LongArrayFieldParser implements FieldParser<long[]> {
     public ByteBuf toByteBuf(long[] data, int len, FieldToByteBufContext context) {
         checkByteBufData(data);
         int singleLen=context.getFieldInfo().getPacketField_singleLen();
-        if(data.length*singleLen!=len){
-            throw BaseRuntimeException.getException("toByteBuf error,data length["+data.length+"],len["+len+"],singleLen["+singleLen+"]");
-        }
         ByteBuf byteBuf= Unpooled.buffer(len,len);
         if(singleLen==BYTE_LENGTH){
             for (long num : data) {

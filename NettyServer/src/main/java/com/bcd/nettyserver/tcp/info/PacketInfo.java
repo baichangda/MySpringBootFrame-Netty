@@ -10,11 +10,16 @@ public class PacketInfo {
     private List<FieldInfo> fieldInfoList;
     //计算偏移量字段集合
     private List<OffsetFieldInfo> offsetFieldInfoList;
+
     /**
-     * 变量个数,包括变量个数
-     * {@link PacketField#var()}
+     * 变量值数组长度,相对于char而言
      */
-    public int varCount;
+    public int varValArrLen=0;
+
+    /**
+     * 变量值数据偏移量,相对于char而言
+     */
+    public int varValArrOffset=0;
 
     public PacketInfo() {
     }
@@ -35,11 +40,19 @@ public class PacketInfo {
         this.offsetFieldInfoList = offsetFieldInfoList;
     }
 
-    public int getVarCount() {
-        return varCount;
+    public int getVarValArrLen() {
+        return varValArrLen;
     }
 
-    public void setVarCount(int varCount) {
-        this.varCount = varCount;
+    public void setVarValArrLen(int varValArrLen) {
+        this.varValArrLen = varValArrLen;
+    }
+
+    public int getVarValArrOffset() {
+        return varValArrOffset;
+    }
+
+    public void setVarValArrOffset(int varValArrOffset) {
+        this.varValArrOffset = varValArrOffset;
     }
 }

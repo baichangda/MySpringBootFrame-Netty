@@ -17,35 +17,35 @@ public class VehicleAlarmData {
     int alarmFlag;
 
     //可充电储能装置故障总数
-    @PacketField(index = 3,len = 1,var = "n1")
+    @PacketField(index = 3,len = 1,var = 'a')
     short chargeBadNum;
 
     //可充电储能装置故障代码列表
-    @PacketField(index = 4,lenExpr = "n1*4")
+    @PacketField(index = 4,lenExpr = "a*4")
     int[] chargeBadCodes;
 
     //驱动电机故障总数
-    @PacketField(index = 5,len = 1,var = "n2")
+    @PacketField(index = 5,len = 1,var = 'b')
     short driverBadNum;
 
     //驱动电机故障代码列表
-    @PacketField(index = 6,lenExpr = "n2*4")
+    @PacketField(index = 6,lenExpr = "b*4")
     int[] driverBadCodes;
 
     //驱动电机故障总数
-    @PacketField(index = 7,len = 1,var = "n3")
+    @PacketField(index = 7,len = 1,var = 'c')
     short engineBadNum;
 
     //驱动电机故障代码列表
-    @PacketField(index = 8,lenExpr = "n3*4")
+    @PacketField(index = 8,lenExpr = "c*4")
     int[] engineBadCodes;
 
     //其他故障总数
-    @PacketField(index = 9,len = 1,var = "n4")
+    @PacketField(index = 9,len = 1,var = 'd')
     short otherBadNum;
 
     //其他故障代码列表
-    @PacketField(index = 10,lenExpr = "n4*4")
+    @PacketField(index = 10,lenExpr = "d*4")
     int[] otherBadCodes;
 
     public short getMaxAlarmLevel() {

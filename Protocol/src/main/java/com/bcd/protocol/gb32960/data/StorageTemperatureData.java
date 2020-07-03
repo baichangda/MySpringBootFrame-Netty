@@ -13,7 +13,7 @@ public class StorageTemperatureData {
     short no;
 
     //可充电储能温度探针个数
-    @PacketField(index = 2,len = 2,var = "n")
+    @PacketField(index = 2,len = 2,var = 'n')
     int num;
 
     //可充电储能子系统各温度探针检测到的温度值
