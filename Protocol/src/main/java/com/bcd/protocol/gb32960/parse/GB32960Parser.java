@@ -52,15 +52,15 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
-//        Packet packet= processor.process(Packet.class, byteBuf);
+        Packet packet= parser.process(Packet.class, byteBuf);
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
         long t2=System.currentTimeMillis();
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-            test2(byteBuf,parser);
-//            test3(packet,processor,data);
+//            test2(byteBuf,parser);
+            test3(packet,parser,data);
         }
         long t3=System.currentTimeMillis();
 
