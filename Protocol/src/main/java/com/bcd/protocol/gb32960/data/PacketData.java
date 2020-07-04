@@ -1,10 +1,10 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.Parsable;
 
 import java.util.Date;
 
-@Processable
+@Parsable
 public class PacketData {
     protected String vin;
     protected Date createTime;

@@ -1,12 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
-import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.Parsable;
 
 /**
  * 每个可充电储能子系统上温度数据格式
  */
-@Processable
+@Parsable
 public class StorageTemperatureData {
     //可充电储能子系统号
     @PacketField(index = 1,len = 1)

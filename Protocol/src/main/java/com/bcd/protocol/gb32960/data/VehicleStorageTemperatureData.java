@@ -1,7 +1,7 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
-import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.Parsable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 可充电储能装置温度数据
  */
-@Processable
+@Parsable
 public class VehicleStorageTemperatureData {
     //可充电储能子系统个数
     @PacketField(index = 1,len = 1,var = 'a')

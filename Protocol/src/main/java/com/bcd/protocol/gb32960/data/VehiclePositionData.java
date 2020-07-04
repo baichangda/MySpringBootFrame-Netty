@@ -1,12 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
-import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.Parsable;
 
 /**
  * 车辆位置数据
  */
-@Processable
+@Parsable
 public class VehiclePositionData {
     //定位状态
     @PacketField(index = 1,len = 1)

@@ -1,12 +1,12 @@
 package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
-import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.Parsable;
 
 /**
  * 极值数据
  */
-@Processable
+@Parsable
 public class VehicleLimitValueData {
     //最高电压电池子系统号
     @PacketField(index = 1,len = 1)
