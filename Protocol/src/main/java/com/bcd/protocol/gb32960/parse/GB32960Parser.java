@@ -3,8 +3,6 @@ package com.bcd.protocol.gb32960.parse;
 import com.bcd.nettyserver.tcp.process.FieldProcessor;
 import com.bcd.nettyserver.tcp.process.Processor;
 import com.bcd.protocol.gb32960.data.Packet;
-import com.bcd.protocol.gb32960.data.PacketData;
-import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
