@@ -20,7 +20,7 @@ public class ListProcessor extends FieldProcessor<List> {
         int listLen=processContext.getListLen();
         List list=new ArrayList(listLen);
         for (int i = 0; i < listLen; i++) {
-            list.add(processor.process(processContext.getFieldInfo().getClazz(),data,processContext));
+            list.add(parser.process(processContext.getFieldInfo().getClazz(),data,processContext));
         }
         return list;
     }
@@ -28,7 +28,7 @@ public class ListProcessor extends FieldProcessor<List> {
     @Override
     public void deProcess(List data, ByteBuf dest, FieldDeProcessContext processContext) {
         for (Object o : data) {
-            processor.deProcess(o,dest,processContext);
+            parser.deProcess(o,dest,processContext);
         }
     }
 }

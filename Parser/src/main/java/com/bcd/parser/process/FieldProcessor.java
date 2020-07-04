@@ -1,17 +1,18 @@
 package com.bcd.parser.process;
 
 
+import com.bcd.parser.Parser;
 import io.netty.buffer.ByteBuf;
 
 public abstract class FieldProcessor<T> {
-    protected Processor processor;
+    protected Parser parser;
 
-    public void setProcessor(Processor processor){
-        this.processor=processor;
+    public void setParser(Parser parser){
+        this.parser = parser;
     }
 
-    public Processor getProcessor() {
-        return processor;
+    public Parser getParser() {
+        return parser;
     }
 
     /**

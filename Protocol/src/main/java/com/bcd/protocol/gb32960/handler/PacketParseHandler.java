@@ -1,6 +1,6 @@
 package com.bcd.protocol.gb32960.handler;
 
-import com.bcd.parser.process.Processor;
+import com.bcd.parser.Parser;
 import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class PacketParseHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     @Qualifier("parser_32960")
-    Processor parser;
+    Parser parser;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

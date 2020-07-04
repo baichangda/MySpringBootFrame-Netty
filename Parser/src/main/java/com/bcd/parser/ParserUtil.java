@@ -1,4 +1,4 @@
-package com.bcd.parser.process;
+package com.bcd.parser;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.RpnUtil;
@@ -7,6 +7,7 @@ import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.info.OffsetFieldInfo;
 import com.bcd.parser.info.PacketInfo;
+import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -16,14 +17,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProcessUtil {
+public class ParserUtil {
     /**
      * 解析类转换成包信息
      * @param clazz
      * @param enableOffsetField
      * @return
      */
-    public static PacketInfo toPacketInfo(Class clazz,boolean enableOffsetField,FieldProcessor[] processors){
+    public static PacketInfo toPacketInfo(Class clazz, boolean enableOffsetField, FieldProcessor[] processors){
         String className=clazz.getName();
         PacketInfo packetInfo=new PacketInfo();
         List<Field> allFieldList= FieldUtils.getAllFieldsList(clazz);

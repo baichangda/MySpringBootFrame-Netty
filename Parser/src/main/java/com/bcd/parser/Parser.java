@@ -1,4 +1,4 @@
-package com.bcd.parser.process;
+package com.bcd.parser;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.ClassUtil;
@@ -9,6 +9,9 @@ import com.bcd.parser.anno.Processable;
 import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.info.OffsetFieldInfo;
 import com.bcd.parser.info.PacketInfo;
+import com.bcd.parser.process.FieldDeProcessContext;
+import com.bcd.parser.process.FieldProcessContext;
+import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.process.impl.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -19,7 +22,7 @@ import java.util.*;
 
 
 @SuppressWarnings("unchecked")
-public abstract class Processor {
+public abstract class Parser {
 
     public final Map<Class, PacketInfo> packetInfoCache =new HashMap<>();
 
@@ -61,7 +64,7 @@ public abstract class Processor {
 
     private void afterInit(){
         for (FieldProcessor processor : fieldProcessors) {
-            processor.setProcessor(this);
+            processor.setParser(this);
         }
     }
 
@@ -149,7 +152,7 @@ public abstract class Processor {
     protected void initPacketInfoByScanClass(String packageName){
         try {
             for (Class e : ClassUtil.getClassesWithAnno(Processable.class, packageName)) {
-                packetInfoCache.put(e,ProcessUtil.toPacketInfo(e,enableOffsetField,fieldProcessors));
+                packetInfoCache.put(e, ParserUtil.toPacketInfo(e,enableOffsetField,fieldProcessors));
             }
         } catch (IOException | ClassNotFoundException e) {
             throw BaseRuntimeException.getException(e);
@@ -285,7 +288,7 @@ public abstract class Processor {
      * @param res
      * @param parentContext
      */
-    public final void deProcess(Object t, ByteBuf res,FieldDeProcessContext parentContext){
+    public final void deProcess(Object t, ByteBuf res, FieldDeProcessContext parentContext){
         try{
             if(res==null){
                 res= Unpooled.buffer();
