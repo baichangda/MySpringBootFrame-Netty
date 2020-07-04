@@ -36,55 +36,55 @@ public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonDa
             switch (flag) {
                 case 1: {
                     //2.1、整车数据
-                    VehicleBaseData data = parser.process(VehicleBaseData.class,byteBuf);
+                    VehicleBaseData data = parser.parse(VehicleBaseData.class,byteBuf);
                     vehicleCommonData.setVehicleBaseData(data);
                     break;
                 }
                 case 2: {
                     //2.2、驱动电机数据
-                    VehicleMotorData vehicleMotorData= parser.process(VehicleMotorData.class,byteBuf);
+                    VehicleMotorData vehicleMotorData= parser.parse(VehicleMotorData.class,byteBuf);
                     vehicleCommonData.setVehicleMotorData(vehicleMotorData);
                     break;
                 }
                 case 3: {
                     //2.3、燃料电池数据
-                    VehicleFuelBatteryData vehicleFuelBatteryData= parser.process(VehicleFuelBatteryData.class,byteBuf);
+                    VehicleFuelBatteryData vehicleFuelBatteryData= parser.parse(VehicleFuelBatteryData.class,byteBuf);
                     vehicleCommonData.setVehicleFuelBatteryData(vehicleFuelBatteryData);
                     break;
                 }
                 case 4: {
                     //2.4、发动机数据
-                    VehicleEngineData data= parser.process(VehicleEngineData.class,byteBuf);
+                    VehicleEngineData data= parser.parse(VehicleEngineData.class,byteBuf);
                     vehicleCommonData.setVehicleEngineData(data);
                     break;
                 }
                 case 5: {
                     //2.5、车辆位置数据
-                    VehiclePositionData data= parser.process(VehiclePositionData.class,byteBuf);
+                    VehiclePositionData data= parser.parse(VehiclePositionData.class,byteBuf);
                     vehicleCommonData.setVehiclePositionData(data);
                     break;
                 }
                 case 6: {
                     //2.6、极值数据
-                    VehicleLimitValueData data= parser.process(VehicleLimitValueData.class,byteBuf);
+                    VehicleLimitValueData data= parser.parse(VehicleLimitValueData.class,byteBuf);
                     vehicleCommonData.setVehicleLimitValueData(data);
                     break;
                 }
                 case 7: {
                     //2.7、报警数据
-                    VehicleAlarmData vehicleAlarmData= parser.process(VehicleAlarmData.class,byteBuf);
+                    VehicleAlarmData vehicleAlarmData= parser.parse(VehicleAlarmData.class,byteBuf);
                     vehicleCommonData.setVehicleAlarmData(vehicleAlarmData);
                     break;
                 }
                 case 8:{
                     //2.8、可充电储能装置电压数据
-                    VehicleStorageVoltageData vehicleStorageVoltageData= parser.process(VehicleStorageVoltageData.class,byteBuf);
+                    VehicleStorageVoltageData vehicleStorageVoltageData= parser.parse(VehicleStorageVoltageData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageVoltageData(vehicleStorageVoltageData);
                     break;
                 }
                 case 9:{
                     //2.9、可充电储能装置温度数据
-                    VehicleStorageTemperatureData vehicleStorageTemperatureData= parser.process(VehicleStorageTemperatureData.class,byteBuf);
+                    VehicleStorageTemperatureData vehicleStorageTemperatureData= parser.parse(VehicleStorageTemperatureData.class,byteBuf);
                     vehicleCommonData.setVehicleStorageTemperatureData(vehicleStorageTemperatureData);
                     break;
                 }

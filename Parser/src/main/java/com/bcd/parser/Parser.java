@@ -159,8 +159,8 @@ public abstract class Parser {
         }
     }
 
-    public final <T>T process(Class<T> clazz, ByteBuf data){
-        return process(clazz,data,null);
+    public final <T>T parse(Class<T> clazz, ByteBuf data){
+        return parse(clazz,data,null);
     }
 
 
@@ -173,7 +173,7 @@ public abstract class Parser {
      * @param <T>
      * @return
      */
-    public final <T>T process(Class<T> clazz, ByteBuf data, FieldProcessContext parentContext){
+    public final <T>T parse(Class<T> clazz, ByteBuf data, FieldProcessContext parentContext){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
 //        if(packetInfo==null){
@@ -278,8 +278,8 @@ public abstract class Parser {
     }
 
 
-    public final void deProcess(Object t, ByteBuf res){
-        deProcess(t, res,null);
+    public final void deParse(Object t, ByteBuf res){
+        deParse(t, res,null);
     }
 
     /**
@@ -288,7 +288,7 @@ public abstract class Parser {
      * @param res
      * @param parentContext
      */
-    public final void deProcess(Object t, ByteBuf res, FieldDeProcessContext parentContext){
+    public final void deParse(Object t, ByteBuf res, FieldDeProcessContext parentContext){
         try{
             if(res==null){
                 res= Unpooled.buffer();
@@ -358,7 +358,7 @@ public abstract class Parser {
             return null;
         }else {
             ByteBuf res = Unpooled.buffer();
-            deProcess(t, res);
+            deParse(t, res);
             return res;
         }
     }
