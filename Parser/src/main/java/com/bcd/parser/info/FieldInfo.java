@@ -1,6 +1,6 @@
-package com.bcd.nettyserver.tcp.info;
+package com.bcd.parser.info;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.parser.anno.PacketField;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -21,7 +21,7 @@ public class FieldInfo {
     public Class packetField_parserClass;
 
     /**
-     * {@link com.bcd.nettyserver.tcp.process.Processor#fieldProcessors} 索引
+     * {@link com.bcd.parser.process.Processor#fieldProcessors} 索引
      * 0、byte/Byte
      * 1、short/Short
      * 2、int/Integer

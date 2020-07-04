@@ -1,6 +1,6 @@
-package com.bcd.nettyserver.tcp.info;
+package com.bcd.parser.info;
 
-import com.bcd.nettyserver.tcp.anno.OffsetField;
+import com.bcd.parser.anno.OffsetField;
 
 import java.lang.reflect.Field;
 import java.util.List;

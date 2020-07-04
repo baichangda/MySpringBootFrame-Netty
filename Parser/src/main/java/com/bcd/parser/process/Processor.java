@@ -1,15 +1,15 @@
-package com.bcd.nettyserver.tcp.process;
+package com.bcd.parser.process;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.ClassUtil;
 import com.bcd.base.util.ProxyUtil;
 import com.bcd.base.util.RpnUtil;
 import com.bcd.base.util.SpringUtil;
-import com.bcd.nettyserver.tcp.anno.Processable;
-import com.bcd.nettyserver.tcp.info.FieldInfo;
-import com.bcd.nettyserver.tcp.info.OffsetFieldInfo;
-import com.bcd.nettyserver.tcp.info.PacketInfo;
-import com.bcd.nettyserver.tcp.process.impl.*;
+import com.bcd.parser.anno.Processable;
+import com.bcd.parser.info.FieldInfo;
+import com.bcd.parser.info.OffsetFieldInfo;
+import com.bcd.parser.info.PacketInfo;
+import com.bcd.parser.process.impl.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -142,7 +142,7 @@ public abstract class Processor {
     protected abstract void initPacketInfo();
 
     /**
-     * 加载所有 {@link Processable} 注解的类并转换为 {@link com.bcd.nettyserver.tcp.info.PacketInfo}
+     * 加载所有 {@link Processable} 注解的类并转换为 {@link com.bcd.parser.info.PacketInfo}
      * 存储在map中
      * @param packageName
      */

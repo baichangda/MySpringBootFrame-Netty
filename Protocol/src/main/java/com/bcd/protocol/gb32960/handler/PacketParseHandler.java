@@ -1,6 +1,6 @@
 package com.bcd.protocol.gb32960.handler;
 
-import com.bcd.nettyserver.tcp.process.Processor;
+import com.bcd.parser.process.Processor;
 import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;

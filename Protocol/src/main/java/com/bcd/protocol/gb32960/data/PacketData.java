@@ -1,6 +1,6 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.Processable;
+import com.bcd.parser.anno.Processable;
 
 import java.util.Date;
 

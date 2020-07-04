@@ -1,8 +1,8 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.OffsetField;
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.Processable;
+import com.bcd.parser.anno.OffsetField;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Processable;
 
 /**
  * 整车数据

@@ -1,5 +1,7 @@
-package com.bcd.nettyserver.tcp.info;
+package com.bcd.parser.info;
 
+
+import com.bcd.parser.info.OffsetFieldInfo;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.bcd.nettyserver.tcp.process;
+package com.bcd.parser.process;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.info.FieldInfo;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.info.FieldInfo;
 import io.netty.buffer.ByteBuf;
 
 public class FieldProcessContext {

@@ -1,12 +1,12 @@
-package com.bcd.nettyserver.tcp.process;
+package com.bcd.parser.process;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.RpnUtil;
-import com.bcd.nettyserver.tcp.anno.OffsetField;
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.info.FieldInfo;
-import com.bcd.nettyserver.tcp.info.OffsetFieldInfo;
-import com.bcd.nettyserver.tcp.info.PacketInfo;
+import com.bcd.parser.anno.OffsetField;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.info.FieldInfo;
+import com.bcd.parser.info.OffsetFieldInfo;
+import com.bcd.parser.info.PacketInfo;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.reflect.FieldUtils;
 

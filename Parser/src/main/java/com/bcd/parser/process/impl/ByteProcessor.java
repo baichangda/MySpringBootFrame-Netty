@@ -1,10 +1,10 @@
-package com.bcd.nettyserver.tcp.process.impl;
+package com.bcd.parser.process.impl;
 
 
-import com.bcd.nettyserver.tcp.info.FieldInfo;
-import com.bcd.nettyserver.tcp.process.FieldDeProcessContext;
-import com.bcd.nettyserver.tcp.process.FieldProcessContext;
-import com.bcd.nettyserver.tcp.process.FieldProcessor;
+import com.bcd.parser.info.FieldInfo;
+import com.bcd.parser.process.FieldDeProcessContext;
+import com.bcd.parser.process.FieldProcessContext;
+import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;

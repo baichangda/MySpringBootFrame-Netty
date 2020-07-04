@@ -1,4 +1,4 @@
-package com.bcd.nettyserver.tcp.process;
+package com.bcd.parser.process;
 
 
 import io.netty.buffer.ByteBuf;

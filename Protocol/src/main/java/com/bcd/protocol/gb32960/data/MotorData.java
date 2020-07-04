@@ -1,7 +1,7 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.Processable;
-import com.bcd.nettyserver.tcp.anno.PacketField;
+import com.bcd.parser.anno.Processable;
+import com.bcd.parser.anno.PacketField;
 
 /**
  * 每个驱动电机数据格式
