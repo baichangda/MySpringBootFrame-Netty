@@ -103,12 +103,13 @@ public class ParserUtil {
             }
 
             //转换逆波兰表达式
-            List[] rpns=new List[2];
+            Object[] lenRpn=null;
+            Object[] listLenRpn=null;
             if(!packetField.lenExpr().isEmpty()){
-                rpns[0]= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.lenExpr()));
+                lenRpn= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.lenExpr()));
             }
             if(!packetField.listLenExpr().isEmpty()){
-                rpns[1]= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.listLenExpr()));
+                listLenRpn= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.listLenExpr()));
             }
 
             //判断是否变量
@@ -117,16 +118,26 @@ public class ParserUtil {
             }
 
             //求maxVarInt、minVarInt
-            for (List rpn : rpns) {
-                if(rpn!=null) {
-                    for (Object o : rpn) {
-                        if (o instanceof Character) {
-                            if (maxVarInt[0]==0||(char) o > maxVarInt[0]) {
-                                maxVarInt[0]=(char) o;
-                            }
-                            if( minVarInt[0]==0||(char) o < minVarInt[0]){
-                                minVarInt[0]=(char) o;
-                            }
+            if(lenRpn!=null) {
+                for (Object o : lenRpn) {
+                    if (o instanceof Character) {
+                        if (maxVarInt[0]==0||(char) o > maxVarInt[0]) {
+                            maxVarInt[0]=(char) o;
+                        }
+                        if( minVarInt[0]==0||(char) o < minVarInt[0]){
+                            minVarInt[0]=(char) o;
+                        }
+                    }
+                }
+            }
+            if(listLenRpn!=null) {
+                for (Object o : listLenRpn) {
+                    if (o instanceof Character) {
+                        if (maxVarInt[0]==0||(char) o > maxVarInt[0]) {
+                            maxVarInt[0]=(char) o;
+                        }
+                        if( minVarInt[0]==0||(char) o < minVarInt[0]){
+                            minVarInt[0]=(char) o;
                         }
                     }
                 }
@@ -137,7 +148,8 @@ public class ParserUtil {
             fieldInfo.setVar(isVar);
             fieldInfo.setClazz(typeClazz);
             fieldInfo.setProcessorIndex(processorIndex);
-            fieldInfo.setRpns(rpns);
+            fieldInfo.setLenRpn(lenRpn);
+            fieldInfo.setListLenRpn(listLenRpn);
             fieldInfo.setPacketField_index(packetField.index());
             fieldInfo.setPacketField_len(packetField.len());
             fieldInfo.setPacketField_lenExpr(packetField.lenExpr());
@@ -164,7 +176,7 @@ public class ParserUtil {
                     offsetFieldInfo.setSourceField(clazz.getDeclaredField(offsetField.sourceField()));
                     offsetFieldInfo.setOffsetField_sourceField(offsetField.sourceField());
                     offsetFieldInfo.setOffsetField_expr(offsetField.expr());
-                    offsetFieldInfo.setRpn(RpnUtil.doWithRpnList_string_double(RpnUtil.parseArithmeticToRPN(offsetField.expr())));
+                    offsetFieldInfo.setRpn(RpnUtil.doWithRpnList_char_double(RpnUtil.parseArithmeticToRPN(offsetField.expr())));
                     offsetFieldInfo.getField().setAccessible(true);
                     offsetFieldInfo.getSourceField().setAccessible(true);
                     Class fieldType = field.getType();

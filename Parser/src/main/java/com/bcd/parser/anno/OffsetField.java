@@ -18,7 +18,8 @@ public @interface OffsetField {
     String sourceField();
 
     /**
-     * 计算公式,公式中的原始值用x表示
+     * 计算公式
+     * 公式中的任意变量都代表{@link #sourceField()}字段的值
      */
     String expr();
 

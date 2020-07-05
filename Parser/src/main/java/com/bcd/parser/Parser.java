@@ -183,11 +183,13 @@ public abstract class Parser {
             //构造实例
             T instance= clazz.newInstance();
             //进行解析
-            int [] vals=null;
             int varValArrLen=packetInfo.getVarValArrLen();
             int varValArrOffset=packetInfo.getVarValArrOffset();
+            int [] vals;
             if(varValArrLen!=0){
                 vals=new int[varValArrLen];
+            }else{
+                vals=null;
             }
             FieldProcessContext processContext=new FieldProcessContext();
             processContext.setParentContext(parentContext);
@@ -195,26 +197,29 @@ public abstract class Parser {
             for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 /**
-                 * rpns[0] 代表 {@link PacketField#lenExpr()}
-                 * rpns[1] 代表 {@link PacketField#listLenExpr()}
+                 * 代表 {@link PacketField#lenExpr()}
                  */
-                List[] rpns= fieldInfo.getRpns();
+                Object[] lenRpn= fieldInfo.getLenRpn();
+                /**
+                 * 代表 {@link PacketField#listLenExpr()}
+                 */
+                Object[] lisLlenRpn= fieldInfo.getListLenRpn();
                 int len;
                 int listLen=0;
-                if(rpns[0]==null){
+                if(lenRpn==null){
                     len=fieldInfo.getPacketField_len();
                 }else{
-                    if(rpns[0].size()==1){
-                        len=vals[(char)rpns[0].get(0)-varValArrOffset];
+                    if(lenRpn.length==1){
+                        len=vals[(char)lenRpn[0]-varValArrOffset];
                     }else {
-                        len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
+                        len = RpnUtil.calcRPN_char_int(lenRpn, vals,varValArrOffset);
                     }
                 }
-                if(rpns[1]!=null){
-                    if(rpns[1].size()==1){
-                        listLen=vals[(char)rpns[1].get(0)-varValArrOffset];
+                if(lisLlenRpn!=null){
+                    if(lisLlenRpn.length==1){
+                        listLen=vals[(char)lisLlenRpn[0]-varValArrOffset];
                     }else {
-                        listLen = RpnUtil.calcRPN_char_int(rpns[1], vals,varValArrOffset);
+                        listLen = RpnUtil.calcRPN_char_int(lisLlenRpn, vals,varValArrOffset);
                     }
                 }
                 processContext.setFieldInfo(fieldInfo);
@@ -239,8 +244,7 @@ public abstract class Parser {
                     for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
                         fieldType=offsetFieldInfo.getFieldType();
                         sourceVal = offsetFieldInfo.getSourceField().get(instance);
-                        map.put("x", ((Number) sourceVal).doubleValue());
-                        destVal = RpnUtil.calcRPN_string_double(offsetFieldInfo.getRpn(), map);
+                        destVal = RpnUtil.calcRPN_char_double_singleVar(offsetFieldInfo.getRpn(),((Number) sourceVal).doubleValue());
                         switch (fieldType) {
                             case 1: {
                                 offsetFieldInfo.getField().set(instance, (byte)destVal);
@@ -309,26 +313,29 @@ public abstract class Parser {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 Object data=fieldInfo.getField().get(t);
                 /**
-                 * rpns[0] 代表 {@link PacketField#lenExpr()}
-                 * rpns[1] 代表 {@link PacketField#listLenExpr()}
+                 * 代表 {@link PacketField#lenExpr()}
                  */
-                List[] rpns= fieldInfo.getRpns();
+                Object[] lenRpn= fieldInfo.getLenRpn();
+                /**
+                 * 代表 {@link PacketField#listLenExpr()}
+                 */
+                Object[] lisLlenRpn= fieldInfo.getListLenRpn();
                 int len;
                 int listLen=0;
-                if(rpns[0]==null){
+                if(lenRpn==null){
                     len=fieldInfo.getPacketField_len();
                 }else{
-                    if(rpns[0].size()==1){
-                        len=vals[(char)rpns[0].get(0)-varValArrOffset];
+                    if(lenRpn.length==1){
+                        len=vals[(char)lenRpn[0]-varValArrOffset];
                     }else {
-                        len = RpnUtil.calcRPN_char_int(rpns[0], vals,varValArrOffset);
+                        len = RpnUtil.calcRPN_char_int(lenRpn, vals,varValArrOffset);
                     }
                 }
-                if(rpns[1]!=null){
-                    if(rpns[1].size()==1){
-                        listLen=vals[(char)rpns[1].get(0)-varValArrOffset];
+                if(lisLlenRpn!=null){
+                    if(lisLlenRpn.length==1){
+                        listLen=vals[(char)lisLlenRpn[0]-varValArrOffset];
                     }else {
-                        listLen = RpnUtil.calcRPN_char_int(rpns[1], vals,varValArrOffset);
+                        listLen = RpnUtil.calcRPN_char_int(lisLlenRpn, vals,varValArrOffset);
                     }
                 }
                 processContext.setFieldInfo(fieldInfo);
@@ -363,5 +370,107 @@ public abstract class Parser {
         }
     }
 
+    public boolean isEnableOffsetField() {
+        return enableOffsetField;
+    }
 
+    public void setEnableOffsetField(boolean enableOffsetField) {
+        this.enableOffsetField = enableOffsetField;
+    }
+
+    public ByteProcessor getByteProcessor() {
+        return byteProcessor;
+    }
+
+    public void setByteProcessor(ByteProcessor byteProcessor) {
+        this.byteProcessor = byteProcessor;
+    }
+
+    public ShortProcessor getShortProcessor() {
+        return shortProcessor;
+    }
+
+    public void setShortProcessor(ShortProcessor shortProcessor) {
+        this.shortProcessor = shortProcessor;
+    }
+
+    public IntegerProcessor getIntegerProcessor() {
+        return integerProcessor;
+    }
+
+    public void setIntegerProcessor(IntegerProcessor integerProcessor) {
+        this.integerProcessor = integerProcessor;
+    }
+
+    public LongProcessor getLongProcessor() {
+        return longProcessor;
+    }
+
+    public void setLongProcessor(LongProcessor longProcessor) {
+        this.longProcessor = longProcessor;
+    }
+
+    public ByteArrayProcessor getByteArrayProcessor() {
+        return byteArrayProcessor;
+    }
+
+    public void setByteArrayProcessor(ByteArrayProcessor byteArrayProcessor) {
+        this.byteArrayProcessor = byteArrayProcessor;
+    }
+
+    public ShortArrayProcessor getShortArrayProcessor() {
+        return shortArrayProcessor;
+    }
+
+    public void setShortArrayProcessor(ShortArrayProcessor shortArrayProcessor) {
+        this.shortArrayProcessor = shortArrayProcessor;
+    }
+
+    public IntegerArrayProcessor getIntegerArrayProcessor() {
+        return integerArrayProcessor;
+    }
+
+    public void setIntegerArrayProcessor(IntegerArrayProcessor integerArrayProcessor) {
+        this.integerArrayProcessor = integerArrayProcessor;
+    }
+
+    public LongArrayProcessor getLongArrayProcessor() {
+        return longArrayProcessor;
+    }
+
+    public void setLongArrayProcessor(LongArrayProcessor longArrayProcessor) {
+        this.longArrayProcessor = longArrayProcessor;
+    }
+
+    public StringProcessor getStringProcessor() {
+        return stringProcessor;
+    }
+
+    public void setStringProcessor(StringProcessor stringProcessor) {
+        this.stringProcessor = stringProcessor;
+    }
+
+    public DateProcessor getDateProcessor() {
+        return dateProcessor;
+    }
+
+    public void setDateProcessor(DateProcessor dateProcessor) {
+        this.dateProcessor = dateProcessor;
+    }
+
+    public ByteBufProcessor getByteBufProcessor() {
+        return byteBufProcessor;
+    }
+
+    public void setByteBufProcessor(ByteBufProcessor byteBufProcessor) {
+        this.byteBufProcessor = byteBufProcessor;
+    }
+
+    public ListProcessor getListProcessor() {
+        return listProcessor;
+    }
+
+    public void setListProcessor(ListProcessor listProcessor) {
+        this.listProcessor = listProcessor;
+    }
 }

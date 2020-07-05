@@ -4,7 +4,6 @@ import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.Parser;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 public class FieldInfo {
 
@@ -55,11 +54,14 @@ public class FieldInfo {
     public Class clazz;
 
     /**
-     * 长度的逆波兰表达式
-     * rpns[0] 对应 {@link PacketField#lenExpr()}表达式
-     * rpns[1] 对应 {@link PacketField#listLenExpr()}表达式
+     * 对应 {@link PacketField#lenExpr()}表达式
      */
-    public List[] rpns;
+    public Object[] lenRpn;
+
+    /**
+     * 对应 {@link PacketField#listLenExpr()}表达式
+     */
+    public Object[] listLenRpn;
 
 
     public Field getField() {
@@ -76,14 +78,6 @@ public class FieldInfo {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
-    }
-
-    public List[] getRpns() {
-        return rpns;
-    }
-
-    public void setRpns(List[] rpns) {
-        this.rpns = rpns;
     }
 
     public boolean isVar() {
@@ -156,5 +150,21 @@ public class FieldInfo {
 
     public void setProcessorIndex(int processorIndex) {
         this.processorIndex = processorIndex;
+    }
+
+    public Object[] getLenRpn() {
+        return lenRpn;
+    }
+
+    public void setLenRpn(Object[] lenRpn) {
+        this.lenRpn = lenRpn;
+    }
+
+    public Object[] getListLenRpn() {
+        return listLenRpn;
+    }
+
+    public void setListLenRpn(Object[] listLenRpn) {
+        this.listLenRpn = listLenRpn;
     }
 }
