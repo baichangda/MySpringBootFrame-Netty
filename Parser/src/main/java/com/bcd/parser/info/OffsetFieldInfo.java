@@ -3,7 +3,6 @@ package com.bcd.parser.info;
 import com.bcd.parser.anno.OffsetField;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 public class OffsetFieldInfo {
     Field field;
