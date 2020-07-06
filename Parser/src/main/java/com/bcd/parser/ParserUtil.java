@@ -159,7 +159,7 @@ public class ParserUtil {
             fieldInfo.setPacketField_parserClass(packetField.processorClass());
             return fieldInfo;
         }).collect(Collectors.toList());
-        packetInfo.setFieldInfoList(fieldInfoList);
+        packetInfo.setFieldInfos(fieldInfoList.toArray(new FieldInfo[0]));
 
         if(maxVarInt[0]!=0){
             packetInfo.setVarValArrLen(maxVarInt[0]-minVarInt[0]+1);
@@ -202,7 +202,7 @@ public class ParserUtil {
                     throw BaseRuntimeException.getException(e);
                 }
             }).collect(Collectors.toList());
-            packetInfo.setOffsetFieldInfoList(offsetFieldInfoList);
+            packetInfo.setOffsetFieldInfos(offsetFieldInfoList.toArray(new OffsetFieldInfo[0]));
         }
         return packetInfo;
     }

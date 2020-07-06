@@ -56,9 +56,9 @@ public abstract class Parser {
     public void init(){
         //初始化处理器
         initProcessor();
-
+        //初始化解析实体对象
         initPacketInfo();
-
+        //设置处理器
         afterInit();
     }
 
@@ -194,7 +194,7 @@ public abstract class Parser {
             FieldProcessContext processContext=new FieldProcessContext();
             processContext.setParentContext(parentContext);
             processContext.setInstance(instance);
-            for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
+            for (FieldInfo fieldInfo : packetInfo.getFieldInfos()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 /**
                  * 代表 {@link PacketField#lenExpr()}
@@ -234,14 +234,13 @@ public abstract class Parser {
 
             if(enableOffsetField) {
                 //偏移量值计算
-                List<OffsetFieldInfo> offsetFieldInfoList = packetInfo.getOffsetFieldInfoList();
-                if (offsetFieldInfoList != null && !offsetFieldInfoList.isEmpty()) {
-                    Map<String, Double> map = new HashMap<>();
+                OffsetFieldInfo[] offsetFieldInfos = packetInfo.getOffsetFieldInfos();
+                if (offsetFieldInfos != null && offsetFieldInfos.length>0) {
                     //define temp var
                     Object sourceVal;
                     double destVal;
                     int fieldType;
-                    for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfoList) {
+                    for (OffsetFieldInfo offsetFieldInfo : offsetFieldInfos) {
                         fieldType=offsetFieldInfo.getFieldType();
                         sourceVal = offsetFieldInfo.getSourceField().get(instance);
                         destVal = RpnUtil.calcRPN_char_double_singleVar(offsetFieldInfo.getRpn(),((Number) sourceVal).doubleValue());
@@ -309,7 +308,7 @@ public abstract class Parser {
             FieldDeProcessContext processContext=new FieldDeProcessContext();
             processContext.setInstance(t);
             processContext.setParentContext(parentContext);
-            for (FieldInfo fieldInfo : packetInfo.getFieldInfoList()) {
+            for (FieldInfo fieldInfo : packetInfo.getFieldInfos()) {
                 int processorIndex=fieldInfo.getProcessorIndex();
                 Object data=fieldInfo.getField().get(t);
                 /**

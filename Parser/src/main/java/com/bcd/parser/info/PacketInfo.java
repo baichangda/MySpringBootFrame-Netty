@@ -1,15 +1,14 @@
 package com.bcd.parser.info;
 
 
-import com.bcd.parser.info.OffsetFieldInfo;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class PacketInfo {
     //解析的字段信息集合
-    private List<FieldInfo> fieldInfoList;
+    private FieldInfo[] fieldInfos;
     //计算偏移量字段集合
-    private List<OffsetFieldInfo> offsetFieldInfoList;
+    private OffsetFieldInfo[] offsetFieldInfos;
 
     /**
      * 变量值数组长度,相对于char而言
@@ -24,20 +23,20 @@ public class PacketInfo {
     public PacketInfo() {
     }
 
-    public List<FieldInfo> getFieldInfoList() {
-        return fieldInfoList;
+    public FieldInfo[] getFieldInfos() {
+        return fieldInfos;
     }
 
-    public void setFieldInfoList(List<FieldInfo> fieldInfoList) {
-        this.fieldInfoList = fieldInfoList;
+    public void setFieldInfos(FieldInfo[] fieldInfos) {
+        this.fieldInfos = fieldInfos;
     }
 
-    public List<OffsetFieldInfo> getOffsetFieldInfoList() {
-        return offsetFieldInfoList;
+    public OffsetFieldInfo[] getOffsetFieldInfos() {
+        return offsetFieldInfos;
     }
 
-    public void setOffsetFieldInfoList(List<OffsetFieldInfo> offsetFieldInfoList) {
-        this.offsetFieldInfoList = offsetFieldInfoList;
+    public void setOffsetFieldInfos(OffsetFieldInfo[] offsetFieldInfos) {
+        this.offsetFieldInfos = offsetFieldInfos;
     }
 
     public int getVarValArrLen() {
