@@ -40,18 +40,18 @@ public abstract class Parser {
      * 基础处理器,内置
      */
     protected List<FieldProcessor> baseProcessorList;
-    protected ByteProcessor byteProcessor=new ByteProcessor();
-    protected ShortProcessor shortProcessor=new ShortProcessor();
-    protected IntegerProcessor integerProcessor=new IntegerProcessor();
-    protected LongProcessor longProcessor=new LongProcessor();
-    protected ByteArrayProcessor byteArrayProcessor=new ByteArrayProcessor();
-    protected ShortArrayProcessor shortArrayProcessor=new ShortArrayProcessor();
-    protected IntegerArrayProcessor integerArrayProcessor=new IntegerArrayProcessor();
-    protected LongArrayProcessor longArrayProcessor=new LongArrayProcessor();
-    protected StringProcessor stringProcessor=new StringProcessor();
-    protected DateProcessor dateProcessor=new DateProcessor();
-    protected ByteBufProcessor byteBufProcessor=new ByteBufProcessor();
-    protected ListProcessor listProcessor=new ListProcessor();
+    protected FieldProcessor byteProcessor=new ByteProcessor();
+    protected FieldProcessor shortProcessor=new ShortProcessor();
+    protected FieldProcessor integerProcessor=new IntegerProcessor();
+    protected FieldProcessor longProcessor=new LongProcessor();
+    protected FieldProcessor<byte[]> byteArrayProcessor=new ByteArrayProcessor();
+    protected FieldProcessor<short[]> shortArrayProcessor=new ShortArrayProcessor();
+    protected FieldProcessor<int[]> integerArrayProcessor=new IntegerArrayProcessor();
+    protected FieldProcessor<long[]> longArrayProcessor=new LongArrayProcessor();
+    protected FieldProcessor<String> stringProcessor=new StringProcessor();
+    protected FieldProcessor<Date> dateProcessor=new DateProcessor();
+    protected FieldProcessor<ByteBuf> byteBufProcessor=new ByteBufProcessor();
+    protected FieldProcessor<List> listProcessor=new ListProcessor();
 
     public void init(){
         //初始化处理器
@@ -377,99 +377,119 @@ public abstract class Parser {
         this.enableOffsetField = enableOffsetField;
     }
 
-    public ByteProcessor getByteProcessor() {
+    public Map<Class, PacketInfo> getPacketInfoCache() {
+        return packetInfoCache;
+    }
+
+    public FieldProcessor[] getFieldProcessors() {
+        return fieldProcessors;
+    }
+
+    public void setFieldProcessors(FieldProcessor[] fieldProcessors) {
+        this.fieldProcessors = fieldProcessors;
+    }
+
+    public List<FieldProcessor> getBaseProcessorList() {
+        return baseProcessorList;
+    }
+
+    public void setBaseProcessorList(List<FieldProcessor> baseProcessorList) {
+        this.baseProcessorList = baseProcessorList;
+    }
+
+    public FieldProcessor getByteProcessor() {
         return byteProcessor;
     }
 
-    public void setByteProcessor(ByteProcessor byteProcessor) {
+    public void setByteProcessor(FieldProcessor byteProcessor) {
         this.byteProcessor = byteProcessor;
     }
 
-    public ShortProcessor getShortProcessor() {
+    public FieldProcessor getShortProcessor() {
         return shortProcessor;
     }
 
-    public void setShortProcessor(ShortProcessor shortProcessor) {
+    public void setShortProcessor(FieldProcessor shortProcessor) {
         this.shortProcessor = shortProcessor;
     }
 
-    public IntegerProcessor getIntegerProcessor() {
+    public FieldProcessor getIntegerProcessor() {
         return integerProcessor;
     }
 
-    public void setIntegerProcessor(IntegerProcessor integerProcessor) {
+    public void setIntegerProcessor(FieldProcessor integerProcessor) {
         this.integerProcessor = integerProcessor;
     }
 
-    public LongProcessor getLongProcessor() {
+    public FieldProcessor getLongProcessor() {
         return longProcessor;
     }
 
-    public void setLongProcessor(LongProcessor longProcessor) {
+    public void setLongProcessor(FieldProcessor longProcessor) {
         this.longProcessor = longProcessor;
     }
 
-    public ByteArrayProcessor getByteArrayProcessor() {
+    public FieldProcessor<byte[]> getByteArrayProcessor() {
         return byteArrayProcessor;
     }
 
-    public void setByteArrayProcessor(ByteArrayProcessor byteArrayProcessor) {
+    public void setByteArrayProcessor(FieldProcessor<byte[]> byteArrayProcessor) {
         this.byteArrayProcessor = byteArrayProcessor;
     }
 
-    public ShortArrayProcessor getShortArrayProcessor() {
+    public FieldProcessor<short[]> getShortArrayProcessor() {
         return shortArrayProcessor;
     }
 
-    public void setShortArrayProcessor(ShortArrayProcessor shortArrayProcessor) {
+    public void setShortArrayProcessor(FieldProcessor<short[]> shortArrayProcessor) {
         this.shortArrayProcessor = shortArrayProcessor;
     }
 
-    public IntegerArrayProcessor getIntegerArrayProcessor() {
+    public FieldProcessor<int[]> getIntegerArrayProcessor() {
         return integerArrayProcessor;
     }
 
-    public void setIntegerArrayProcessor(IntegerArrayProcessor integerArrayProcessor) {
+    public void setIntegerArrayProcessor(FieldProcessor<int[]> integerArrayProcessor) {
         this.integerArrayProcessor = integerArrayProcessor;
     }
 
-    public LongArrayProcessor getLongArrayProcessor() {
+    public FieldProcessor<long[]> getLongArrayProcessor() {
         return longArrayProcessor;
     }
 
-    public void setLongArrayProcessor(LongArrayProcessor longArrayProcessor) {
+    public void setLongArrayProcessor(FieldProcessor<long[]> longArrayProcessor) {
         this.longArrayProcessor = longArrayProcessor;
     }
 
-    public StringProcessor getStringProcessor() {
+    public FieldProcessor<String> getStringProcessor() {
         return stringProcessor;
     }
 
-    public void setStringProcessor(StringProcessor stringProcessor) {
+    public void setStringProcessor(FieldProcessor<String> stringProcessor) {
         this.stringProcessor = stringProcessor;
     }
 
-    public DateProcessor getDateProcessor() {
+    public FieldProcessor<Date> getDateProcessor() {
         return dateProcessor;
     }
 
-    public void setDateProcessor(DateProcessor dateProcessor) {
+    public void setDateProcessor(FieldProcessor<Date> dateProcessor) {
         this.dateProcessor = dateProcessor;
     }
 
-    public ByteBufProcessor getByteBufProcessor() {
+    public FieldProcessor<ByteBuf> getByteBufProcessor() {
         return byteBufProcessor;
     }
 
-    public void setByteBufProcessor(ByteBufProcessor byteBufProcessor) {
+    public void setByteBufProcessor(FieldProcessor<ByteBuf> byteBufProcessor) {
         this.byteBufProcessor = byteBufProcessor;
     }
 
-    public ListProcessor getListProcessor() {
+    public FieldProcessor<List> getListProcessor() {
         return listProcessor;
     }
 
-    public void setListProcessor(ListProcessor listProcessor) {
+    public void setListProcessor(FieldProcessor<List> listProcessor) {
         this.listProcessor = listProcessor;
     }
 }
