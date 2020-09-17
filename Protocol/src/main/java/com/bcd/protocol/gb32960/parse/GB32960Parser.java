@@ -44,16 +44,16 @@ public class GB32960Parser extends ParserContext implements ApplicationListener<
         System.out.println(data.length());
         byte [] bytes= ByteBufUtil.decodeHexDump(data);
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
-        Packet packet= context.parse(Packet.class, byteBuf,0);
-        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
+//        Packet packet= context.parse(Packet.class, byteBuf,0);
+//        PacketData packetData = packetDataFieldParser.parse(packet.getDataContent(),packet.getFlag(),packet.getContentLength());
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
         long t2=System.currentTimeMillis();
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
-//            test2(byteBuf,context,packetDataFieldParser);
-            test3(packet,packetData,context,data);
+            test2(byteBuf,context,packetDataFieldParser);
+//            test3(packet,packetData,context,data);
         }
         long t3=System.currentTimeMillis();
 

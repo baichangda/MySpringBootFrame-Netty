@@ -235,9 +235,9 @@ public abstract class ParserContext {
                          */
                         Class handleClass=fieldInfo.getClazz();
                         FieldParser fieldParser= classToParser.get(handleClass);
-//                            if(fieldParser==null){
-//                                throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
-//                            }
+                        if(fieldParser==null){
+                            throw BaseRuntimeException.getException("cant't find class["+handleClass.getName()+"] handler");
+                        }
                         int len;
                         /**
                          * 如果{@link PacketField#lenExpr()} 为空
@@ -319,9 +319,9 @@ public abstract class ParserContext {
     public final <T>T parse(Class<T> clazz,ByteBuf data,int allLen){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
-//        if(packetInfo==null){
-//            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
-//        }
+        if(packetInfo==null){
+            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
+        }
         try {
             //构造实例
             T instance= clazz.newInstance();
@@ -353,9 +353,9 @@ public abstract class ParserContext {
                          */
                         Class parserClass=fieldInfo.getClazz();
                         FieldParser fieldParser= classToParser.get(parserClass);
-//                        if(fieldParser==null){
-//                            throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
-//                        }
+                        if(fieldParser==null){
+                            throw BaseRuntimeException.getException("cant't find class["+parserClass.getName()+"] handler");
+                        }
                         int len;
                         /**
                          * 如果{@link PacketField#lenExpr()} 为空
