@@ -111,7 +111,6 @@ public abstract class Parser {
     protected List<FieldProcessor> initProcessorBySpring(){
         List<FieldProcessor> processorList=new ArrayList<>();
         SpringUtil.applicationContext.getBeansOfType(FieldProcessor.class).values().forEach(e->{
-            Class clazz= ProxyUtil.getSource(e).getClass();
             processorList.add(e);
         });
         return processorList;
