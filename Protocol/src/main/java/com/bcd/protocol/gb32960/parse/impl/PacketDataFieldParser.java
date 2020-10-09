@@ -19,38 +19,32 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
         switch (flag){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= parser.parse(VehicleLoginData.class, data,processContext);
-                packetData=vehicleLoginData;
+                packetData= parser.parse(VehicleLoginData.class, data,processContext);
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= parser.parse(VehicleRealData.class,data,processContext);
-                packetData=vehicleRealData;
+                packetData= parser.parse(VehicleRealData.class,data,processContext);
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= parser.parse(VehicleSupplementData.class,data,processContext);
-                packetData=vehicleSupplementData;
+                packetData= parser.parse(VehicleSupplementData.class,data,processContext);
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= parser.parse(VehicleLogoutData.class,data,processContext);
-                packetData=vehicleLogoutData;
+                packetData= parser.parse(VehicleLogoutData.class,data,processContext);
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= parser.parse(PlatformLoginData.class,data,processContext);
-                packetData=platformLoginData;
+                packetData= parser.parse(PlatformLoginData.class,data,processContext);
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= parser.parse(PlatformLogoutData.class,data,processContext);
-                packetData=platformLogoutData;
+                packetData= parser.parse(PlatformLogoutData.class,data,processContext);
                 break;
             }
             //心跳
