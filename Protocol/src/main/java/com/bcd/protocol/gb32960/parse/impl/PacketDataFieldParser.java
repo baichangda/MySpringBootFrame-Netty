@@ -25,38 +25,32 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
         switch (flag){
             //车辆登入
             case 1:{
-                VehicleLoginData vehicleLoginData= context.parse(VehicleLoginData.class, data,len);
-                packetData=vehicleLoginData;
+                packetData= context.parse(VehicleLoginData.class, data,len);
                 break;
             }
             //车辆实时信息
             case 2:{
-                VehicleRealData vehicleRealData= context.parse(VehicleRealData.class,data,len);
-                packetData=vehicleRealData;
+                packetData= context.parse(VehicleRealData.class,data,len);
                 break;
             }
             //补发信息上报
             case 3:{
-                VehicleSupplementData vehicleSupplementData= context.parse(VehicleSupplementData.class,data,len);
-                packetData=vehicleSupplementData;
+                packetData= context.parse(VehicleSupplementData.class,data,len);
                 break;
             }
             //车辆登出
             case 4:{
-                VehicleLogoutData vehicleLogoutData= context.parse(VehicleLogoutData.class,data,len);
-                packetData=vehicleLogoutData;
+                packetData= context.parse(VehicleLogoutData.class,data,len);
                 break;
             }
             //平台登入
             case 5:{
-                PlatformLoginData platformLoginData= context.parse(PlatformLoginData.class,data,len);
-                packetData=platformLoginData;
+                packetData= context.parse(PlatformLoginData.class,data,len);
                 break;
             }
             //平台登出
             case 6:{
-                PlatformLogoutData platformLogoutData= context.parse(PlatformLogoutData.class,data,len);
-                packetData=platformLogoutData;
+                packetData= context.parse(PlatformLogoutData.class,data,len);
                 break;
             }
             //心跳
