@@ -60,11 +60,6 @@ public class PacketDataFieldParser extends FieldProcessor<PacketData> {
     }
 
     @Override
-    public boolean support(Class clazz) {
-        return clazz==PacketData.class;
-    }
-
-    @Override
     public PacketData process(ByteBuf data, FieldProcessContext processContext) {
         Packet packet=(Packet)processContext.getInstance();
         return parse(data,packet.getFlag(),processContext);

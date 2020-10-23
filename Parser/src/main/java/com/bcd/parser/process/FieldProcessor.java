@@ -16,13 +16,6 @@ public abstract class FieldProcessor<T> {
     }
 
     /**
-     * 当前字段解析器是否支持
-     * @param clazz
-     * @return
-     */
-    public abstract boolean support(Class clazz);
-
-    /**
      * 读取byteBuf数据转换成对象
      * @param data
      * @param processContext

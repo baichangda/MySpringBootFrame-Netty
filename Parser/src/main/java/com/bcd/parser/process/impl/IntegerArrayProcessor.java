@@ -11,10 +11,6 @@ import java.util.Objects;
 
 public class IntegerArrayProcessor extends FieldProcessor<int[]> {
     private final static int BYTE_LENGTH=4;
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==int[].class;
-    }
 
     @Override
     public int[] process(ByteBuf data, FieldProcessContext processContext){

@@ -12,11 +12,6 @@ import java.util.Objects;
 public class ShortArrayProcessor extends FieldProcessor<short[]> {
     private final static int BYTE_LENGTH=2;
     @Override
-    public boolean support(Class clazz) {
-        return false;
-    }
-
-    @Override
     public short[] process(ByteBuf data, FieldProcessContext processContext) {
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         int len=processContext.getLen();

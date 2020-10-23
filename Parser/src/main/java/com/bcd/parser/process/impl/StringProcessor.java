@@ -10,11 +10,6 @@ import java.util.Objects;
 
 public class StringProcessor extends FieldProcessor<String> {
     @Override
-    public boolean support(Class clazz) {
-        return clazz==String.class;
-    }
-
-    @Override
     public String process(ByteBuf data, FieldProcessContext processContext) {
         int discardLen=0;
         int len =processContext.getLen();

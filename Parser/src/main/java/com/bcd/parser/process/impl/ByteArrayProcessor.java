@@ -10,10 +10,6 @@ import java.util.Objects;
 
 public class ByteArrayProcessor extends FieldProcessor<byte[]> {
     private final static int BYTE_LENGTH=1;
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==byte[].class;
-    }
 
     @Override
     public byte[] process(ByteBuf data, FieldProcessContext processContext)  {
@@ -47,13 +43,5 @@ public class ByteArrayProcessor extends FieldProcessor<byte[]> {
                 dest.writeByte(num);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        ByteArrayProcessor processor=new ByteArrayProcessor();
-        byte[] b1=new byte[0];
-        Byte[] b2=new Byte[0];
-        System.out.println(processor.support(b1.getClass()));
-        System.out.println(processor.support(b2.getClass()));
     }
 }

@@ -13,11 +13,6 @@ public class LongArrayProcessor extends FieldProcessor<long[]> {
     public final static int BYTE_LENGTH=8;
 
     @Override
-    public boolean support(Class clazz) {
-        return clazz==long[].class;
-    }
-
-    @Override
     public long[] process(ByteBuf data, FieldProcessContext processContext){
         int singleLen= processContext.getFieldInfo().getPacketField_singleLen();
         int len= processContext.getLen();

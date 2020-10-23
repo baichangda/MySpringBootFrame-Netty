@@ -52,6 +52,7 @@ public abstract class Parser {
     protected FieldProcessor<Date> dateProcessor=new DateProcessor();
     protected FieldProcessor<ByteBuf> byteBufProcessor=new ByteBufProcessor();
     protected FieldProcessor<List> listProcessor=new ListProcessor();
+    protected FieldProcessor<Object> parsableObjectProcessor=new ParsableObjectProcessor();
 
     public void init(){
         //初始化处理器
@@ -93,6 +94,7 @@ public abstract class Parser {
         processorList.add(this.dateProcessor);
         processorList.add(this.byteBufProcessor);
         processorList.add(this.listProcessor);
+        processorList.add(this.parsableObjectProcessor);
         return processorList;
     }
 
@@ -202,7 +204,7 @@ public abstract class Parser {
                 /**
                  * 代表 {@link PacketField#listLenExpr()}
                  */
-                Object[] lisLlenRpn= fieldInfo.getListLenRpn();
+                Object[] listLenRpn= fieldInfo.getListLenRpn();
                 int len;
                 int listLen=0;
                 if(lenRpn==null){
@@ -214,11 +216,11 @@ public abstract class Parser {
                         len = RpnUtil.calcRPN_char_int(lenRpn, vals,varValArrOffset);
                     }
                 }
-                if(lisLlenRpn!=null){
-                    if(lisLlenRpn.length==1){
-                        listLen=vals[(char)lisLlenRpn[0]-varValArrOffset];
+                if(listLenRpn!=null){
+                    if(listLenRpn.length==1){
+                        listLen=vals[(char)listLenRpn[0]-varValArrOffset];
                     }else {
-                        listLen = RpnUtil.calcRPN_char_int(lisLlenRpn, vals,varValArrOffset);
+                        listLen = RpnUtil.calcRPN_char_int(listLenRpn, vals,varValArrOffset);
                     }
                 }
                 processContext.setFieldInfo(fieldInfo);

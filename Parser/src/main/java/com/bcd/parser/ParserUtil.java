@@ -4,6 +4,7 @@ import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.anno.OffsetField;
 import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
 import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.info.OffsetFieldInfo;
 import com.bcd.parser.info.PacketInfo;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class ParserUtil {
     /**
      * 解析类转换成包信息
@@ -53,6 +55,21 @@ public class ParserUtil {
             Class typeClazz=null;
             boolean isVar=false;
             int processorIndex;
+            /**
+             *         processorList.add(this.byteProcessor);
+             *         processorList.add(this.shortProcessor);
+             *         processorList.add(this.integerProcessor);
+             *         processorList.add(this.longProcessor);
+             *         processorList.add(this.byteArrayProcessor);
+             *         processorList.add(this.shortArrayProcessor);
+             *         processorList.add(this.integerArrayProcessor);
+             *         processorList.add(this.longArrayProcessor);
+             *         processorList.add(this.stringProcessor);
+             *         processorList.add(this.dateProcessor);
+             *         processorList.add(this.byteBufProcessor);
+             *         processorList.add(this.listProcessor);
+             *         processorList.add(this.parsableObjectProcessor);
+             */
             //判断是否特殊处理
             if(packetField.processorClass()==Void.class){
                 //判断是否是List<Bean>(Bean代表自定义实体类型,不包括Byte、Short、Integer、Long)
@@ -87,9 +104,14 @@ public class ParserUtil {
                         //ByteBuf类型
                         processorIndex=10;
                     } else {
-                        //实体类型
+                        /**
+                         * 带{@link com.bcd.parser.anno.Parsable}注解的实体类
+                         */
+                        if(fieldType.getAnnotation(Parsable.class)==null){
+                            throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Bean Type[" + fieldType + "] Not Support,Must have annotation [com.bcd.parser.anno.Parsable]");
+                        }
                         typeClazz = fieldType;
-                        processorIndex=findProcessorIndexByBeanClass(typeClazz,processors);
+                        processorIndex=12;
                     }
                 }else{
                     //实体类型集合
@@ -215,25 +237,4 @@ public class ParserUtil {
         }
         throw BaseRuntimeException.getException("class["+clazz.getName()+"] FieldProcessor not exist");
     }
-
-    public static int findProcessorIndexByBeanClass(Class clazz,FieldProcessor[] processors){
-        int index=-1;
-        FieldProcessor select=null;
-        for (int i=0;i<processors.length;i++) {
-            if(processors[i].support(clazz)){
-                if(index==-1){
-                    index = i;
-                    select = processors[i];
-                }else {
-                    throw BaseRuntimeException.getException("FieldProcessor["+select.getClass()+"] and FieldProcessor["+processors[i].getClass()+"] both support class["+clazz.getName()+"]");
-                }
-            }
-        }
-        if(index==-1){
-            throw BaseRuntimeException.getException("class["+clazz.getName()+"] FieldProcessor not exist");
-        }
-        return index;
-    }
-
-
 }

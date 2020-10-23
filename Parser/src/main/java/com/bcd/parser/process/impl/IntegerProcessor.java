@@ -1,6 +1,5 @@
 package com.bcd.parser.process.impl;
 
-import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -11,10 +10,6 @@ import java.util.Objects;
 
 public class IntegerProcessor extends FieldProcessor {
     public final static int BYTE_LENGTH=4;
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==int.class||clazz==Integer.class;
-    }
 
     @Override
     public Object process(ByteBuf data, FieldProcessContext processContext){

@@ -11,10 +11,6 @@ import java.util.Objects;
 
 public class ByteProcessor extends FieldProcessor {
     private final static int BYTE_LENGTH=1;
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==byte.class||clazz==Byte.class;
-    }
 
     @Override
     public Object process(ByteBuf data, FieldProcessContext processContext) {

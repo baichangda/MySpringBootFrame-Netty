@@ -10,10 +10,6 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class ListProcessor extends FieldProcessor<List> {
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==List.class;
-    }
 
     @Override
     public List process(ByteBuf data, FieldProcessContext processContext) {

@@ -13,11 +13,6 @@ public class LongProcessor extends FieldProcessor {
     public final static int BYTE_LENGTH=8;
 
     @Override
-    public boolean support(Class clazz) {
-        return clazz==long.class||clazz==Long.class;
-    }
-
-    @Override
     public Object process(ByteBuf data, FieldProcessContext processContext){
         int len=processContext.getLen();
         if(len==4){

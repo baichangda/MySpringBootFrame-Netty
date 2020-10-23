@@ -13,11 +13,6 @@ public class VehicleCommonDataFieldParser extends FieldProcessor<VehicleCommonDa
     Logger logger= LoggerFactory.getLogger(VehicleCommonDataFieldParser.class);
 
     @Override
-    public boolean support(Class clazz) {
-        return clazz==VehicleCommonData.class;
-    }
-
-    @Override
     public VehicleCommonData process(ByteBuf data, FieldProcessContext processContext) {
         return parseVehicleData(data,processContext.getLen(),processContext);
     }

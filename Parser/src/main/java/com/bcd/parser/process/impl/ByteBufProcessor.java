@@ -10,10 +10,6 @@ import io.netty.buffer.Unpooled;
 import java.util.Objects;
 
 public class ByteBufProcessor extends FieldProcessor<ByteBuf> {
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==ByteBuf.class;
-    }
 
     @Override
     public ByteBuf process(ByteBuf data, FieldProcessContext processContext) {

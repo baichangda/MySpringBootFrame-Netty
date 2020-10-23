@@ -14,10 +14,6 @@ import java.util.Objects;
 
 public class DateProcessor extends FieldProcessor<Date> {
     private final static int BASE_YEAR=2000;
-    @Override
-    public boolean support(Class clazz) {
-        return clazz==Date.class;
-    }
 
     @Override
     public Date process(ByteBuf data, FieldProcessContext processContext){
