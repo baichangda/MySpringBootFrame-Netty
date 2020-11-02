@@ -1,7 +1,6 @@
 package com.bcd.parser.process.impl;
 
 
-import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -9,11 +8,11 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
 
-public class ByteProcessor extends FieldProcessor {
+public class ByteProcessor extends FieldProcessor<Byte> {
     private final static int BYTE_LENGTH=1;
 
     @Override
-    public Object process(ByteBuf data, FieldProcessContext processContext) {
+    public Byte process(ByteBuf data, FieldProcessContext processContext) {
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
             return data.readByte();
@@ -26,11 +25,11 @@ public class ByteProcessor extends FieldProcessor {
     }
 
     @Override
-    public void deProcess(Object data, ByteBuf dest, FieldDeProcessContext processContext) {
+    public void deProcess(Byte data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int len=processContext.getLen();
         byte[] content=new byte[len];
-        content[len-BYTE_LENGTH]=(byte)data;
+        content[len-BYTE_LENGTH]=data;
         dest.writeBytes(content);
     }
 }

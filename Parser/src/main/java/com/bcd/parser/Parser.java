@@ -177,9 +177,9 @@ public abstract class Parser {
     public final <T>T parse(Class<T> clazz, ByteBuf data, FieldProcessContext parentContext){
         //解析包
         PacketInfo packetInfo=packetInfoCache.get(clazz);
-//        if(packetInfo==null){
-//            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
-//        }
+        if(packetInfo==null){
+            throw BaseRuntimeException.getException("can not find class["+clazz.getName()+"] packetInfo");
+        }
         try {
             //构造实例
             T instance= clazz.newInstance();

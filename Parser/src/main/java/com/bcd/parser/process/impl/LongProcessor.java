@@ -1,6 +1,5 @@
 package com.bcd.parser.process.impl;
 
-import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -9,11 +8,11 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
-public class LongProcessor extends FieldProcessor {
+public class LongProcessor extends FieldProcessor<Long> {
     public final static int BYTE_LENGTH=8;
 
     @Override
-    public Object process(ByteBuf data, FieldProcessContext processContext){
+    public Long process(ByteBuf data, FieldProcessContext processContext){
         int len=processContext.getLen();
         if(len==4){
             //优化处理 int->long
@@ -34,18 +33,18 @@ public class LongProcessor extends FieldProcessor {
     }
 
     @Override
-    public void deProcess(Object data, ByteBuf dest, FieldDeProcessContext processContext) {
+    public void deProcess(Long data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
-            dest.writeLong((long)data);
+            dest.writeLong(data);
         }else if(len>BYTE_LENGTH){
             dest.writeBytes(new byte[len-BYTE_LENGTH]);
-            dest.writeLong((long)data);
+            dest.writeLong(data);
         }else{
             for(int i=len;i>=1;i--){
                 int move=8*(i-1);
-                dest.writeByte((byte)((long)data>>>move));
+                dest.writeByte((byte)(data>>>move));
             }
         }
     }

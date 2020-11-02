@@ -59,6 +59,7 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
         for(int i=1;i<=1000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
+//            parser.parse(Packet.class, byteBuf);
             test2(byteBuf,parser);
 //            test3(packet,parser,data);
         }

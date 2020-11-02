@@ -8,11 +8,11 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
-public class ShortProcessor extends FieldProcessor {
+public class ShortProcessor extends FieldProcessor<Short> {
     private final static int BYTE_LENGTH=2;
 
     @Override
-    public Object process(ByteBuf data, FieldProcessContext processContext) {
+    public Short process(ByteBuf data, FieldProcessContext processContext) {
         int len=processContext.getLen();
         if(len==1){
             //优化处理 byte->short
@@ -33,18 +33,18 @@ public class ShortProcessor extends FieldProcessor {
     }
 
     @Override
-    public void deProcess(Object data, ByteBuf dest, FieldDeProcessContext processContext) {
+    public void deProcess(Short data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
-            dest.writeShort((short)data);
+            dest.writeShort(data);
         }else if(len>BYTE_LENGTH){
             dest.writeBytes(new byte[len-BYTE_LENGTH]);
-            dest.writeShort((short)data);
+            dest.writeShort(data);
         }else{
             for(int i=len;i>=1;i--){
                 int move=8*(i-1);
-                dest.writeByte((byte)((short)data>>>move));
+                dest.writeByte((byte)(data>>>move));
             }
         }
     }
