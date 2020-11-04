@@ -1,5 +1,6 @@
 package com.bcd.parser.process.impl;
 
+import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -13,22 +14,29 @@ public class DoubleProcessor extends FieldProcessor<Double> {
 
     @Override
     public Double process(ByteBuf data, FieldProcessContext processContext) {
+        long res;
         int len=processContext.getLen();
         if(len==4){
             //优化处理 int->long
-            return withValExpr(data.readUnsignedInt(),processContext);
+            res= data.readUnsignedInt();
         }else {
             if (len == BYTE_LENGTH) {
-                return withValExpr(data.readLong(),processContext);
+                res=data.readLong();
             } else if (len > BYTE_LENGTH) {
                 data.skipBytes(len - BYTE_LENGTH);
-                return withValExpr(data.readLong(),processContext);
+                res=data.readLong();
             } else {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return withValExpr(temp.readLong(),processContext);
+                res=temp.readLong();
             }
+        }
+        Object[] valRpn=processContext.getFieldInfo().getValRpn();
+        if(valRpn==null){
+            return (double)res;
+        }else{
+            return RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
         }
     }
 

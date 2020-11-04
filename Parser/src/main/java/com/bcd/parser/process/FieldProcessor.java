@@ -37,15 +37,6 @@ public abstract class FieldProcessor<T> {
      */
     public abstract void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext);
 
-    protected double withValExpr(double val,FieldProcessContext processContext){
-        Object[] valRpn= processContext.getFieldInfo().getValRpn();
-        if(valRpn==null){
-            return val;
-        }else {
-            return RpnUtil.calcRPN_char_double_singleVar(valRpn, val);
-        }
-    }
-
     protected void checkValRpnNull(FieldDeProcessContext processContext){
         if(processContext.getFieldInfo().getValRpn()!=null){
             Field field=processContext.getFieldInfo().getField();

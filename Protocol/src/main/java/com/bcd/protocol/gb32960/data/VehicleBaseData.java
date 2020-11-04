@@ -22,12 +22,16 @@ public class VehicleBaseData {
     short runMode;
 
     //车速
-    @PacketField(index = 4,len=2,valExpr = "x*0.1")
-    float vehicleSpeed;
+    @PacketField(index = 4,len=2
+//            ,valExpr = "x*0.1"
+    )
+    int vehicleSpeed;
 
     //累计里程
-    @PacketField(index = 5,len=4,valExpr = "x*0.1")
-    double totalMileage;
+    @PacketField(index = 5,len=4
+//            ,valExpr = "x*0.1"
+    )
+    long totalMileage;
 
     //总电压
     @PacketField(index = 6,len=2)
@@ -84,16 +88,6 @@ public class VehicleBaseData {
     public void setRunMode(short runMode) {
         this.runMode = runMode;
     }
-
-    public float getVehicleSpeed() {
-        return vehicleSpeed;
-    }
-
-    public void setVehicleSpeed(float vehicleSpeed) {
-        this.vehicleSpeed = vehicleSpeed;
-    }
-
-
 
     public int getTotalVoltage() {
         return totalVoltage;
@@ -159,11 +153,4 @@ public class VehicleBaseData {
         this.pedalStatus = pedalStatus;
     }
 
-    public double getTotalMileage() {
-        return totalMileage;
-    }
-
-    public void setTotalMileage(double totalMileage) {
-        this.totalMileage = totalMileage;
-    }
 }

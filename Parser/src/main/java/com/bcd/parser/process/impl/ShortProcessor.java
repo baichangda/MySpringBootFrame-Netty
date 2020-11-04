@@ -1,5 +1,6 @@
 package com.bcd.parser.process.impl;
 
+import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -13,22 +14,29 @@ public class ShortProcessor extends FieldProcessor<Short> {
 
     @Override
     public Short process(ByteBuf data, FieldProcessContext processContext) {
+        short res;
         int len=processContext.getLen();
         if(len==1){
             //优化处理 byte->short
-            return (short)withValExpr(data.readUnsignedByte(),processContext);
+            res=data.readUnsignedByte();
         }else {
             if (len == BYTE_LENGTH) {
-                return (short)withValExpr(data.readShort(),processContext);
+                res=data.readShort();
             } else if (len > BYTE_LENGTH) {
                 data.skipBytes(len - BYTE_LENGTH);
-                return (short)withValExpr(data.readShort(),processContext);
+                res=data.readShort();
             } else {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return (short)withValExpr(temp.readShort(),processContext);
+                res=temp.readShort();
             }
+        }
+        Object[] valRpn=processContext.getFieldInfo().getValRpn();
+        if(valRpn==null){
+            return res;
+        }else{
+            return (short)RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
         }
     }
 

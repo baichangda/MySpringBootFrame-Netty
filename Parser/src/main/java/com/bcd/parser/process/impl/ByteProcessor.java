@@ -2,6 +2,7 @@ package com.bcd.parser.process.impl;
 
 
 import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -15,13 +16,20 @@ public class ByteProcessor extends FieldProcessor<Byte> {
     @Override
     public Byte process(ByteBuf data, FieldProcessContext processContext) {
         int len=processContext.getLen();
+        byte res;
         if(len==BYTE_LENGTH){
-            return (byte)withValExpr(data.readByte(),processContext);
+            res=data.readByte();
         }else if(len>BYTE_LENGTH){
             data.skipBytes(len-BYTE_LENGTH);
-            return (byte)withValExpr(data.readByte(),processContext);
+            res=data.readByte();
         }else{
-            return (byte)withValExpr(0,processContext);
+            res=0;
+        }
+        Object[] valRpn=processContext.getFieldInfo().getValRpn();
+        if(valRpn==null){
+            return res;
+        }else{
+            return (byte)RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
         }
     }
 
