@@ -13,10 +13,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component("parser_32960")
@@ -66,18 +63,29 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
         int core=Runtime.getRuntime().availableProcessors();
         logger.info("core:{}",core);
         AtomicInteger count=new AtomicInteger(0);
-        ThreadPoolExecutor pool= (ThreadPoolExecutor)Executors.newFixedThreadPool(core+1);
-        for(int i=0;i<pool.getMaximumPoolSize();i++){
-            pool.execute(()->{
-                testParse(data, parser,count);
+        ExecutorService []pools=new ExecutorService[core+1];
+        for(int i=0;i<pools.length;i++){
+            pools[i] = Executors.newSingleThreadExecutor();
+        }
+        for (ExecutorService pool : pools) {
+            pool.execute(() -> {
+                testParse(data, parser, count);
             });
         }
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
+        ScheduledExecutorService monitor=Executors.newSingleThreadScheduledExecutor();
+        monitor.scheduleAtFixedRate(()->{
             logger.info("speed/s:{}",count.getAndSet(0)/3);
         },3,3,TimeUnit.SECONDS);
 
         try {
-            pool.awaitTermination(1,TimeUnit.HOURS);
+            for (ExecutorService pool : pools) {
+                pool.shutdown();
+            }
+            for (ExecutorService pool : pools) {
+                pool.awaitTermination(1,TimeUnit.HOURS);
+            }
+            monitor.shutdown();
+            monitor.awaitTermination(1,TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             logger.error("interrupted",e);
         }
@@ -88,7 +96,7 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
         ByteBuf byteBuf= Unpooled.wrappedBuffer(bytes);
         byteBuf.markReaderIndex();
         byteBuf.markWriterIndex();
-        for(int i=1;i<=100000000;i++) {
+        for(int i=1;i<=5000000;i++) {
             byteBuf.resetReaderIndex();
             byteBuf.resetWriterIndex();
             parser.parse(Packet.class,byteBuf);
