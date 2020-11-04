@@ -60,6 +60,8 @@ public class ParserUtil {
              *         processorList.add(this.shortProcessor);
              *         processorList.add(this.integerProcessor);
              *         processorList.add(this.longProcessor);
+             *         processorList.add(this.floatProcessor);
+             *         processorList.add(this.doubleProcessor);
              *         processorList.add(this.byteArrayProcessor);
              *         processorList.add(this.shortArrayProcessor);
              *         processorList.add(this.integerArrayProcessor);
@@ -82,27 +84,31 @@ public class ParserUtil {
                         processorIndex=2;
                     } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
                         processorIndex=3;
+                    } else if (Float.class.isAssignableFrom(fieldType) || Float.TYPE.isAssignableFrom(fieldType)) {
+                        processorIndex=4;
+                    } else if (Double.class.isAssignableFrom(fieldType) || Double.TYPE.isAssignableFrom(fieldType)) {
+                        processorIndex=5;
                     } else if (String.class.isAssignableFrom(fieldType)) {
-                        processorIndex=8;
+                        processorIndex=10;
                     } else if (Date.class.isAssignableFrom(fieldType)) {
-                        processorIndex=9;
+                        processorIndex=11;
                     } else if (fieldType.isArray()) {
                         //数组类型
                         Class arrType = fieldType.getComponentType();
                         if (Byte.class.isAssignableFrom(arrType) || Byte.TYPE.isAssignableFrom(arrType)) {
-                            processorIndex=4;
-                        } else if (Short.class.isAssignableFrom(arrType) || Short.TYPE.isAssignableFrom(arrType)) {
-                            processorIndex=5;
-                        } else if (Integer.class.isAssignableFrom(arrType) || Integer.TYPE.isAssignableFrom(arrType)) {
                             processorIndex=6;
-                        } else if (Long.class.isAssignableFrom(arrType) || Long.TYPE.isAssignableFrom(arrType)) {
+                        } else if (Short.class.isAssignableFrom(arrType) || Short.TYPE.isAssignableFrom(arrType)) {
                             processorIndex=7;
+                        } else if (Integer.class.isAssignableFrom(arrType) || Integer.TYPE.isAssignableFrom(arrType)) {
+                            processorIndex=8;
+                        } else if (Long.class.isAssignableFrom(arrType) || Long.TYPE.isAssignableFrom(arrType)) {
+                            processorIndex=9;
                         } else {
                             throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Array Type[" + arrType.getName() + "] Not Support");
                         }
                     } else if(ByteBuf.class.isAssignableFrom(fieldType)){
                         //ByteBuf类型
-                        processorIndex=10;
+                        processorIndex=12;
                     } else {
                         /**
                          * 带{@link com.bcd.parser.anno.Parsable}注解的实体类
@@ -111,12 +117,12 @@ public class ParserUtil {
                             throw BaseRuntimeException.getException("Class[" + clazz.getName() + "] Field[" + field.getName() + "] Bean Type[" + fieldType + "] Not Support,Must have annotation [com.bcd.parser.anno.Parsable]");
                         }
                         typeClazz = fieldType;
-                        processorIndex=12;
+                        processorIndex=14;
                     }
                 }else{
                     //实体类型集合
                     typeClazz = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                    processorIndex=11;
+                    processorIndex=13;
                 }
             }else{
                 //特殊处理,自定义实体类型
@@ -127,11 +133,15 @@ public class ParserUtil {
             //转换逆波兰表达式
             Object[] lenRpn=null;
             Object[] listLenRpn=null;
+            Object[] valRpn=null;
             if(!packetField.lenExpr().isEmpty()){
                 lenRpn= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.lenExpr()));
             }
             if(!packetField.listLenExpr().isEmpty()){
                 listLenRpn= RpnUtil.doWithRpnList_char_int(RpnUtil.parseArithmeticToRPN(packetField.listLenExpr()));
+            }
+            if(!packetField.valExpr().isEmpty()){
+                valRpn= RpnUtil.doWithRpnList_char_double(RpnUtil.parseArithmeticToRPN(packetField.valExpr()));
             }
 
             //判断是否变量
@@ -172,6 +182,7 @@ public class ParserUtil {
             fieldInfo.setProcessorIndex(processorIndex);
             fieldInfo.setLenRpn(lenRpn);
             fieldInfo.setListLenRpn(listLenRpn);
+            fieldInfo.setValRpn(valRpn);
             fieldInfo.setPacketField_index(packetField.index());
             fieldInfo.setPacketField_len(packetField.len());
             fieldInfo.setPacketField_lenExpr(packetField.lenExpr());
@@ -179,6 +190,7 @@ public class ParserUtil {
             fieldInfo.setPacketField_singleLen(packetField.singleLen());
             fieldInfo.setPacketField_var(packetField.var());
             fieldInfo.setPacketField_parserClass(packetField.processorClass());
+            fieldInfo.setPacketField_valExpr(packetField.valExpr());
             return fieldInfo;
         }).collect(Collectors.toList());
         packetInfo.setFieldInfos(fieldInfoList.toArray(new FieldInfo[0]));
@@ -202,23 +214,23 @@ public class ParserUtil {
                     offsetFieldInfo.getField().setAccessible(true);
                     offsetFieldInfo.getSourceField().setAccessible(true);
                     Class fieldType = field.getType();
-                    int type;
+                    int numberType;
                     if (Byte.class.isAssignableFrom(fieldType) || Byte.TYPE.isAssignableFrom(fieldType)) {
-                        type = 1;
+                        numberType = 1;
                     } else if (Short.class.isAssignableFrom(fieldType) || Short.TYPE.isAssignableFrom(fieldType)) {
-                        type = 2;
+                        numberType = 2;
                     } else if (Integer.class.isAssignableFrom(fieldType) || Integer.TYPE.isAssignableFrom(fieldType)) {
-                        type = 3;
+                        numberType = 3;
                     } else if (Long.class.isAssignableFrom(fieldType) || Long.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
+                        numberType = 4;
                     } else if (Float.class.isAssignableFrom(fieldType) || Float.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
+                        numberType = 5;
                     } else if (Double.class.isAssignableFrom(fieldType) || Double.TYPE.isAssignableFrom(fieldType)) {
-                        type = 4;
+                        numberType = 6;
                     } else {
                         throw BaseRuntimeException.getException("class[" + className + "],field[" + field.getName() + "],fieldType[" + fieldType.getName() + "] not support");
                     }
-                    offsetFieldInfo.setFieldType(type);
+                    offsetFieldInfo.setFieldType(numberType);
                     return offsetFieldInfo;
                 } catch (NoSuchFieldException e) {
                     throw BaseRuntimeException.getException(e);

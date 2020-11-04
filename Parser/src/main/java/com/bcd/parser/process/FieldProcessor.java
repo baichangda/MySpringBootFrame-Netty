@@ -1,8 +1,14 @@
 package com.bcd.parser.process;
 
 
+import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.Parser;
+import com.bcd.parser.info.FieldInfo;
 import io.netty.buffer.ByteBuf;
+
+import java.lang.reflect.Field;
+import java.util.Objects;
 
 public abstract class FieldProcessor<T> {
     protected Parser parser;
@@ -30,5 +36,23 @@ public abstract class FieldProcessor<T> {
      * @param processContext
      */
     public abstract void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext);
+
+    protected double withValExpr(double val,FieldProcessContext processContext){
+        Object[] valRpn= processContext.getFieldInfo().getValRpn();
+        if(valRpn==null){
+            return val;
+        }else {
+            return RpnUtil.calcRPN_char_double_singleVar(valRpn, val);
+        }
+    }
+
+    protected void checkValRpnNull(FieldDeProcessContext processContext){
+        if(processContext.getFieldInfo().getValRpn()!=null){
+            Field field=processContext.getFieldInfo().getField();
+            throw BaseRuntimeException.getException("class[{0}] field[{1}] has valRpn,deProcess not support",
+                    field.getDeclaringClass().getName(),
+                    field.getName());
+        }
+    }
 
 }

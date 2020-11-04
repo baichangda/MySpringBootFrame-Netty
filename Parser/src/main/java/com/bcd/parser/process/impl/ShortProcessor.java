@@ -16,18 +16,18 @@ public class ShortProcessor extends FieldProcessor<Short> {
         int len=processContext.getLen();
         if(len==1){
             //优化处理 byte->short
-            return data.readUnsignedByte();
+            return (short)withValExpr(data.readUnsignedByte(),processContext);
         }else {
             if (len == BYTE_LENGTH) {
-                return data.readShort();
+                return (short)withValExpr(data.readShort(),processContext);
             } else if (len > BYTE_LENGTH) {
                 data.skipBytes(len - BYTE_LENGTH);
-                return data.readShort();
+                return (short)withValExpr(data.readShort(),processContext);
             } else {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return temp.readShort();
+                return (short)withValExpr(temp.readShort(),processContext);
             }
         }
     }
@@ -35,6 +35,7 @@ public class ShortProcessor extends FieldProcessor<Short> {
     @Override
     public void deProcess(Short data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
+        checkValRpnNull(processContext);
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
             dest.writeShort(data);

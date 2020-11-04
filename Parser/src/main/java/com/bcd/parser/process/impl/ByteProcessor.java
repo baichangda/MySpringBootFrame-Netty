@@ -1,6 +1,7 @@
 package com.bcd.parser.process.impl;
 
 
+import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
@@ -15,18 +16,22 @@ public class ByteProcessor extends FieldProcessor<Byte> {
     public Byte process(ByteBuf data, FieldProcessContext processContext) {
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
-            return data.readByte();
+            return (byte)withValExpr(data.readByte(),processContext);
         }else if(len>BYTE_LENGTH){
             data.skipBytes(len-BYTE_LENGTH);
-            return data.readByte();
+            return (byte)withValExpr(data.readByte(),processContext);
         }else{
-            return 0;
+            return (byte)withValExpr(0,processContext);
         }
     }
 
     @Override
     public void deProcess(Byte data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
+        checkValRpnNull(processContext);
+        if(processContext.getFieldInfo().getValRpn()!=null){
+            throw BaseRuntimeException.getException("class[{0}] field[{1}] not support",processContext.getFieldInfo().getClazz().getName(),processContext.getFieldInfo().getField().getName());
+        }
         int len=processContext.getLen();
         byte[] content=new byte[len];
         content[len-BYTE_LENGTH]=data;

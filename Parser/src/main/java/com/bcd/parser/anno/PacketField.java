@@ -79,6 +79,15 @@ public @interface PacketField {
     int singleLen() default 1;
 
     /**
+     * 值处理表达式
+     * 在解析出的原始值得基础上,进行偏移量运算,只对数字类型值有效
+     * 公式中的任意变量都代表字段原始的值
+     * 例如:
+     * x*0.1-1000
+     */
+    String valExpr() default "";
+
+    /**
      * 处理类
      * 用于处理特殊情况,class类型必须是{@link com.bcd.parser.process.FieldProcessor}子类
      */

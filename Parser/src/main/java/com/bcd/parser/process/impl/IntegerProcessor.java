@@ -16,18 +16,18 @@ public class IntegerProcessor extends FieldProcessor<Integer> {
         int len=processContext.getLen();
         if(len==2){
             //优化处理 short->int
-            return data.readUnsignedShort();
+            return (int)withValExpr(data.readUnsignedShort(),processContext);
         }else {
             if (len == BYTE_LENGTH) {
-                return data.readInt();
+                return (int)withValExpr(data.readInt(),processContext);
             } else if (len > BYTE_LENGTH) {
                 data.skipBytes(len - BYTE_LENGTH);
-                return data.readInt();
+                return (int)withValExpr(data.readInt(),processContext);
             } else {
                 ByteBuf temp= Unpooled.buffer(BYTE_LENGTH,BYTE_LENGTH);
                 temp.writeBytes(new byte[BYTE_LENGTH-len]);
                 temp.writeBytes(data,len);
-                return temp.readInt();
+                return (int)withValExpr(temp.readInt(),processContext);
             }
         }
     }
@@ -35,6 +35,7 @@ public class IntegerProcessor extends FieldProcessor<Integer> {
     @Override
     public void deProcess(Integer data, ByteBuf dest, FieldDeProcessContext processContext) {
         Objects.requireNonNull(data);
+        checkValRpnNull(processContext);
         int len=processContext.getLen();
         if(len==BYTE_LENGTH){
             dest.writeInt(data);

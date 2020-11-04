@@ -19,6 +19,7 @@ public class FieldInfo {
     public String packetField_listLenExpr;
     public int packetField_singleLen;
     public Class packetField_parserClass;
+    public String packetField_valExpr;
 
     /**
      * {@link Parser#fieldProcessors} 索引
@@ -26,16 +27,18 @@ public class FieldInfo {
      * 1、short/Short
      * 2、int/Integer
      * 3、long/Long
-     * 4、byte[]
-     * 5、short[]
-     * 6、int[]
-     * 7、long[]
-     * 8、String
-     * 9、Date
-     * 10、ByteBuf
-     * 11、List
+     * 4、long/Long
+     * 5、long/Long
+     * 6、byte[]
+     * 7、short[]
+     * 8、int[]
+     * 9、long[]
+     * 10、String
+     * 11、Date
+     * 12、ByteBuf
+     * 13、List
      *
-     * >11、代表自定义的类型
+     * >=14、代表自定义的类型
      *
      */
     public int processorIndex;
@@ -48,8 +51,8 @@ public class FieldInfo {
     public boolean isVar;
 
     /**
-     * processorIndex=11时候代表集合泛型
-     * processorIndex>11代表实体类型
+     * processorIndex=13时候代表集合泛型
+     * processorIndex>=14代表实体类型
      */
     public Class clazz;
 
@@ -63,6 +66,10 @@ public class FieldInfo {
      */
     public Object[] listLenRpn;
 
+    /**
+     * 对应 {@link PacketField#valExpr()}表达式
+     */
+    public Object[] valRpn;
 
     public Field getField() {
         return field;
@@ -166,5 +173,21 @@ public class FieldInfo {
 
     public void setListLenRpn(Object[] listLenRpn) {
         this.listLenRpn = listLenRpn;
+    }
+
+    public String getPacketField_valExpr() {
+        return packetField_valExpr;
+    }
+
+    public void setPacketField_valExpr(String packetField_valExpr) {
+        this.packetField_valExpr = packetField_valExpr;
+    }
+
+    public Object[] getValRpn() {
+        return valRpn;
+    }
+
+    public void setValRpn(Object[] valRpn) {
+        this.valRpn = valRpn;
     }
 }

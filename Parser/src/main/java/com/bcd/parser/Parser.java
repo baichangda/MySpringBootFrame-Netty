@@ -44,6 +44,8 @@ public abstract class Parser {
     protected FieldProcessor shortProcessor=new ShortProcessor();
     protected FieldProcessor integerProcessor=new IntegerProcessor();
     protected FieldProcessor longProcessor=new LongProcessor();
+    protected FieldProcessor floatProcessor=new FloatProcessor();
+    protected FieldProcessor doubleProcessor=new DoubleProcessor();
     protected FieldProcessor<byte[]> byteArrayProcessor=new ByteArrayProcessor();
     protected FieldProcessor<short[]> shortArrayProcessor=new ShortArrayProcessor();
     protected FieldProcessor<int[]> integerArrayProcessor=new IntegerArrayProcessor();
@@ -86,6 +88,8 @@ public abstract class Parser {
         processorList.add(this.shortProcessor);
         processorList.add(this.integerProcessor);
         processorList.add(this.longProcessor);
+        processorList.add(this.floatProcessor);
+        processorList.add(this.doubleProcessor);
         processorList.add(this.byteArrayProcessor);
         processorList.add(this.shortArrayProcessor);
         processorList.add(this.integerArrayProcessor);

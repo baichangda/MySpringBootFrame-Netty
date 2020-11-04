@@ -131,7 +131,7 @@ public class RpnUtil {
     /**
      * 计算逆波兰表达式
      * 只有一个变量
-     * @param rpn 逆波兰表达式集合,其中变量必须是string,常量必须是double
+     * @param rpn 逆波兰表达式集合,其中变量必须是char,常量必须是double
      * @param var 变量值
      * @return
      */
