@@ -27,8 +27,8 @@ public class FieldInfo {
      * 1、short/Short
      * 2、int/Integer
      * 3、long/Long
-     * 4、long/Long
-     * 5、long/Long
+     * 4、float/Float
+     * 5、double/Double
      * 6、byte[]
      * 7、short[]
      * 8、int[]
