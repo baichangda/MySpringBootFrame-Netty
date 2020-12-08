@@ -1,11 +1,11 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
 
 import java.util.Date;
 
-@ParseAble
+@Parsable
 public class VehicleLogoutData extends PacketData{
     //登出时间
     @PacketField(index = 1,len = 6)

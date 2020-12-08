@@ -1,13 +1,13 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.OffsetField;
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.OffsetField;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
 
 /**
  * 整车数据
  */
-@ParseAble
+@Parsable
 public class VehicleBaseData {
     //车辆状态
     @PacketField(index = 1,len=1)
@@ -22,16 +22,16 @@ public class VehicleBaseData {
     short runMode;
 
     //车速
-    @PacketField(index = 4,len=2)
+    @PacketField(index = 4,len=2
+//            ,valExpr = "x*0.1"
+    )
     int vehicleSpeed;
-    @OffsetField(sourceField = "vehicleSpeed",expr = "x*0.1")
-    float vehicleSpeedOffset;
 
     //累计里程
-    @PacketField(index = 5,len=4)
-    int totalMileage;
-    @OffsetField(sourceField = "totalMileage",expr = "x*0.1")
-    float totalMileageOffset;
+    @PacketField(index = 5,len=4
+//            ,valExpr = "x*0.1"
+    )
+    long totalMileage;
 
     //总电压
     @PacketField(index = 6,len=2)
@@ -87,22 +87,6 @@ public class VehicleBaseData {
 
     public void setRunMode(short runMode) {
         this.runMode = runMode;
-    }
-
-    public int getVehicleSpeed() {
-        return vehicleSpeed;
-    }
-
-    public void setVehicleSpeed(int vehicleSpeed) {
-        this.vehicleSpeed = vehicleSpeed;
-    }
-
-    public int getTotalMileage() {
-        return totalMileage;
-    }
-
-    public void setTotalMileage(int totalMileage) {
-        this.totalMileage = totalMileage;
     }
 
     public int getTotalVoltage() {
@@ -169,19 +153,4 @@ public class VehicleBaseData {
         this.pedalStatus = pedalStatus;
     }
 
-    public float getVehicleSpeedOffset() {
-        return vehicleSpeedOffset;
-    }
-
-    public void setVehicleSpeedOffset(float vehicleSpeedOffset) {
-        this.vehicleSpeedOffset = vehicleSpeedOffset;
-    }
-
-    public float getTotalMileageOffset() {
-        return totalMileageOffset;
-    }
-
-    public void setTotalMileageOffset(float totalMileageOffset) {
-        this.totalMileageOffset = totalMileageOffset;
-    }
 }

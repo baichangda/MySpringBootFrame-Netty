@@ -1,7 +1,7 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 驱动电机数据
  */
-@ParseAble
+@Parsable
 public class VehicleMotorData {
     //驱动电机个数
     @PacketField(index = 1,len = 1,var = 'a')

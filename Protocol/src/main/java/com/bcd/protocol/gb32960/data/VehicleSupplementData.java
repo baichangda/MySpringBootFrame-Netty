@@ -1,20 +1,20 @@
 package com.bcd.protocol.gb32960.data;
 
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
 import com.bcd.protocol.gb32960.parse.impl.VehicleCommonDataFieldParser;
 
 import java.util.Date;
 
-@ParseAble
+@Parsable
 public class VehicleSupplementData extends PacketData {
     //数据采集时间
     @PacketField(index = 1,len = 6)
     Date collectTime;
 
     //车辆运行通用数据
-    @PacketField(index = 2, parserClass = VehicleCommonDataFieldParser.class)
+    @PacketField(index = 2, processorClass = VehicleCommonDataFieldParser.class)
     VehicleCommonData vehicleCommonData;
 
     public Date getCollectTime() {

@@ -1,56 +1,50 @@
 package com.bcd.protocol.gb32960.parse.impl;
 
-import com.bcd.nettyserver.tcp.parse.FieldParseContext;
-import com.bcd.nettyserver.tcp.parse.FieldParser;
-import com.bcd.nettyserver.tcp.parse.FieldToByteBufContext;
-import com.bcd.nettyserver.tcp.parse.ParserContext;
+import com.bcd.parser.process.FieldDeProcessContext;
+import com.bcd.parser.process.FieldProcessContext;
+import com.bcd.parser.process.FieldProcessor;
 import com.bcd.protocol.gb32960.data.*;
 import io.netty.buffer.ByteBuf;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class PacketDataFieldParser implements FieldParser<PacketData> {
-    ParserContext context;
+public class PacketDataFieldParser extends FieldProcessor<PacketData> {
 
     public PacketDataFieldParser() {
     }
 
-    @Override
-    public void setContext(ParserContext context) {
-        this.context =context;
-    }
-
-    public PacketData parse(ByteBuf data,int flag,int len){
+    public PacketData parse(ByteBuf data,int flag,FieldProcessContext processContext){
         PacketData packetData=null;
         switch (flag){
             //车辆登入
             case 1:{
-                packetData= context.parse(VehicleLoginData.class, data,len);
+                packetData= parser.parse(VehicleLoginData.class, data,processContext);
                 break;
             }
             //车辆实时信息
             case 2:{
-                packetData= context.parse(VehicleRealData.class,data,len);
+                packetData= parser.parse(VehicleRealData.class,data,processContext);
                 break;
             }
             //补发信息上报
             case 3:{
-                packetData= context.parse(VehicleSupplementData.class,data,len);
+                packetData= parser.parse(VehicleSupplementData.class,data,processContext);
                 break;
             }
             //车辆登出
             case 4:{
-                packetData= context.parse(VehicleLogoutData.class,data,len);
+                packetData= parser.parse(VehicleLogoutData.class,data,processContext);
                 break;
             }
             //平台登入
             case 5:{
-                packetData= context.parse(PlatformLoginData.class,data,len);
+                packetData= parser.parse(PlatformLoginData.class,data,processContext);
                 break;
             }
             //平台登出
             case 6:{
-                packetData= context.parse(PlatformLogoutData.class,data,len);
+                packetData= parser.parse(PlatformLogoutData.class,data,processContext);
                 break;
             }
             //心跳
@@ -66,43 +60,43 @@ public class PacketDataFieldParser implements FieldParser<PacketData> {
     }
 
     @Override
-    public PacketData parse(ByteBuf data, int len, FieldParseContext fieldParseContext){
-        Packet packet=(Packet)fieldParseContext.getInstance();
-        return parse(data,packet.getFlag(),len);
+    public PacketData process(ByteBuf data, FieldProcessContext processContext) {
+        Packet packet=(Packet)processContext.getInstance();
+        return parse(data,packet.getFlag(),processContext);
     }
 
     @Override
-    public void toByteBuf(PacketData data, int len, FieldToByteBufContext fieldToByteBufContext,ByteBuf result) {
-        int flag=data.getFlag();
+    public void deProcess(PacketData data, ByteBuf dest, FieldDeProcessContext processContext) {
+        int flag=((Packet)processContext.getInstance()).getFlag();
         switch (flag){
             //车辆登入
             case 1:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //车辆实时信息
             case 2:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //补发信息上报
             case 3:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //车辆登出
             case 4:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //平台登入
             case 5:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //平台登出
             case 6:{
-                result.writeBytes(context.toByteBuf(data));
+                parser.deParse(data,dest,processContext);
                 break;
             }
             //心跳

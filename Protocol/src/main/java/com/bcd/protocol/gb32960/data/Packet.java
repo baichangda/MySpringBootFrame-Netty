@@ -1,10 +1,11 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.PacketField;
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.PacketField;
+import com.bcd.parser.anno.Parsable;
+import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldParser;
 import io.netty.buffer.ByteBuf;
 
-@ParseAble
+@Parsable
 public class Packet {
     //头 0-2
     @PacketField(index = 1,len = 2)
@@ -25,9 +26,9 @@ public class Packet {
     @PacketField(index = 6,len = 2,var = 'a')
     int contentLength;
     //数据单元
-//    @PacketField(index = 7,lenExpr = "len",parserClass = PacketDataFieldParser.class)
-    @PacketField(index = 7,lenExpr = "a")
+//    @PacketField(index = 7,lenExpr = "a")
     ByteBuf dataContent;
+    @PacketField(index = 7,lenExpr = "a", processorClass = PacketDataFieldParser.class)
     PacketData data;
     //异或校验位
     @PacketField(index = 8,len = 1)

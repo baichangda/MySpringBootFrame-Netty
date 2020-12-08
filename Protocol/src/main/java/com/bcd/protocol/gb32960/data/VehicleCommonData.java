@@ -1,11 +1,11 @@
 package com.bcd.protocol.gb32960.data;
 
-import com.bcd.nettyserver.tcp.anno.ParseAble;
+import com.bcd.parser.anno.Parsable;
 
 /**
  * 车辆运行通用数据
  */
-@ParseAble
+@Parsable
 public class VehicleCommonData {
     //整车数据
     VehicleBaseData vehicleBaseData;
