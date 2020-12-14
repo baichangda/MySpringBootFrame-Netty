@@ -28,7 +28,9 @@ public abstract class FieldProcessor<T> {
      * @param processContext
      * @return
      */
-    public abstract T process(ByteBuf data, FieldProcessContext processContext);
+    public T process(ByteBuf data, FieldProcessContext processContext){
+        throw BaseRuntimeException.getException("process not support");
+    }
 
     /**
      * 解析对象转换为byteBuf
@@ -36,7 +38,9 @@ public abstract class FieldProcessor<T> {
      * @param dest
      * @param processContext
      */
-    public abstract void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext);
+    public void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext){
+        throw BaseRuntimeException.getException("deProcess not support");
+    }
 
     /**
      * 验证{@link PacketField#valExpr()}是否为空
