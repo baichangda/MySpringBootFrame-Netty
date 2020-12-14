@@ -6,8 +6,12 @@ import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+/**
+ * 解析{@link List}类型字段
+ */
 @SuppressWarnings("unchecked")
 public class ListProcessor extends FieldProcessor<List> {
 

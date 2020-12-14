@@ -7,8 +7,12 @@ import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * 解析long[]类型字段
+ */
 public class LongArrayProcessor extends FieldProcessor<long[]> {
     public final static int BYTE_LENGTH=8;
 

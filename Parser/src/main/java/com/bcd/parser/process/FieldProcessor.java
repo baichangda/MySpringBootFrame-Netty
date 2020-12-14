@@ -4,6 +4,7 @@ package com.bcd.parser.process;
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.Parser;
+import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.info.FieldInfo;
 import io.netty.buffer.ByteBuf;
 
@@ -37,10 +38,14 @@ public abstract class FieldProcessor<T> {
      */
     public abstract void deProcess(T data, ByteBuf dest, FieldDeProcessContext processContext);
 
+    /**
+     * 验证{@link PacketField#valExpr()}是否为空
+     * @param processContext
+     */
     protected void checkValRpnNull(FieldDeProcessContext processContext){
         if(processContext.getFieldInfo().getValRpn()!=null){
             Field field=processContext.getFieldInfo().getField();
-            throw BaseRuntimeException.getException("class[{0}] field[{1}] has valRpn,deProcess not support",
+            throw BaseRuntimeException.getException("class[{0}] field[{1}] has valExpr,deProcess not support",
                     field.getDeclaringClass().getName(),
                     field.getName());
         }

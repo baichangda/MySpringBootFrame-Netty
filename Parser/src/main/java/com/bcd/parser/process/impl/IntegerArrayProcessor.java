@@ -7,8 +7,12 @@ import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.Date;
 import java.util.Objects;
 
+/**
+ * 解析int[]类型字段
+ */
 public class IntegerArrayProcessor extends FieldProcessor<int[]> {
     private final static int BYTE_LENGTH=4;
 

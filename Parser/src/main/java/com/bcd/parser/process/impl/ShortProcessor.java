@@ -7,8 +7,12 @@ import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * 解析short、Short类型字段
+ */
 public class ShortProcessor extends FieldProcessor<Short> {
     private final static int BYTE_LENGTH=2;
 

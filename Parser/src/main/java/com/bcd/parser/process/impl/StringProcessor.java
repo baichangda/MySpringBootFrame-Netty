@@ -6,8 +6,12 @@ import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * 解析{@link String}类型字段
+ */
 public class StringProcessor extends FieldProcessor<String> {
     @Override
     public String process(ByteBuf data, FieldProcessContext processContext) {

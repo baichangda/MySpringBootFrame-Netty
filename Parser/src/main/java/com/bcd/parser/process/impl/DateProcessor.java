@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * 解析{@link Date}类型字段
+ */
 public class DateProcessor extends FieldProcessor<Date> {
     private final static int BASE_YEAR=2000;
 
