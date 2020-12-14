@@ -179,7 +179,7 @@ public abstract class Parser {
      * 所有涉及解析对象必须有空参数的构造方法
      * @param clazz
      * @param data
-     * @param parentContext 当前对象作为其他类的字段解析时候 的环境
+     * @param parentContext 当前对象作为其他类的字段解析时候的环境、顶层环境传入nullc
      * @param <T>
      * @return
      */
