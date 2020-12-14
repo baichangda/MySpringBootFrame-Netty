@@ -9,6 +9,9 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
+/**
+ * 解析int、Integer类型字段
+ */
 public class IntegerProcessor extends FieldProcessor<Integer> {
     public final static int BYTE_LENGTH=4;
 

@@ -10,6 +10,9 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
 
+/**
+ * 解析byte、Byte类型字段
+ */
 public class ByteProcessor extends FieldProcessor<Byte> {
     private final static int BYTE_LENGTH=1;
 

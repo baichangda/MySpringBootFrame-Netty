@@ -9,6 +9,9 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
+/**
+ * 解析float、Float类型字段
+ */
 public class FloatProcessor extends FieldProcessor<Float> {
     public final static int BYTE_LENGTH=4;
 

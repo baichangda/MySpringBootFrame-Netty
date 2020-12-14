@@ -9,6 +9,9 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
+/**
+ * 解析{@link ByteBuf}类型字段
+ */
 public class ByteBufProcessor extends FieldProcessor<ByteBuf> {
 
     @Override

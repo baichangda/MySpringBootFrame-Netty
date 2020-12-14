@@ -9,6 +9,9 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
+/**
+ * 解析long、Long类型字段
+ */
 public class LongProcessor extends FieldProcessor<Long> {
     public final static int BYTE_LENGTH=8;
 

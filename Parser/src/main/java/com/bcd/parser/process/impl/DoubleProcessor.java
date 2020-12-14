@@ -9,6 +9,9 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Objects;
 
+/**
+ * 解析double、Double类型字段
+ */
 public class DoubleProcessor extends FieldProcessor<Double> {
     public final static int BYTE_LENGTH=8;
 

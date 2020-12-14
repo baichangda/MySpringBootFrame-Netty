@@ -8,6 +8,9 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
 
+/**
+ * 解析byte[]类型字段
+ */
 public class ByteArrayProcessor extends FieldProcessor<byte[]> {
     private final static int BYTE_LENGTH=1;
 
