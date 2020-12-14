@@ -24,11 +24,13 @@ public class ParserUtil {
      * 解析类转换成包信息
      * @param clazz
      * @param enableOffsetField
+     * @param processors
      * @return
      */
     public static PacketInfo toPacketInfo(Class clazz, boolean enableOffsetField, FieldProcessor[] processors){
         String className=clazz.getName();
         PacketInfo packetInfo=new PacketInfo();
+        packetInfo.setClazz(clazz);
         List<Field> allFieldList= FieldUtils.getAllFieldsList(clazz);
         //求出最小var char int和最大var char int
         int[] maxVarInt=new int[1];

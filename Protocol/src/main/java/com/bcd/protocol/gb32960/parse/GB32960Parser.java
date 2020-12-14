@@ -1,5 +1,8 @@
 package com.bcd.protocol.gb32960.parse;
 
+import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.base.util.ClassUtil;
+import com.bcd.parser.anno.Parsable;
 import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.Parser;
 import com.bcd.protocol.gb32960.data.Packet;
@@ -12,6 +15,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,8 +30,12 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
     }
 
     @Override
-    protected void initPacketInfo() {
-        super.initPacketInfoByScanClass("com.bcd");
+    protected List<Class> getParsableClass() {
+        try {
+            return ClassUtil.getClassesWithAnno(Parsable.class,"com.bcd");
+        } catch (IOException| ClassNotFoundException e) {
+            throw BaseRuntimeException.getException(e);
+        }
     }
 
     @Override
@@ -42,8 +51,12 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
     public static void main(String[] args) throws Exception{
         Parser parser= new Parser() {
             @Override
-            protected void initPacketInfo() {
-                super.initPacketInfoByScanClass("com.bcd");
+            protected List<Class> getParsableClass() {
+                try {
+                    return ClassUtil.getClassesWithAnno(Parsable.class,"com.bcd");
+                } catch (IOException| ClassNotFoundException e) {
+                    throw BaseRuntimeException.getException(e);
+                }
             }
 
             @Override

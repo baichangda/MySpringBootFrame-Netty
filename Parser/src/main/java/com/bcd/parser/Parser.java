@@ -2,7 +2,6 @@ package com.bcd.parser;
 
 import com.bcd.base.exception.BaseRuntimeException;
 import com.bcd.base.util.ClassUtil;
-import com.bcd.base.util.ProxyUtil;
 import com.bcd.base.util.RpnUtil;
 import com.bcd.base.util.SpringUtil;
 import com.bcd.parser.anno.Parsable;
@@ -16,6 +15,8 @@ import com.bcd.parser.process.impl.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -23,6 +24,8 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public abstract class Parser {
+
+    Logger logger= LoggerFactory.getLogger(this.getClass());
 
     public final Map<Class, PacketInfo> packetInfoCache =new HashMap<>();
 
@@ -66,6 +69,7 @@ public abstract class Parser {
     }
 
     private void afterInit(){
+        //为每个处理器绑定当前解析器
         for (FieldProcessor processor : fieldProcessors) {
             processor.setParser(this);
         }
@@ -77,6 +81,9 @@ public abstract class Parser {
         processorList.addAll(baseProcessorList);
         processorList.addAll(initExtProcessor());
         fieldProcessors=processorList.toArray(new FieldProcessor[0]);
+        if(logger.isInfoEnabled()){
+            logger.info("init processor succeed,follow list:\n{}", Arrays.stream(fieldProcessors).map(e->e.getClass().getName()).reduce((e1,e2)->e1+"\n"+e2).orElse(""));
+        }
     }
 
     /**
@@ -145,24 +152,22 @@ public abstract class Parser {
     }
 
     /**
-     * 加载所有 {@link Parsable} 注解的类并转换为 {@link PacketInfo}
+     * 初始化{@link #packetInfoCache}
      */
-    protected abstract void initPacketInfo();
-
-    /**
-     * 加载所有 {@link Parsable} 注解的类并转换为 {@link com.bcd.parser.info.PacketInfo}
-     * 存储在map中
-     * @param packageName
-     */
-    protected void initPacketInfoByScanClass(String packageName){
-        try {
-            for (Class e : ClassUtil.getClassesWithAnno(Parsable.class, packageName)) {
-                packetInfoCache.put(e, ParserUtil.toPacketInfo(e,enableOffsetField,fieldProcessors));
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw BaseRuntimeException.getException(e);
+    private void initPacketInfo(){
+        List<Class> classes= getParsableClass();
+        for (Class clazz : classes) {
+            packetInfoCache.put(clazz,ParserUtil.toPacketInfo(clazz,enableOffsetField,fieldProcessors));
+        }
+        if(logger.isInfoEnabled()){
+            logger.info("init packetInfo succeed,follow list:\n{}", packetInfoCache.values().stream().map(e->e.getClazz().getName()).reduce((e1,e2)->e1+"\n"+e2).orElse(""));
         }
     }
+
+    /**
+     * 加载所有 {@link Parsable} 注解的类
+     */
+    protected abstract List<Class> getParsableClass();
 
     public final <T>T parse(Class<T> clazz, ByteBuf data){
         return parse(clazz,data,null);

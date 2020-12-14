@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
  * 解析{@link Parsable}标注的类
  * 作为默认的实体类解析器
  */
+@SuppressWarnings("unchecked")
 public class ParsableObjectProcessor  extends FieldProcessor<Object> {
     @Override
     public Object process(ByteBuf data, FieldProcessContext processContext) {
