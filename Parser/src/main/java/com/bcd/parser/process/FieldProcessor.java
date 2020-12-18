@@ -1,15 +1,12 @@
 package com.bcd.parser.process;
 
 
-import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.Parser;
 import com.bcd.parser.anno.PacketField;
-import com.bcd.parser.info.FieldInfo;
+import com.bcd.parser.exception.BaseRuntimeException;
 import io.netty.buffer.ByteBuf;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
 
 public abstract class FieldProcessor<T> {
     protected Parser parser;

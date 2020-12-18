@@ -1,6 +1,5 @@
 package com.bcd.parser.process.impl;
 
-import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;

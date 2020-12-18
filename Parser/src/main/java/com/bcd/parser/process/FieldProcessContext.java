@@ -2,7 +2,6 @@ package com.bcd.parser.process;
 
 import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.info.FieldInfo;
-import io.netty.buffer.ByteBuf;
 
 public class FieldProcessContext {
     /**

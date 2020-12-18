@@ -1,18 +1,14 @@
-package com.bcd.base.util;
+package com.bcd.parser.util;
 
 
-import com.bcd.base.exception.BaseRuntimeException;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -20,66 +16,6 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class ClassUtil {
-    public static Type getParentUntil(Class startClass, Class... endClasses) {
-        Type parentType = startClass.getGenericSuperclass();
-        while (true) {
-            if (parentType instanceof ParameterizedType) {
-                Class rawType = (Class)((ParameterizedType) parentType).getRawType();
-                boolean isMatch = false;
-                for (Class endClass : endClasses) {
-                    if (rawType.equals(endClass)) {
-                        isMatch = true;
-                        break;
-                    }
-                }
-                if (isMatch) {
-                    break;
-                } else {
-                    parentType = rawType.getGenericSuperclass();
-                }
-            } else {
-                parentType = ((Class) parentType).getGenericSuperclass();
-            }
-        }
-        return parentType;
-    }
-
-    /**
-     * 递归扫描, 找出所有此注解及其标注的子注解所标注的所有类, 结果根据注解类型分类
-     *
-     * @param annoClass
-     * @param packages
-     * @return
-     */
-    public static Map<String, List<Class>> findWithSub(Class annoClass, String... packages) {
-        try {
-            Map<String, List<Class>> annoNameToClassListMap = new HashMap<>();
-            //1、找出所有带 ICSComponent 注解的类
-            List<Class> classList = ClassUtil.getClassesWithAnno(annoClass, packages);
-            //2、找出其中的 注解,并从集合中移除
-            List<Class> subAnnoList = new ArrayList<>();
-            for (int i = 0; i <= classList.size() - 1; i++) {
-                Class clazz = classList.get(i);
-                if (clazz.isAnnotation()) {
-                    subAnnoList.add(clazz);
-                    classList.remove(i);
-                    i--;
-                }
-            }
-            //3、找出所有子注解的类
-            for (Class subAnno : subAnnoList) {
-                //3.1、将子注解扫描出来的类添加进去
-                Map<String, List<Class>> tempMap = findWithSub(subAnno, packages);
-                annoNameToClassListMap.putAll(tempMap);
-            }
-            //4、返回此注解和其子注解 标注的类
-            annoNameToClassListMap.put(annoClass.getName(), classList);
-            return annoNameToClassListMap;
-        } catch (IOException | ClassNotFoundException e) {
-            throw BaseRuntimeException.getException(e);
-        }
-    }
-
     /**
      * 找出所有带注解的类
      * @param annoClass
@@ -93,7 +29,10 @@ public class ClassUtil {
         for (String packageName : packageNames) {
             classSet.addAll(getClasses(packageName));
         }
-        return classSet.stream().filter(e -> e.getAnnotation(annoClass) != null).collect(Collectors.toList());
+        return classSet.stream().filter(e -> {
+            int modifiers= e.getModifiers();
+            return e.getAnnotation(annoClass) != null&&!Modifier.isInterface(modifiers)&&!Modifier.isAbstract(modifiers);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -140,7 +79,7 @@ public class ClassUtil {
             // 如果是以文件的形式保存在服务器上
             if ("file".equals(protocol)) {
                 // 获取包的物理路径
-                String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8.name());
+                String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
                 // 以文件的方式扫描整个包下的文件 并添加到集合中
                 findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
             } else if ("jar".equals(protocol)) {

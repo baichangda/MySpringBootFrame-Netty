@@ -5,6 +5,7 @@ import com.bcd.base.util.ClassUtil;
 import com.bcd.parser.anno.Parsable;
 import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.Parser;
+import com.bcd.parser.util.ParserUtil;
 import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -31,11 +32,7 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
 
     @Override
     protected List<Class> getParsableClass() {
-        try {
-            return ClassUtil.getClassesWithAnno(Parsable.class,"com.bcd");
-        } catch (IOException| ClassNotFoundException e) {
-            throw BaseRuntimeException.getException(e);
-        }
+        return ParserUtil.getParsableClassByScanPackage("com.bcd");
     }
 
     @Override
@@ -52,11 +49,7 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
         Parser parser= new Parser() {
             @Override
             protected List<Class> getParsableClass() {
-                try {
-                    return ClassUtil.getClassesWithAnno(Parsable.class,"com.bcd");
-                } catch (IOException| ClassNotFoundException e) {
-                    throw BaseRuntimeException.getException(e);
-                }
+                return ParserUtil.getParsableClassByScanPackage("com.bcd");
             }
 
             @Override
@@ -74,7 +67,7 @@ public class GB32960Parser extends Parser implements ApplicationListener<Context
 
     private static void testPerformance(String data,Parser parser){
 //        int poolSize=Runtime.getRuntime().availableProcessors()+1;
-        int poolSize=20;
+        int poolSize=1;
         int num=10000000;
         logger.info("poolSize:{}",poolSize);
         AtomicInteger count=new AtomicInteger(0);

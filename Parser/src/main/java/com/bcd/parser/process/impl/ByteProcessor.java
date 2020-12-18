@@ -1,11 +1,11 @@
 package com.bcd.parser.process.impl;
 
 
-import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.base.util.RpnUtil;
+import com.bcd.parser.exception.BaseRuntimeException;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
+import com.bcd.parser.util.RpnUtil;
 import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class ByteProcessor extends FieldProcessor<Byte> {
         if(valRpn==null){
             return res;
         }else{
-            return (byte)RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
+            return (byte) RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
         }
     }
 

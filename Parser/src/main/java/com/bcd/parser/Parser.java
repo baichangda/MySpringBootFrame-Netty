@@ -1,10 +1,8 @@
 package com.bcd.parser;
 
-import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.base.util.ClassUtil;
-import com.bcd.base.util.RpnUtil;
 import com.bcd.base.util.SpringUtil;
 import com.bcd.parser.anno.Parsable;
+import com.bcd.parser.exception.BaseRuntimeException;
 import com.bcd.parser.info.FieldInfo;
 import com.bcd.parser.info.OffsetFieldInfo;
 import com.bcd.parser.info.PacketInfo;
@@ -12,6 +10,9 @@ import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.process.impl.*;
+import com.bcd.parser.util.ClassUtil;
+import com.bcd.parser.util.ParserUtil;
+import com.bcd.parser.util.RpnUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -121,13 +122,13 @@ public abstract class Parser {
      * 初始化 classToHandler
      * 通过spring
      */
-    protected List<FieldProcessor> initProcessorBySpring(){
-        List<FieldProcessor> processorList=new ArrayList<>();
-        SpringUtil.applicationContext.getBeansOfType(FieldProcessor.class).values().forEach(e->{
-            processorList.add(e);
-        });
-        return processorList;
-    }
+//    protected List<FieldProcessor> initProcessorBySpring(){
+//        List<FieldProcessor> processorList=new ArrayList<>();
+//        SpringUtil.applicationContext.getBeansOfType(FieldProcessor.class).values().forEach(e->{
+//            processorList.add(e);
+//        });
+//        return processorList;
+//    }
 
     /**
      * 初始化 classToParser
@@ -157,7 +158,7 @@ public abstract class Parser {
     private void initPacketInfo(){
         List<Class> classes= getParsableClass();
         for (Class clazz : classes) {
-            packetInfoCache.put(clazz,ParserUtil.toPacketInfo(clazz,enableOffsetField,fieldProcessors));
+            packetInfoCache.put(clazz, ParserUtil.toPacketInfo(clazz,enableOffsetField,fieldProcessors));
         }
         if(logger.isInfoEnabled()){
             logger.info("init packetInfo succeed,follow list:\n{}", packetInfoCache.values().stream().map(e->e.getClazz().getName()).reduce((e1,e2)->e1+"\n"+e2).orElse(""));

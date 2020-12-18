@@ -9,8 +9,8 @@ allprojects{
 
     repositories {
         mavenLocal()
+        maven { url 'http://repository.incarcloud.com/content/repositories/snapshots/' }
         maven { url "${mavenRepoUrl}" }
-        jcenter()
         mavenCentral()
     }
 

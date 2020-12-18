@@ -1,7 +1,6 @@
 package com.bcd.base.message;
 
 
-
 import java.io.Serializable;
 
 /**
@@ -9,6 +8,7 @@ import java.io.Serializable;
  *
  * @param <T>
  */
+@SuppressWarnings("unchecked")
 public class JsonMessage<T> implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean result;

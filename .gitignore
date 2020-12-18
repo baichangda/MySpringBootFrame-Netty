@@ -1,20 +1,15 @@
 *.class
 *.iml
-*.ipr
-*.iws
 *.log
 *.log.*
+*.lst
 
 .gradle/
 .idea/
-.vscode/
-**/.DS_Store
 
+**/build/
+**/target/
+**/out/
 **/node_modules/
-build/
-out/
 **/*-dev.yml
 **/*-test.yml
-/gradle.properties
-*.js.map
-**/upload/

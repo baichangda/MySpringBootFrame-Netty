@@ -1,42 +1,12 @@
-package com.bcd.base.util;
+package com.bcd.parser.util;
 
-import com.bcd.base.exception.BaseRuntimeException;
+import com.bcd.parser.exception.BaseRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class RpnUtil {
-
-    /**
-     * 计算字符串公式
-     * 支持 = - * / ( )
-     * @param str
-     * @param map
-     * @return
-     */
-    public static Double calcArithmetic(String str, Map<String,Double> map){
-        return calcRPN_string_string(parseArithmeticToRPN(str),map);
-    }
-
-    /**
-     * 处理rpn表达式集合
-     * 字符串变量 --> string
-     * 将数字字符串 --> double
-     * @param rpn rpn表达式集合
-     * @return
-     */
-    public static Object[] doWithRpnList_string_double(String[] rpn){
-        return Arrays.stream(rpn).map(e->{
-            try {
-                return Double.parseDouble(e);
-            }catch (NumberFormatException ex){
-                return e;
-            }
-        }).toArray();
-    }
-
     /**
      * 处理rpn表达式集合
      * 字符串变量 --> char
@@ -129,95 +99,47 @@ public class RpnUtil {
 
     /**
      * 计算逆波兰表达式
-     * @param rpn 逆波兰表达式集合,其中变量必须是string,常量必须是double
-     * @param map 字段和值对应map
+     * 只有一个变量
+     * @param rpn 逆波兰表达式集合,其中变量必须是char,常量必须是double
+     * @param var 变量值
      * @return
      */
-    public static double calcRPN_string_double(Object[] rpn, Map<String,Double> map){
+    public static double calcRPN_char_double_singleVar(Object[] rpn, double var){
         int stackIndex=-1;
         double[] stack=new double[2];
         for (Object o : rpn) {
             if(o instanceof Double){
                 stack[++stackIndex] = (double)o;
             }else {
-                switch ((String)o) {
-                    case "+": {
+                switch ((char)o) {
+                    case '+': {
                         double num2 = stack[stackIndex--];
                         double num1 = stack[stackIndex--];
                         stack[++stackIndex] = num1 + num2;
                         break;
                     }
-                    case "-": {
+                    case '-': {
                         double num2 = stack[stackIndex--];
                         double num1 = stack[stackIndex--];
                         stack[++stackIndex] = num1 - num2;
                         break;
                     }
-                    case "*": {
+                    case '*': {
                         double num2 = stack[stackIndex--];
                         double num1 = stack[stackIndex--];
                         stack[++stackIndex] = num1 * num2;
                         break;
                     }
-                    case "/": {
+                    case '/': {
                         double num2 = stack[stackIndex--];
                         double num1 = stack[stackIndex--];
                         stack[++stackIndex] = num1 / num2;
                         break;
                     }
                     default: {
-                        stack[++stackIndex] = map.get(o);
+                        stack[++stackIndex] = var;
                         break;
                     }
-                }
-            }
-        }
-        return stack[0];
-    }
-
-    /**
-     * 计算逆波兰表达式
-     * @param rpn 逆波兰表达式集合,其中变量必须是string,常量也是string
-     * @param map 字段和值对应map
-     * @return
-     */
-    public static double calcRPN_string_string(String[] rpn, Map<String,Double> map){
-        int stackIndex=-1;
-        double[] stack=new double[2];
-        for (String s : rpn) {
-            switch (s) {
-                case "+": {
-                    double num2 = stack[stackIndex--];
-                    double num1 = stack[stackIndex--];
-                    stack[++stackIndex] = num1 + num2;
-                    break;
-                }
-                case "-": {
-                    double num2 = stack[stackIndex--];
-                    double num1 = stack[stackIndex--];
-                    stack[++stackIndex] = num1 - num2;
-                    break;
-                }
-                case "*": {
-                    double num2 = stack[stackIndex--];
-                    double num1 = stack[stackIndex--];
-                    stack[++stackIndex] = num1 * num2;
-                    break;
-                }
-                case "/": {
-                    double num2 = stack[stackIndex--];
-                    double num1 = stack[stackIndex--];
-                    stack[++stackIndex] = num1 / num2;
-                    break;
-                }
-                default: {
-                    Number val = map.get(s);
-                    if(val==null){
-                        stack[++stackIndex] = Double.parseDouble(s);
-                    }else{
-                        stack[++stackIndex] = val.doubleValue();
-                    }
-                    break;
                 }
             }
         }
@@ -231,12 +153,9 @@ public class RpnUtil {
      */
     public static String[] parseArithmeticToRPN(String str){
         List<String> output=new ArrayList<>();
-        char[] arr= str.toCharArray();
-        //记录符号位置
         int stackIndex=-1;
-        //存储符号
         char[] stack=new char[str.length()];
-        //存储非符号
+        char[] arr= str.toCharArray();
         StringBuilder temp=new StringBuilder();
         for(int i=0;i<=arr.length-1;i++){
             if(arr[i]=='+'||arr[i]=='-'||arr[i]=='*'||arr[i]=='/'){
@@ -306,9 +225,5 @@ public class RpnUtil {
                 throw BaseRuntimeException.getException("symbol["+c+"] not support");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Arrays.toString(parseArithmeticToRPN("a+(b+c*d-a)*(c-d)")));
     }
 }

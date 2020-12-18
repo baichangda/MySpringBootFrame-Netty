@@ -1,9 +1,9 @@
 package com.bcd.parser.process.impl;
 
-import com.bcd.base.util.RpnUtil;
 import com.bcd.parser.process.FieldDeProcessContext;
 import com.bcd.parser.process.FieldProcessContext;
 import com.bcd.parser.process.FieldProcessor;
+import com.bcd.parser.util.RpnUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -39,7 +39,7 @@ public class IntegerProcessor extends FieldProcessor<Integer> {
         if(valRpn==null){
             return res;
         }else{
-            return (int)RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
+            return (int) RpnUtil.calcRPN_char_double_singleVar(valRpn,res);
         }
     }
 
