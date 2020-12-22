@@ -3,7 +3,7 @@ package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.anno.Parsable;
-import com.bcd.protocol.gb32960.parse.impl.VehicleCommonDataFieldProcessor;
+import com.bcd.protocol.gb32960.parser.impl.VehicleCommonDataFieldProcessor;
 
 import java.util.Date;
 

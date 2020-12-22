@@ -2,7 +2,7 @@ package com.bcd.protocol.gb32960.handler;
 
 import com.bcd.protocol.gb32960.data.Packet;
 import com.bcd.protocol.gb32960.data.PacketData;
-import com.bcd.protocol.gb32960.parse.impl.PacketDataFieldProcessor;
+import com.bcd.protocol.gb32960.parser.impl.PacketDataFieldProcessor;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
