@@ -1,9 +1,7 @@
 dependencies {
-//    compile project(':NettyServer')
-//    compile ('com.bcd:Parser:1.0-SNAPSHOT'){
-//        exclude group:'io.netty',module:'netty-all'
-//        exclude group:'org.slf4j',module:'slf4j-api'
-//    }
-
-    compile project(":Parser")
+    compile project(':NettyServer')
+    compile ('com.bcd:Parser:1.0-SNAPSHOT'){
+        exclude group:'io.netty',module:'netty-all'
+        exclude group:'org.slf4j',module:'slf4j-api'
+    }
 }

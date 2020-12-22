@@ -3,7 +3,7 @@ package com.bcd.protocol.gb32960.data;
 
 import com.bcd.parser.anno.PacketField;
 import com.bcd.parser.anno.Parsable;
-import com.bcd.protocol.gb32960.parse.impl.VehicleCommonDataFieldParser;
+import com.bcd.protocol.gb32960.parse.impl.VehicleCommonDataFieldProcessor;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ public class VehicleSupplementData extends PacketData {
     Date collectTime;
 
     //车辆运行通用数据
-    @PacketField(index = 2, processorClass = VehicleCommonDataFieldParser.class)
+    @PacketField(index = 2, processorClass = VehicleCommonDataFieldProcessor.class)
     VehicleCommonData vehicleCommonData;
 
     public Date getCollectTime() {

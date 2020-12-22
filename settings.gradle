@@ -2,5 +2,4 @@ rootProject.name = 'MySpringBootFrame-Netty'
 include 'Base'
 include 'NettyServer'
 include 'Protocol'
-include 'Parser'
 

@@ -1,8 +1,5 @@
 package com.bcd.protocol.gb32960.parse;
 
-import com.bcd.base.exception.BaseRuntimeException;
-import com.bcd.base.util.ClassUtil;
-import com.bcd.parser.anno.Parsable;
 import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.Parser;
 import com.bcd.parser.util.ParserUtil;
@@ -16,18 +13,16 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component("parser_32960")
-public class GB32960Parser extends Parser implements ApplicationListener<ContextRefreshedEvent> {
+public class Parser_gb32960 extends Parser implements ApplicationListener<ContextRefreshedEvent> {
 
-    static Logger logger= LoggerFactory.getLogger(GB32960Parser.class);
+    static Logger logger= LoggerFactory.getLogger(Parser_gb32960.class);
 
-    public GB32960Parser() {
+    public Parser_gb32960() {
     }
 
     @Override

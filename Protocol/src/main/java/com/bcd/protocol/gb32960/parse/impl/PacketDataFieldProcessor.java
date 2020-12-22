@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class PacketDataFieldParser extends FieldProcessor<PacketData> {
+public class PacketDataFieldProcessor extends FieldProcessor<PacketData> {
 
-    public PacketDataFieldParser() {
+    public PacketDataFieldProcessor() {
     }
 
     public PacketData parse(ByteBuf data,int flag,FieldProcessContext processContext){
