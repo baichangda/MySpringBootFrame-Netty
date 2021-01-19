@@ -1,9 +1,9 @@
 package com.bcd.protocol.gb32960.parser.impl;
 
-import com.bcd.parser.process.FieldDeProcessContext;
-import com.bcd.parser.process.FieldProcessContext;
-import com.bcd.parser.process.FieldProcessor;
-import com.bcd.protocol.gb32960.data.*;
+import com.bcd.parser.impl.gb32960.data.*;
+import com.bcd.parser.processer.FieldDeProcessContext;
+import com.bcd.parser.processer.FieldProcessContext;
+import com.bcd.parser.processer.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class PacketDataFieldProcessor extends FieldProcessor<PacketData> {
     public PacketDataFieldProcessor() {
     }
 
-    public PacketData parse(ByteBuf data,int flag,FieldProcessContext processContext){
+    public PacketData parse(ByteBuf data, int flag, FieldProcessContext processContext){
         PacketData packetData=null;
         switch (flag){
             //车辆登入

@@ -4,7 +4,6 @@ package com.bcd.protocol.gb32960;
 import com.bcd.base.util.ExceptionUtil;
 import com.bcd.nettyserver.tcp.TcpServer;
 import com.bcd.protocol.gb32960.handler.BusinessHandler;
-import com.bcd.protocol.gb32960.handler.PacketContentParseHandler;
 import com.bcd.protocol.gb32960.handler.PacketParseHandler;
 import com.bcd.nettyserver.tcp.handler.PacketSplitHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -33,9 +32,6 @@ public class TcpServer_32960 extends TcpServer{
     PacketParseHandler packetParseHandler;
 
     @Autowired
-    PacketContentParseHandler packetContentParseHandler;
-
-    @Autowired
     BusinessHandler businessHandler;
 
     public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port){
@@ -55,7 +51,6 @@ public class TcpServer_32960 extends TcpServer{
                             ch.pipeline().addLast(new ReadTimeoutHandler(60*10));
                             ch.pipeline().addLast(new PacketSplitHandler.Default(new byte[]{35,35},22,2));
                             ch.pipeline().addLast(packetParseHandler);
-                            ch.pipeline().addLast(packetContentParseHandler);
                             ch.pipeline().addLast(businessHandler);
                         }
                     }

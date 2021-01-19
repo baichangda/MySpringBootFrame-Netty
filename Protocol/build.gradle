@@ -1,7 +1,8 @@
 dependencies {
     compile project(':NettyServer')
-    compile ('com.bcd:Parser:2.0-SNAPSHOT'){
+    compile ('com.bcd:Parser:6.0-SNAPSHOT'){
         exclude group:'io.netty',module:'netty-all'
         exclude group:'org.slf4j',module:'slf4j-api'
+        exclude group:'ch.qos.logback',module:'logback-classic'
     }
 }

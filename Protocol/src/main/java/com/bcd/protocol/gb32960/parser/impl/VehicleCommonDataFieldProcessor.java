@@ -1,9 +1,9 @@
 package com.bcd.protocol.gb32960.parser.impl;
 
-import com.bcd.parser.process.FieldDeProcessContext;
-import com.bcd.parser.process.FieldProcessContext;
-import com.bcd.parser.process.FieldProcessor;
-import com.bcd.protocol.gb32960.data.*;
+import com.bcd.parser.impl.gb32960.data.*;
+import com.bcd.parser.processer.FieldDeProcessContext;
+import com.bcd.parser.processer.FieldProcessContext;
+import com.bcd.parser.processer.FieldProcessor;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

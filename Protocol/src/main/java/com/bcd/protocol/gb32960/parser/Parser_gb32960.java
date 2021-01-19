@@ -1,9 +1,9 @@
 package com.bcd.protocol.gb32960.parser;
 
-import com.bcd.parser.process.FieldProcessor;
 import com.bcd.parser.Parser;
+import com.bcd.parser.impl.gb32960.data.Packet;
+import com.bcd.parser.processer.FieldProcessor;
 import com.bcd.parser.util.ParserUtil;
-import com.bcd.protocol.gb32960.data.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
