@@ -1,6 +1,5 @@
 package com.bcd.protocol.gb32960.handler;
 
-import com.bcd.base.util.ExceptionUtil;
 import com.bcd.parser.impl.gb32960.data.Packet;
 import com.bcd.protocol.gb32960.datahandler.DataHandler;
 import com.bcd.protocol.gb32960.define.CommonConst;
@@ -21,15 +20,14 @@ public class BusinessHandler extends ChannelInboundHandlerAdapter{
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Object data= ((Packet)msg).getData();
         DataHandler dataHandler= CommonConst.DATA_HANDLER_ARR[((Packet)msg).getFlag()];
-        dataHandler.handle(data,ctx);
+        dataHandler.handle(msg,ctx);
         super.channelRead(ctx, msg);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        ExceptionUtil.printException(cause);
+        logger.error("exceptionCaught",cause);
 //        super.exceptionCaught(ctx, cause);
     }
 

@@ -1,6 +1,4 @@
 dependencies {
     //集成netty
     compile group: 'io.netty', name: 'netty-all', version: '4.+'
-
-    compile project(':Base')
 }

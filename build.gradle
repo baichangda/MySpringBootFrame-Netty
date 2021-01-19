@@ -3,6 +3,8 @@ allprojects{
     version '1.0-SNAPSHOT'
     apply plugin: 'java'
     apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -15,7 +17,8 @@ allprojects{
     }
 
     dependencies{
-
+        //springboot支持
+        compile("org.springframework.boot:spring-boot-starter")
     }
 
     gradle.projectsEvaluated {

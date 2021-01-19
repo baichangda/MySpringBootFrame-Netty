@@ -1,7 +1,6 @@
 package com.bcd.protocol.gb32960;
 
 
-import com.bcd.base.util.ExceptionUtil;
 import com.bcd.nettyserver.tcp.TcpServer;
 import com.bcd.protocol.gb32960.handler.BusinessHandler;
 import com.bcd.protocol.gb32960.handler.PacketParseHandler;
@@ -58,7 +57,7 @@ public class TcpServer_32960 extends TcpServer{
             ChannelFuture channelFuture= serverBootstrap.bind(new InetSocketAddress(port)).sync();
             channelFuture.channel().closeFuture().sync();
         }catch(Exception e){
-            ExceptionUtil.printException(e);
+            logger.error("run error",e);
         }finally{
             boosGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
