@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
  * 基于Netty的Http监听服务
  */
 @Component
-public class TcpServer_32960 extends TcpServer{
+public class Server_32960 extends TcpServer{
 
     @Autowired
     PacketParseHandler packetParseHandler;
@@ -33,7 +33,7 @@ public class TcpServer_32960 extends TcpServer{
     @Autowired
     BusinessHandler businessHandler;
 
-    public TcpServer_32960(@Value("${server.gb32960.port}")int port){
+    public Server_32960(@Value("${server.gb32960.port}")int port){
         super(port);
     }
 
