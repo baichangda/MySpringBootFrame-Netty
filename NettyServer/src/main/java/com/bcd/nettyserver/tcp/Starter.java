@@ -24,7 +24,6 @@ public class Starter implements CommandLineRunner{
             POOL = Executors.newFixedThreadPool(serverList.size());
             serverList.forEach(tcpServer -> {
                 POOL.execute(tcpServer);
-                logger.info("启动netty tcp服务器[" + tcpServer.getPort() + "]!");
             });
         }
     }

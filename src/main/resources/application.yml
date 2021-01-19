@@ -5,7 +5,6 @@ spring:
       encoding: UTF-8
       cache-duration: -1
 
-netty:
-   tcp:
-      server_32960:
-          port: 6666
+server:
+   gb32960:
+      port: 6666

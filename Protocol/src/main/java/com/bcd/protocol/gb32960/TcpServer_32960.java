@@ -33,7 +33,7 @@ public class TcpServer_32960 extends TcpServer{
     @Autowired
     BusinessHandler businessHandler;
 
-    public TcpServer_32960(@Value("${netty.tcp.server-32960.port}")int port){
+    public TcpServer_32960(@Value("${server.gb32960.port}")int port){
         super(port);
     }
 
@@ -55,6 +55,7 @@ public class TcpServer_32960 extends TcpServer{
                     }
             );
             ChannelFuture channelFuture= serverBootstrap.bind(new InetSocketAddress(port)).sync();
+            logger.info("server listen on port[{}]",port);
             channelFuture.channel().closeFuture().sync();
         }catch(Exception e){
             logger.error("run error",e);
