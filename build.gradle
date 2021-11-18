@@ -1,3 +1,21 @@
+buildscript {
+    ext {
+        springBootVersion = '+'
+        mavenRepoUrl = 'https://maven.aliyun.com/repository/central'
+    }
+    repositories {
+        mavenLocal()
+        maven { url "${mavenRepoUrl}" }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        //使用springboot框架
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
 allprojects{
     group 'MySpringBootFrame-Netty'
     version '1.0-SNAPSHOT'
@@ -18,7 +36,7 @@ allprojects{
 
     dependencies{
         //springboot支持
-        compile("org.springframework.boot:spring-boot-starter")
+        implementation("org.springframework.boot:spring-boot-starter")
     }
 
     gradle.projectsEvaluated {
@@ -52,24 +70,5 @@ bootRun {
     }
 }
 
-buildscript {
-    ext {
-        springBootVersion = '+'
-        mavenRepoUrl='http://maven.aliyun.com/nexus/content/groups/public/'
-    }
-    repositories {
-        mavenLocal()
-        maven { url "${mavenRepoUrl}" }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        //使用springboot框架
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
 
-}
 
-dependencies {
-    compile project(':Protocol')
-}
