@@ -1,4 +1,0 @@
-dependencies {
-    //集成netty
-    compile("io.netty:netty-all:4.+")
-}
