@@ -1,59 +1,88 @@
 buildscript {
     ext {
-        springBootVersion = '+'
-        mavenRepoUrl = 'https://maven.aliyun.com/repository/central'
+        aliyunPublic = 'https://maven.aliyun.com/repository/public/'
+        aliyunGoogle = 'https://maven.aliyun.com/repository/google'
+        aliyunGradlePlugin = 'https://maven.aliyun.com/repository/gradle-plugin'
+        aliyunSpring = 'https://maven.aliyun.com/repository/spring'
+        aliyunSpringPlugin = 'https://maven.aliyun.com/repository/spring-plugin'
+        incarMavenRepoUrl='https://repository.incarcloud.com/content/repositories/snapshots/'
     }
     repositories {
         mavenLocal()
-        maven { url "${mavenRepoUrl}" }
-        jcenter()
+        maven { url "${aliyunPublic}" }
+        maven { url "${aliyunGradlePlugin}" }
+        maven { url "${aliyunSpringPlugin}" }
         mavenCentral()
-    }
-    dependencies {
-        //使用springboot框架
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-
-}
-
-allprojects{
-    group 'MySpringBootFrame-Netty'
-    version '1.0-SNAPSHOT'
-    apply plugin: 'java'
-    apply plugin: 'idea'
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.springframework.boot'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    repositories {
-        mavenLocal()
-        maven { url 'http://repository.incarcloud.com/content/repositories/snapshots/' }
-        maven { url "${mavenRepoUrl}" }
-        mavenCentral()
-    }
-
-    dependencies{
-        //springboot支持
-        implementation("org.springframework.boot:spring-boot-starter")
-    }
-
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked"
-            options.compilerArgs << "-parameters"
-            options.encoding = "UTF-8"
-        }
-    }
-
-    jar {
-        enabled = true
     }
 }
 
+plugins{
+    id 'java-library'
+    id 'java'
+    id 'idea'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'org.springframework.boot' version "2.+"
+}
 
-apply plugin: 'org.springframework.boot'
+group 'MySpringBootFrame-Netty'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 18
+targetCompatibility = 18
+
+repositories {
+    mavenLocal()
+    maven { url "${aliyunPublic}" }
+    maven { url "${aliyunGoogle}" }
+    maven { url "${aliyunSpring}" }
+    maven {
+        url "${incarMavenRepoUrl}"
+        //允许http依赖库
+        allowInsecureProtocol = true
+    }
+    mavenCentral()
+}
+
+//下载源码和文档
+//gradle cleanIdea idea
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+//去除springboot默认的logback
+configurations.all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    exclude module: 'logback-classic'
+    exclude module: 'logback-core'
+}
+
+dependencies {
+    //springboot支持
+    implementation("org.springframework.boot:spring-boot-starter")
+    //springboot log4j2支持
+    implementation('org.springframework.boot:spring-boot-starter-log4j2')
+
+    implementation('com.bcd:Parser:6.5-SNAPSHOT') {
+        exclude group: 'io.netty', module: 'netty-all'
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+        exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    }
+
+    //集成netty
+    implementation("io.netty:netty-all:4.+")
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked"
+        options.compilerArgs << "-parameters"
+        options.encoding = "UTF-8"
+    }
+}
+
 bootJar {
     manifest {
         attributes 'Start-Class': 'com.bcd.Application'
@@ -65,9 +94,12 @@ bootRun {
      * 启动时候带入jvm的参数;如下(启动jvisualvm监控)
      * nohup gradle bootRun -PjvmArgs="-Djava.rmi.server.hostname=172.16.24.36 -Dcom.sun.management.jmxremote.port=10001 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=true" &
      */
-    if (project.hasProperty('jvmArgs') ) {
-        jvmArgs = (project.jvmArgs.split("\\s+") as List)
+    if (project.hasProperty('jvmArgs')) {
+        jvmArgs(project.jvmArgs.split("\\s+") as List)
     }
+    //开启缓存行补齐
+    jvmArgs('-XX:-RestrictContended')
+    jvmArgs('-Dfile.encoding=UTF-8')
 }
 
 
